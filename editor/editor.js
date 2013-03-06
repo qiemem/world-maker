@@ -5,6 +5,15 @@ Editor = (function() {
     this.editor.classList.add("editor");
     this.container.appendChild(this.editor);
     this.visible = false;
+    this.evalTimeout = -1;
+    var self = this;
+    //this.editor.onchange = function() { console.log('test'); };
+    this.editor.addEventListener('input', function() {
+      clearTimeout(self.evalTimeout);
+      self.evalTimeout = setTimeout(function() {
+        eval(self.editor.value);
+      }, 500);
+    });
   }
 
   Editor.prototype.slideIn = function() {
@@ -26,6 +35,7 @@ Editor = (function() {
       this.slideIn();
     }
   }
+
   return Editor;
 }());
 
