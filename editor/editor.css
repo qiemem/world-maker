@@ -1,0 +1,9 @@
+.editor {
+  margin: 0px;
+  background: #CCC;
+  width: 600px;
+  min-height: 100%;
+  position: absolute;
+  left: -600px;
+  top: 0px;
+}

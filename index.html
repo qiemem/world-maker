@@ -2,7 +2,23 @@
 <html>
   <head>
     <title>World Maker</title>
+    <link rel="stylesheet" href="editor/editor.css" />
+    <script src="http://localhost:9001/ws"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="editor/editor.js"></script>
+    <script>
+      var editor;
+      function init() {
+        editor = new Editor(document.body);
+        document.body.addEventListener('keypress', function(e) {
+          if (e.keyCode === '`'.charCodeAt(0)) {
+            editor.toggleSlide();
+            return false;
+          }
+        });
+      }
+    </script>
   </head>
-  <body>
+  <body onload="init();">
   </body>
 </html>
