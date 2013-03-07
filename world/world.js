@@ -68,11 +68,18 @@ World = (function () {
           });
 
     var sphere = new THREE.Mesh(
-        new THREE.SphereGeometry(1,16,16),
+        new THREE.SphereGeometry(.5,16,16),
         sphereMaterial);
 
     scene.add(sphere);
     return sphere;
+  }
+
+  World.cube = function(color) {
+    var material = new THREE.MeshLambertMaterial({color: color});
+    var cube = new THREE.Mesh(new THREE.CubeGeometry(1,1,1), material);
+    scene.add(cube);
+    return cube;
   }
 
   var AgentProto = THREE.Object3D.prototype;
@@ -138,6 +145,12 @@ World = (function () {
     var sphere = World.sphere(this.material.color);
     sphere.applyMatrix(this.matrix);
     return sphere;
+  }
+
+  AgentProto.cube = function() {
+    var cube = World.cube(this.material.color);
+    cube.applyMatrix(this.matrix);
+    return cube;
   }
 
   return World;
