@@ -77,6 +77,7 @@ World = (function () {
 
   var AgentProto = THREE.Object3D.prototype;
 
+  // TODO: Translate methods only use rotation, not scaling, from matrix
   AgentProto.forward = AgentProto.fd = function(distance) {
     this.translateZ(-distance);
     this.updateMatrix();
@@ -94,19 +95,43 @@ World = (function () {
   AgentProto.left = AgentProto.lt = function(angle) {
     this.matrix.multiply(new THREE.Matrix4().makeRotationY(2*Math.PI*angle/360));
     var mat = new THREE.Matrix4().extractRotation( this.matrix );
-		this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
+    this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
     return this;
   }
 
   AgentProto.upward = AgentProto.uw = function(angle) {
     this.matrix.multiply(new THREE.Matrix4().makeRotationX(2*Math.PI*angle/360));
     var mat = new THREE.Matrix4().extractRotation( this.matrix );
-		this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
+    this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
     return this;
   }
 
   AgentProto.downward = AgentProto.dw = function(angle) {
     return this.uw(-angle);
+  }
+
+
+  // TODO: Scalar methods do not use matrix multiplication.
+  AgentProto.grow = function(amount) {
+    return this.gw(amount).gl(amount).gt(amount);
+  }
+
+  AgentProto.growWide = AgentProto.gw = function(amount) {
+    this.scale.x += amount;
+    this.updateMatrix();
+    return this;
+  }
+
+  AgentProto.growLong = AgentProto.gl = function(amount) {
+    this.scale.z += amount;
+    this.updateMatrix();
+    return this;
+  }
+
+  AgentProto.growTall = AgentProto.gt = function(amount) {
+    this.scale.y += amount;
+    this.updateMatrix();
+    return this;
   }
 
   AgentProto.sphere = function() {
