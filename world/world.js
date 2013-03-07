@@ -11,13 +11,13 @@ World = (function () {
 
   World.init = function(container) {
     renderer = new THREE.WebGLRenderer();
-    //renderer.setClearColor(new THREE.Color(0x000000), 1.0);
     // 1.0 = Arbitrary aspect; WindowResize takes care of it for us
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, 1.0, NEAR, FAR);
-    renderer.setClearColor(new THREE.Color(0x000000, 1));
+    renderer.setClearColor(new THREE.Color(0x000020, 1));
     scene = new THREE.Scene();
     World.scene = scene;
     World.camera = camera;
+    World.renderer = renderer;
     scene.add(camera);
     THREEx.WindowResize(renderer, camera);
     renderer.setSize(window.innerWidth, window.innerHeight);
