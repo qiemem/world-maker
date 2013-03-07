@@ -67,7 +67,7 @@ World = (function () {
             color: color
           });
 
-    sphere = new THREE.Mesh(
+    var sphere = new THREE.Mesh(
         new THREE.SphereGeometry(1,16,16),
         sphereMaterial);
 
@@ -77,6 +77,7 @@ World = (function () {
 
   THREE.Object3D.prototype.fd = function(distance) {
     this.translateZ(-distance);
+    this.updateMatrix();
     return this;
   }
 
@@ -86,16 +87,26 @@ World = (function () {
 
   THREE.Object3D.prototype.lt = function(angle) {
     this.matrix.multiply(new THREE.Matrix4().makeRotationY(2*Math.PI*angle/360));
+    var mat = new THREE.Matrix4().extractRotation( this.matrix );
+		this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
     return this;
   }
 
   THREE.Object3D.prototype.uw = function(angle) {
     this.matrix.multiply(new THREE.Matrix4().makeRotationX(2*Math.PI*angle/360));
+    var mat = new THREE.Matrix4().extractRotation( this.matrix );
+		this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
     return this;
   }
 
   THREE.Object3D.prototype.dw = function(angle) {
     return this.uw(-angle);
+  }
+
+  THREE.Object3D.prototype.sphere = function() {
+    var sphere = World.sphere(this.material.color);
+    sphere.applyMatrix(this.matrix);
+    return sphere;
   }
 
   return World;
