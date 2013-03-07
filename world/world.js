@@ -13,7 +13,7 @@ World = (function () {
     renderer = new THREE.WebGLRenderer();
     // 1.0 = Arbitrary aspect; WindowResize takes care of it for us
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, 1.0, NEAR, FAR);
-    renderer.setClearColor(new THREE.Color(0x000020, 1));
+    renderer.setClearColor(new THREE.Color(0x000000, 1));
     scene = new THREE.Scene();
     World.scene = scene;
     World.camera = camera;
@@ -53,6 +53,21 @@ World = (function () {
     requestAnimationFrame(World.animate);
   }
 
+  World.sphere = function(color) {
+    // create the sphere's material
+    var sphereMaterial =
+      new THREE.MeshLambertMaterial(
+          {
+            color: color
+          });
+
+    sphere = new THREE.Mesh(
+        new THREE.SphereGeometry(1,16,16),
+        sphereMaterial);
+
+    scene.add(sphere);
+    return sphere;
+  }
 
   return World;
 }());
