@@ -59,13 +59,10 @@ World = (function () {
     requestAnimationFrame(World.animate);
   }
 
-  World.sphere = function(color) {
+  World.sphere = function() {
     // create the sphere's material
     var sphereMaterial =
-      new THREE.MeshLambertMaterial(
-          {
-            color: color
-          });
+      new THREE.MeshLambertMaterial();
 
     var sphere = new THREE.Mesh(
         new THREE.SphereGeometry(.5,16,16),
@@ -75,8 +72,8 @@ World = (function () {
     return sphere;
   }
 
-  World.cube = function(color) {
-    var material = new THREE.MeshLambertMaterial({color: color});
+  World.cube = function() {
+    var material = new THREE.MeshLambertMaterial();
     var cube = new THREE.Mesh(new THREE.CubeGeometry(1,1,1), material);
     scene.add(cube);
     return cube;
@@ -141,14 +138,21 @@ World = (function () {
     return this;
   }
 
+  AgentProto.color = function(color) {
+    this.material.color.set(color);
+    return this;
+  }
+
   AgentProto.sphere = function() {
-    var sphere = World.sphere(this.material.color);
+    var sphere = World.sphere();
+    sphere.material.color.copy(this.material.color);
     sphere.applyMatrix(this.matrix);
     return sphere;
   }
 
   AgentProto.cube = function() {
-    var cube = World.cube(this.material.color);
+    var cube = World.cube();
+    cube.material.color.copy(this.material.color);
     cube.applyMatrix(this.matrix);
     return cube;
   }
