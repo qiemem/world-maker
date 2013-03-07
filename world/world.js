@@ -13,6 +13,7 @@ World = (function () {
     renderer = new THREE.WebGLRenderer();
     // 1.0 = Arbitrary aspect; WindowResize takes care of it for us
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, 1.0, NEAR, FAR);
+    camera.position.z = 10;
     renderer.setClearColor(new THREE.Color(0x000000, 1));
     scene = new THREE.Scene();
     World.scene = scene;
@@ -26,6 +27,9 @@ World = (function () {
     // create a point light
     var pointLight =
       new THREE.PointLight(0xFFFFFF);
+    
+    pointLight.position.z = camera.position.z;
+    World.pointLight = pointLight;
 
     // add to the scene
     scene.add(pointLight);
@@ -43,6 +47,8 @@ World = (function () {
     // create a point light
     var pointLight =
       new THREE.PointLight(0xFFFFFF);
+    pointLight.position.z = camera.position.z;
+    World.pointLight = pointLight;
 
     // add to the scene
     scene.add(pointLight);
@@ -67,6 +73,29 @@ World = (function () {
 
     scene.add(sphere);
     return sphere;
+  }
+
+  THREE.Object3D.prototype.fd = function(distance) {
+    this.translateZ(-distance);
+    return this;
+  }
+
+  THREE.Object3D.prototype.rt = function(angle) {
+    return this.lt(-angle);
+  }
+
+  THREE.Object3D.prototype.lt = function(angle) {
+    this.matrix.multiply(new THREE.Matrix4().makeRotationY(2*Math.PI*angle/360));
+    return this;
+  }
+
+  THREE.Object3D.prototype.uw = function(angle) {
+    this.matrix.multiply(new THREE.Matrix4().makeRotationX(2*Math.PI*angle/360));
+    return this;
+  }
+
+  THREE.Object3D.prototype.dw = function(angle) {
+    return this.uw(-angle);
   }
 
   return World;
