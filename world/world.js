@@ -75,35 +75,41 @@ World = (function () {
     return sphere;
   }
 
-  THREE.Object3D.prototype.fd = function(distance) {
+  var AgentProto = THREE.Object3D.prototype;
+
+  AgentProto.forward = AgentProto.fd = function(distance) {
     this.translateZ(-distance);
     this.updateMatrix();
     return this;
   }
 
-  THREE.Object3D.prototype.rt = function(angle) {
+  AgentProto.backward = AgentProto.bk = function(distance) {
+    return this.fd(-distance);
+  }
+    
+  AgentProto.right = AgentProto.rt = function(angle) {
     return this.lt(-angle);
   }
 
-  THREE.Object3D.prototype.lt = function(angle) {
+  AgentProto.left = AgentProto.lt = function(angle) {
     this.matrix.multiply(new THREE.Matrix4().makeRotationY(2*Math.PI*angle/360));
     var mat = new THREE.Matrix4().extractRotation( this.matrix );
 		this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
     return this;
   }
 
-  THREE.Object3D.prototype.uw = function(angle) {
+  AgentProto.upward = AgentProto.uw = function(angle) {
     this.matrix.multiply(new THREE.Matrix4().makeRotationX(2*Math.PI*angle/360));
     var mat = new THREE.Matrix4().extractRotation( this.matrix );
 		this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
     return this;
   }
 
-  THREE.Object3D.prototype.dw = function(angle) {
+  AgentProto.downward = AgentProto.dw = function(angle) {
     return this.uw(-angle);
   }
 
-  THREE.Object3D.prototype.sphere = function() {
+  AgentProto.sphere = function() {
     var sphere = World.sphere(this.material.color);
     sphere.applyMatrix(this.matrix);
     return sphere;
