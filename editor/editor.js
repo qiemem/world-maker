@@ -6,13 +6,18 @@ Editor = (function() {
     this.container.appendChild(this.editor);
     this.visible = false;
     this.evalTimeout = -1;
+
+    this.evalListeners = [];
     var self = this;
     //this.editor.onchange = function() { console.log('test'); };
     this.editor.addEventListener('input', function() {
       clearTimeout(self.evalTimeout);
       self.evalTimeout = setTimeout(function() {
+        for (var i = 0; i < self.evalListeners.length; i++) {
+          self.evalListeners[i]();
+        }
         eval(self.editor.value);
-      }, 500);
+      }, 100);
     });
   }
 
@@ -35,6 +40,11 @@ Editor = (function() {
       this.slideIn();
     }
   }
+
+  Editor.prototype.addEvalListener = function(func) {
+    this.evalListeners.push(func);
+  }
+
 
   return Editor;
 }());

@@ -3,12 +3,25 @@
   <head>
     <title>World Maker</title>
     <link rel="stylesheet" href="editor/editor.css" />
+    <link rel="stylesheet" href="world/world.css" />
+    <style type="text/css">
+      body {
+        background-color: #f0f0f0;
+        margin: 0px;
+        overflow: hidden;
+      }
+    </style>
+
     <script src="http://localhost:9001/ws"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="libs/three.min.js"></script>
+    <script src="libs/THREEx.WindowResize.js"></script>
     <script src="editor/editor.js"></script>
+    <script src="world/world.js"></script>
     <script>
       var editor;
       function init() {
+        World.init(document.body);
         editor = new Editor(document.body);
         document.body.addEventListener('keypress', function(e) {
           if (e.keyCode === '`'.charCodeAt(0)) {
@@ -16,6 +29,9 @@
             return false;
           }
         });
+        editor.addEvalListener(World.reset);
+
+
       }
     </script>
   </head>

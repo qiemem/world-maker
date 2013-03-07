@@ -1,6 +1,9 @@
 .editor {
   margin: 0px;
-  background: #CCC;
+  background: rgba(64,64,64,0.5);
+  color: rgb(196, 196, 196);
+  font-size: 14px;
+  font-family: monospace;
   width: 600px;
   min-height: 100%;
   position: absolute;
