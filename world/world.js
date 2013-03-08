@@ -48,12 +48,16 @@ World = (function () {
         scene.remove(obj);
       }
     }
+    /*
     World.cube().fd(10).color('red');
     World.cube().bk(10).color('blue');
     World.cube().rt(90).fd(10).color('green');
     World.cube().lt(90).fd(10).color('yellow');
     World.cube().uw(90).fd(10).color('purple');
     World.cube().dw(90).fd(10).color('orange');
+    */
+
+    window.cursor = World.cursor().fd(5);
 
     var playerLight = new THREE.PointLight(0xFFFFFF);
     World.playerLight = playerLight;
@@ -65,6 +69,28 @@ World = (function () {
     controls.update(clock.getDelta());
     renderer.render(scene, camera);
     requestAnimationFrame(World.animate);
+  }
+
+  World.cursor = function() {
+    var outerSphere = World.sphere().color(0xFFFFAA).transparency(0.5);
+
+    var innerSphere = World.sphere().grow(-.5).color(0xAAAAAAFF).transparency(0.5);
+
+    var back = World.cube().bk(.635).gl(-.75).gt(-.75);
+    back.transparency(.2);
+
+    var right = World.cube().bk(.135).rt(90).fd(.625).lt(90).gw(-.75).gt(-.75).gl(.25);
+    right.transparency(.2);
+    var left = right.cube().lt(90).fd(1.25).lt(90);
+    left.transparency(.2);
+
+    var backBottom = World.cube().bk(.635).gl(-.75).gt(-.5).gw(-.75).dw(90).fd(.25).uw(90);
+    backBottom.transparency(.2);
+
+    var bottom = right.cube().dw(90).fd(.625).uw(90).lt(90).fd(.625).rt(90);
+    bottom.transparency(.2);
+
+    return World.compositeObject(outerSphere, innerSphere, back, right, left, backBottom, bottom);
   }
 
   World.sphere = function() {
@@ -86,6 +112,16 @@ World = (function () {
     scene.add(cube);
     return cube;
   }
+
+  World.compositeObject = function() {
+    var obj = new THREE.Object3D();
+    for (var i=0; i<arguments.length; i++) {
+      obj.add(arguments[i]);
+    }
+    scene.add(obj);
+    return obj;
+  }
+
 
   var AgentProto = THREE.Object3D.prototype;
 
@@ -139,13 +175,13 @@ World = (function () {
   }
 
   AgentProto.growWide = AgentProto.gw = function(amount) {
-    this.scale.x += amount;
+    this.scale.z += amount;
     this.updateMatrix();
     return this;
   }
 
   AgentProto.growLong = AgentProto.gl = function(amount) {
-    this.scale.z += amount;
+    this.scale.x += amount;
     this.updateMatrix();
     return this;
   }
@@ -161,16 +197,31 @@ World = (function () {
     return this;
   }
 
+  AgentProto.transparency = function(amount) {
+    if (amount > 0 && amount <= 1) {
+      this.material.transparent = true;
+      this.material.opacity = 1-amount;
+    } else {
+      this.material.transparent = false;
+      this.material.opacity = 1;
+    }
+    return this;
+  }
+
   AgentProto.sphere = function() {
     var sphere = World.sphere();
-    sphere.material.color.copy(this.material.color);
+    if (this.material) {
+      sphere.material.color.copy(this.material.color);
+    }
     sphere.applyMatrix(this.matrix);
     return sphere;
   }
 
   AgentProto.cube = function() {
     var cube = World.cube();
-    cube.material.color.copy(this.material.color);
+    if (this.material) {
+      cube.material.color.copy(this.material.color);
+    }
     cube.applyMatrix(this.matrix);
     return cube;
   }
