@@ -11,29 +11,26 @@ World = (function () {
 
   World.init = function(container) {
     renderer = new THREE.WebGLRenderer();
-    // 1.0 = Arbitrary aspect; WindowResize takes care of it for us
-    camera = new THREE.PerspectiveCamera(VIEW_ANGLE, 1.0, NEAR, FAR);
+    
+    var aspect = window.innerWidth/window.innerHeight
+    camera = new THREE.PerspectiveCamera(VIEW_ANGLE, aspect, NEAR, FAR);
     camera.position.z = 10;
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(new THREE.Color(0x000000, 1));
+
+    THREEx.WindowResize(renderer, camera);
+
     scene = new THREE.Scene();
+    scene.add(camera);
+    
     World.scene = scene;
     World.camera = camera;
     World.renderer = renderer;
-    scene.add(camera);
-    THREEx.WindowResize(renderer, camera);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+
     container.appendChild(renderer.domElement);
 
-    // create a point light
-    var pointLight =
-      new THREE.PointLight(0xFFFFFF);
-    
-    pointLight.position.z = camera.position.z;
-    World.pointLight = pointLight;
-
-    // add to the scene
-    scene.add(pointLight);
-
+    World.reset();
     World.animate();
   }
 
@@ -44,13 +41,12 @@ World = (function () {
         scene.remove(obj);
       }
     }
-    // create a point light
+
     var pointLight =
       new THREE.PointLight(0xFFFFFF);
     pointLight.position.z = camera.position.z;
     World.pointLight = pointLight;
 
-    // add to the scene
     scene.add(pointLight);
   }
 
