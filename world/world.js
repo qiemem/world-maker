@@ -110,6 +110,16 @@ World = (function () {
     return this.uw(-angle);
   }
 
+  AgentProto.rollLeft = AgentProto.rl = function(angle) {
+    this.matrix.multiply(new THREE.Matrix4().makeRotationZ(2*Math.PI*angle/360));
+    var mat = new THREE.Matrix4().extractRotation( this.matrix );
+    this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
+    return this;
+  }
+
+  AgentProto.rollRight = AgentProto.rr = function(angle) {
+    return this.rl(-angle);
+  }
 
   // TODO: Scalar methods do not use matrix multiplication.
   AgentProto.grow = function(amount) {
