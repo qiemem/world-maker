@@ -9,12 +9,17 @@ World = (function () {
       camera,
       scene;
 
+  var clock = new THREE.Clock();
+
   World.init = function(container) {
     renderer = new THREE.WebGLRenderer();
     
     var aspect = window.innerWidth/window.innerHeight
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, aspect, NEAR, FAR);
-    camera.position.z = 10;
+
+    controls = new THREE.FirstPersonControls(camera);
+    controls.lookSpeed = .1;
+    controls.movementSpeed = 2;
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(new THREE.Color(0x000000, 1));
@@ -26,11 +31,13 @@ World = (function () {
     
     World.scene = scene;
     World.camera = camera;
+    World.controls = controls;
     World.renderer = renderer;
 
     container.appendChild(renderer.domElement);
 
     World.reset();
+
     World.animate();
   }
 
@@ -41,16 +48,21 @@ World = (function () {
         scene.remove(obj);
       }
     }
+    World.cube().fd(10).color('red');
+    World.cube().bk(10).color('blue');
+    World.cube().rt(90).fd(10).color('green');
+    World.cube().lt(90).fd(10).color('yellow');
+    World.cube().uw(90).fd(10).color('purple');
+    World.cube().dw(90).fd(10).color('orange');
 
-    var pointLight =
-      new THREE.PointLight(0xFFFFFF);
-    pointLight.position.z = camera.position.z;
-    World.pointLight = pointLight;
-
-    scene.add(pointLight);
+    var playerLight = new THREE.PointLight(0xFFFFFF);
+    World.playerLight = playerLight;
+    scene.add(playerLight);
   }
 
-  World.animate = function(dt) {
+  World.animate = function() {
+    World.playerLight.position.copy(World.camera.position);
+    controls.update(clock.getDelta());
     renderer.render(scene, camera);
     requestAnimationFrame(World.animate);
   }
@@ -58,7 +70,7 @@ World = (function () {
   World.sphere = function() {
     // create the sphere's material
     var sphereMaterial =
-      new THREE.MeshLambertMaterial();
+      new THREE.MeshPhongMaterial();
 
     var sphere = new THREE.Mesh(
         new THREE.SphereGeometry(.5,16,16),
@@ -69,7 +81,7 @@ World = (function () {
   }
 
   World.cube = function() {
-    var material = new THREE.MeshLambertMaterial();
+    var material = new THREE.MeshPhongMaterial();
     var cube = new THREE.Mesh(new THREE.CubeGeometry(1,1,1), material);
     scene.add(cube);
     return cube;
@@ -79,7 +91,7 @@ World = (function () {
 
   // TODO: Translate methods only use rotation, not scaling, from matrix
   AgentProto.forward = AgentProto.fd = function(distance) {
-    this.translateZ(-distance);
+    this.translateX(distance);
     this.updateMatrix();
     return this;
   }
@@ -100,7 +112,7 @@ World = (function () {
   }
 
   AgentProto.upward = AgentProto.uw = function(angle) {
-    this.matrix.multiply(new THREE.Matrix4().makeRotationX(2*Math.PI*angle/360));
+    this.matrix.multiply(new THREE.Matrix4().makeRotationZ(2*Math.PI*angle/360));
     var mat = new THREE.Matrix4().extractRotation( this.matrix );
     this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
     return this;

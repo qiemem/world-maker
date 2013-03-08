@@ -13,13 +13,17 @@
     </style>
 
     <script src="http://localhost:9001/ws"></script>
+  </head>
+  <body onload="init();">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="libs/three.min.js"></script>
+    <script src="libs/FirstPersonControls.js"></script>
     <script src="libs/THREEx.WindowResize.js"></script>
     <script src="editor/editor.js"></script>
     <script src="world/world.js"></script>
     <script>
       var editor;
+      
       function init() {
         World.init(document.body);
         editor = new Editor(document.body);
@@ -34,7 +38,5 @@
 
       }
     </script>
-  </head>
-  <body onload="init();">
   </body>
 </html>
