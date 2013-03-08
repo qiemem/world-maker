@@ -30,6 +30,7 @@
         document.body.addEventListener('keypress', function(e) {
           if (e.keyCode === '`'.charCodeAt(0)) {
             editor.toggleSlide();
+            World.controls.freeze = editor.visible;
             return false;
           }
         });
