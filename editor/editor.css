@@ -25,3 +25,11 @@
 
 .completions {
 }
+
+li.completion {
+  cursor:pointer;
+}
+
+li.completion:hover {
+  background:#444;
+}

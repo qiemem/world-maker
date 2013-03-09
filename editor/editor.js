@@ -25,24 +25,32 @@ Editor = (function() {
     this.editor.addEventListener('input', function() {
       clearTimeout(self.evalTimeout);
       self.evalTimeout = setTimeout(function() {
-        for (var i = 0; i < self.evalListeners.length; i++) {
-          self.evalListeners[i]();
-        }
-        eval(self.editor.value);
-        console.log('Eval successful');
+        self.evalContents();
       }, 100);
     });
+
+    var complete = function() {self.doCompletions();};
+    d3.select(this.editor).on('click', complete).on('keydown', complete).on('focus', complete);
+  }
+
+  Editor.prototype.evalContents = function() {
+    for (var i = 0; i < this.evalListeners.length; i++) {
+      this.evalListeners[i]();
+    }
+    eval(this.editor.value);
+    console.log('Eval successful');
   }
 
   Editor.prototype.slideIn = function() {
-    $(this.drawer).animate({left: 0});
-    this.drawer.focus();
+    d3.select(this.drawer).transition().style("left", "0px");
+    this.editor.focus();
     this.visible = true;
   }
 
   Editor.prototype.slideOut = function() {
-    $(this.drawer).animate({left: -$(this.drawer).width()});
-    this.drawer.blur();
+    var drawer = d3.select(this.drawer);
+    drawer.transition().style("left", "-" + drawer.style("width"));
+    this.editor.blur();
     this.visible = false;
   }
 
@@ -58,6 +66,47 @@ Editor = (function() {
     this.evalListeners.push(func);
   }
 
+  Editor.prototype.doCompletions = function() {
+    this.showCompletions(this.getCompletions(this.editor.selectionStart));
+  }
+
+  Editor.prototype.getCompletions = function(position) {
+    return ["cursor.cube()", "cursor.sphere()", ".color('red')"];
+  }
+
+  Editor.prototype.showCompletions = function(completions) {
+    console.log(completions);
+    var li = d3.select(this.completionsList).selectAll("li").data(completions);
+    var self = this;
+    li.enter().append("li")
+      .text(function (d) {return d;})
+      .classed("completion", 1)
+      .on("mouseover", function(d) {
+        var editor = self.editor;
+        var text = editor.value;
+        var insertStart = editor.selectionStart;
+        var insertEnd = editor.selectionEnd;
+        editor.value = text.slice(0, insertStart) + d + text.slice(insertEnd);
+        editor.selectionStart = insertStart;
+        editor.selectionEnd = insertStart + d.length;
+        self.evalContents();
+      })
+      .on("mouseout", function(d) {
+        var editor = self.editor;
+        var text = editor.value;
+        var insertStart = editor.selectionStart;
+        var insertEnd = editor.selectionEnd;
+        editor.value = text.slice(0,insertStart) + text.slice(insertEnd);
+        editor.selectionStart = editor.selectionEnd = insertStart;
+        self.evalContents();
+      })
+      .on("click", function() {
+        self.editor.selectionStart = self.editor.selectionEnd;
+      })
+        ;
+      
+    li.exit().remove();
+  }
 
   return Editor;
 }());
