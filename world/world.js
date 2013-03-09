@@ -126,6 +126,14 @@ World = (function () {
   var AgentProto = THREE.Object3D.prototype;
 
   // TODO: Translate methods only use rotation, not scaling, from matrix
+
+  AgentProto.trans = function(xDist, yDist, zDist) {
+    this._vector.set(xDist, yDist, zDist);
+    var dist = this._vector.length();
+    this.translate(dist, this._vector.setLength(1));
+    return this;
+  }
+
   AgentProto.forward = AgentProto.fd = function(distance) {
     this.translateX(distance);
     this.updateMatrix();
@@ -158,14 +166,14 @@ World = (function () {
     return this.uw(-angle);
   }
 
-  AgentProto.rollLeft = AgentProto.rl = function(angle) {
+  AgentProto.rollRight = AgentProto.rr = function(angle) {
     this.matrix.multiply(new THREE.Matrix4().makeRotationX(2*Math.PI*angle/360));
     var mat = new THREE.Matrix4().extractRotation( this.matrix );
     this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
     return this;
   }
 
-  AgentProto.rollRight = AgentProto.rr = function(angle) {
+  AgentProto.rollLeft = AgentProto.rl = function(angle) {
     return this.rl(-angle);
   }
 
