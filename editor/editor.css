@@ -24,6 +24,8 @@
 }
 
 .completions {
+  overflow:auto;
+  height:30%;
 }
 
 li.completion {

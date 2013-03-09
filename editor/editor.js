@@ -71,7 +71,23 @@ Editor = (function() {
   }
 
   Editor.prototype.getCompletions = function(position) {
-    return ["cursor.cube()", "cursor.sphere()", ".color('red')"];
+    return ["cursor"
+      ,".cube()"
+      , ".sphere()"
+      , ".color('red')"
+      , ".forward(1)"
+      , ".backward(1)"
+      , ".right(90)"
+      , ".left(90)"
+      , ".upward(90)"
+      , ".downward(90)"
+      , ".rollRight(90)"
+      , ".rollLeft(90)"
+      , ".grow(1)"
+      , ".growWide(1)"
+      , ".growLong(1)"
+      , ".growTall(1)"
+      , ".transparency(.5)"];
   }
 
   Editor.prototype.showCompletions = function(completions) {
