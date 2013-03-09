@@ -1,9 +1,21 @@
 Editor = (function() {
   function Editor(container) {
     this.container = container;
+    this.drawer = document.createElement("div");
+    this.drawer.classList.add("drawer");
     this.editor = document.createElement("textarea");
     this.editor.classList.add("editor");
-    this.container.appendChild(this.editor);
+    this.drawer.appendChild(this.editor);
+
+    this.completions = document.createElement("div");
+    this.completions.classList.add("completions");
+    this.drawer.appendChild(this.completions);
+
+    this.completionsList = document.createElement("ul");
+    this.completionsList.classList.add("completions-list");
+    this.completions.appendChild(this.completionsList);
+
+    this.container.appendChild(this.drawer);
     this.visible = false;
     this.evalTimeout = -1;
 
@@ -17,19 +29,20 @@ Editor = (function() {
           self.evalListeners[i]();
         }
         eval(self.editor.value);
+        console.log('Eval successful');
       }, 100);
     });
   }
 
   Editor.prototype.slideIn = function() {
-    $(this.editor).animate({left: 0});
-    this.editor.focus();
+    $(this.drawer).animate({left: 0});
+    this.drawer.focus();
     this.visible = true;
   }
 
   Editor.prototype.slideOut = function() {
-    $(this.editor).animate({left: -$(this.editor).width()});
-    this.editor.blur();
+    $(this.drawer).animate({left: -$(this.drawer).width()});
+    this.drawer.blur();
     this.visible = false;
   }
 
