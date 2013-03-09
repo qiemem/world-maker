@@ -72,9 +72,9 @@ World = (function () {
   }
 
   World.cursor = function() {
-    var outerSphere = World.sphere().color(0xFFFFAA).transparency(0.5);
+    //var outerSphere = World.sphere().color(0xFFFFAA).transparency(0.5);
 
-    var innerSphere = World.sphere().grow(-.5).color(0xAAAAAAFF).transparency(0.5);
+    //var innerSphere = World.sphere().grow(-.5).color(0xAAAAAAFF).transparency(0.5);
 
     var back = World.cube().bk(.635).gl(-.75).gt(-.75);
     back.transparency(.2);
@@ -90,7 +90,7 @@ World = (function () {
     var bottom = right.cube().dw(90).fd(.625).uw(90).lt(90).fd(.625).rt(90);
     bottom.transparency(.2);
 
-    return World.compositeObject(outerSphere, innerSphere, back, right, left, backBottom, bottom);
+    return World.compositeObject(back, right, left, backBottom, bottom);
   }
 
   World.sphere = function() {
