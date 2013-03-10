@@ -9,11 +9,12 @@
   left: -600px;
   top: 0px;
   bottom: 0px;
+  z-index: 9;
 }
 
 .CodeMirror {
   height: 70%;
-  width: 100%;
+  padding: 0px 5px 0px 5px;
 }
 
 .cm-s-solarized.cm-s-dark .CodeMirror-selected {
