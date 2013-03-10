@@ -3,9 +3,12 @@ Editor = (function() {
     this.container = container;
     this.drawer = document.createElement("div");
     this.drawer.classList.add("drawer");
-    this.editor = document.createElement("textarea");
-    this.editor.classList.add("editor");
-    this.drawer.appendChild(this.editor);
+    this.editor = CodeMirror(this.drawer, {
+      mode: "javascript",
+      lineNumbers: false,
+      theme: "solarized dark"
+
+    });
 
     this.completions = document.createElement("div");
     this.completions.classList.add("completions");
@@ -21,36 +24,33 @@ Editor = (function() {
 
     this.evalListeners = [];
     var self = this;
-    //this.editor.onchange = function() { console.log('test'); };
-    this.editor.addEventListener('input', function() {
+    this.editor.on('change', function() {
       clearTimeout(self.evalTimeout);
       self.evalTimeout = setTimeout(function() {
         self.evalContents();
       }, 100);
     });
-
     var complete = function() {self.doCompletions();};
-    d3.select(this.editor).on('click', complete).on('keydown', complete).on('focus', complete);
+    this.editor.on('cursorActivity', complete);
+    this.editor.on('focus', complete);
   }
 
   Editor.prototype.evalContents = function() {
     for (var i = 0; i < this.evalListeners.length; i++) {
       this.evalListeners[i]();
     }
-    eval(this.editor.value);
+    eval(this.editor.getValue());
     console.log('Eval successful');
   }
 
   Editor.prototype.slideIn = function() {
     d3.select(this.drawer).transition().style("left", "0px");
-    this.editor.focus();
     this.visible = true;
   }
 
   Editor.prototype.slideOut = function() {
     var drawer = d3.select(this.drawer);
     drawer.transition().style("left", "-" + drawer.style("width"));
-    this.editor.blur();
     this.visible = false;
   }
 
@@ -91,33 +91,19 @@ Editor = (function() {
   }
 
   Editor.prototype.showCompletions = function(completions) {
-    console.log(completions);
     var li = d3.select(this.completionsList).selectAll("li").data(completions);
     var self = this;
     li.enter().append("li")
       .text(function (d) {return d;})
       .classed("completion", 1)
       .on("mouseover", function(d) {
-        var editor = self.editor;
-        var text = editor.value;
-        var insertStart = editor.selectionStart;
-        var insertEnd = editor.selectionEnd;
-        editor.value = text.slice(0, insertStart) + d + text.slice(insertEnd);
-        editor.selectionStart = insertStart;
-        editor.selectionEnd = insertStart + d.length;
-        self.evalContents();
+        self.editor.replaceSelection(d);
       })
       .on("mouseout", function(d) {
-        var editor = self.editor;
-        var text = editor.value;
-        var insertStart = editor.selectionStart;
-        var insertEnd = editor.selectionEnd;
-        editor.value = text.slice(0,insertStart) + text.slice(insertEnd);
-        editor.selectionStart = editor.selectionEnd = insertStart;
-        self.evalContents();
+        self.editor.replaceSelection("");
       })
       .on("click", function() {
-        self.editor.selectionStart = self.editor.selectionEnd;
+        self.editor.setCursor(self.editor.getCursor("end"));
       })
         ;
       

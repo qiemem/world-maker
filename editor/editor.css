@@ -1,9 +1,9 @@
 .drawer {
-  margin: 0px;
-  background: rgba(64,64,64,0.5);
-  color: rgb(196, 196, 196);
-  font-size: 14px;
+  background: #002b36;
   font-family: monospace;
+  font-size: 14px;
+  color: rgb(196, 196, 196);
+  opacity: .9;
   width: 600px;
   position: absolute;
   left: -600px;
@@ -11,16 +11,13 @@
   bottom: 0px;
 }
 
-.editor {
+.CodeMirror {
   height: 70%;
   width: 100%;
-  margin: 0px;
-  border: 0px;
-  padding: 0px;
-  background: rgba(64,64,64,0.5);
-  color: rgb(196, 196, 196);
-  font-size: 14px;
-  font-family: monospace;
+}
+
+.cm-s-solarized.cm-s-dark .CodeMirror-selected {
+  background: #fdf6e3;
 }
 
 .completions {

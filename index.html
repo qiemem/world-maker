@@ -2,6 +2,8 @@
 <html>
   <head>
     <title>World Maker</title>
+    <link rel="stylesheet" href="libs/codemirror/codemirror.css" />
+    <link rel="stylesheet" href="libs/codemirror/solarized.css" />
     <link rel="stylesheet" href="editor/editor.css" />
     <link rel="stylesheet" href="world/world.css" />
     <style type="text/css">
@@ -19,6 +21,8 @@
     <script src="libs/three.min.js"></script>
     <script src="libs/FirstPersonControls.js"></script>
     <script src="libs/THREEx.WindowResize.js"></script>
+    <script src="libs/codemirror/codemirror.js"></script>
+    <script src="libs/codemirror/javascript.js"></script>
     <script src="editor/editor.js"></script>
     <script src="world/world.js"></script>
     <script>
@@ -31,8 +35,14 @@
           if (e.keyCode === '`'.charCodeAt(0)) {
             editor.toggleSlide();
             World.controls.freeze = editor.visible;
-            return false;
+            if (editor.visible) {
+              // Otherwise the key actually registers in the editor, typing `
+              setTimeout(function(){editor.editor.focus();});
+            } else {
+              editor.editor.getInputField().blur();
+            }
           }
+          return false;
         });
         editor.addEvalListener(World.reset);
 
