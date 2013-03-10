@@ -14,7 +14,7 @@ World = (function () {
   World.init = function(container) {
     renderer = new THREE.WebGLRenderer();
     
-    var aspect = window.innerWidth/window.innerHeight
+    var aspect = window.innerWidth/window.innerHeight;
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, aspect, NEAR, FAR);
 
     controls = new THREE.FirstPersonControls(camera);
@@ -59,9 +59,8 @@ World = (function () {
 
     window.cursor = World.cursor().fd(5);
 
-    var playerLight = new THREE.PointLight(0xFFFFFF);
-    World.playerLight = playerLight;
-    scene.add(playerLight);
+    World.playerLight = new THREE.PointLight(0xFFFFFF);
+    scene.add(World.playerLight);
   }
 
   World.animate = function() {
