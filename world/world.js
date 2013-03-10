@@ -85,13 +85,9 @@ World = (function () {
   }
 
   World.sphere = function() {
-    // create the sphere's material
-    var sphereMaterial =
-      new THREE.MeshPhongMaterial();
-
-    var sphere = new THREE.Mesh(
-        new THREE.SphereGeometry(.5,16,16),
-        sphereMaterial);
+    var material = new THREE.MeshPhongMaterial();
+    material.side = THREE.DoubleSide;
+    var sphere = new THREE.Mesh(new THREE.SphereGeometry(.5,16,16), material);
 
     scene.add(sphere);
     return sphere;
@@ -99,6 +95,7 @@ World = (function () {
 
   World.cube = function() {
     var material = new THREE.MeshPhongMaterial();
+    material.side = THREE.DoubleSide;
     var cube = new THREE.Mesh(new THREE.CubeGeometry(1,1,1), material);
     scene.add(cube);
     return cube;
