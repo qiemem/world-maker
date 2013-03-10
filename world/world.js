@@ -48,14 +48,6 @@ World = (function () {
         scene.remove(obj);
       }
     }
-    /*
-    World.cube().fd(10).color('red');
-    World.cube().bk(10).color('blue');
-    World.cube().rt(90).fd(10).color('green');
-    World.cube().lt(90).fd(10).color('yellow');
-    World.cube().uw(90).fd(10).color('purple');
-    World.cube().dw(90).fd(10).color('orange');
-    */
 
     window.cursor = World.cursor().fd(5);
 
@@ -201,6 +193,16 @@ World = (function () {
 
   AgentProto.color = function(color) {
     this.material.color.set(color);
+    return this;
+  }
+
+  AgentProto.rgb = function(red, green, blue) {
+    this.material.color.setRGB(red, green, blue);
+    return this;
+  }
+
+  AgentProto.hsl = function(hue, saturation, lightness) {
+    this.material.color.setHSL(hue, saturation, lightness);
     return this;
   }
 

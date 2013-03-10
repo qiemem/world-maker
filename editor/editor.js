@@ -75,6 +75,8 @@ Editor = (function() {
       ,".cube()"
       , ".sphere()"
       , ".color('red')"
+      , ".rgb(.2, .5, .7)"
+      , ".hsl(.2, 1, .5)"
       , ".forward(1)"
       , ".backward(1)"
       , ".right(90)"
