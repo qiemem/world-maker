@@ -43,6 +43,6 @@ li.completion:hover {
   /*cursor:ns-resize;*/
   cursor:ns-resize;
   width: 25px;
-  height: 25px;
+  height: 14px;
   z-index: 9;
 }

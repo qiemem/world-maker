@@ -144,11 +144,12 @@ Editor = (function() {
 
         this.numberSelector.style.top = startPos.top + "px";
         this.numberSelector.style.left = startPos.left + "px";
+        this.numberSelector.style.width = (endPos.left - startPos.left) + "px";
 
         var string = token.string;
         var decimal = token.string.indexOf(".");
         var numDecimals = decimal < 0 ? 0 : string.length - decimal - 1;
-        var value = parseInt(token.string);
+        var value = parseFloat(string);
         var me = this;
         this.numberSelector.onmousedown = function(e) {
           var lastVal = e.pageY;
@@ -157,6 +158,7 @@ Editor = (function() {
             var curVal = e.pageY;
             var diff = Math.round((lastVal - curVal)/2);
             var changeBy = numDecimals === 0 ? diff : diff / Math.pow(10, numDecimals);
+            console.log(changeBy);
             var newStr = (value + changeBy).toFixed(numDecimals);
             me.editor.replaceRange(newStr, startLoc, endLoc);
             endLoc.ch = startLoc.ch + newStr.length;
