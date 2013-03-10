@@ -106,6 +106,7 @@ Editor = (function() {
       })
       .on("click", function() {
         self.editor.setCursor(self.editor.getCursor("end"));
+        self.editor.focus();
       })
         ;
       
