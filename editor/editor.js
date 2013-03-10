@@ -71,7 +71,8 @@ Editor = (function() {
   }
 
   Editor.prototype.getCompletions = function(position) {
-    return ["cursor"
+    return [ ";\n"
+      ,"cursor"
       ,".cube()"
       , ".sphere()"
       , ".color('red')"
