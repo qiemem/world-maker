@@ -9,7 +9,7 @@
   left: -600px;
   top: 0px;
   bottom: 0px;
-  z-index: 9;
+  z-index: 8;
 }
 
 .CodeMirror {
@@ -32,4 +32,17 @@ li.completion {
 
 li.completion:hover {
   background:#444;
+}
+
+#number-selector {
+  display:none;
+  background:#888;
+  opacity:.2;
+  border:solid 2px #FFF;
+  position:absolute;
+  /*cursor:ns-resize;*/
+  cursor:ns-resize;
+  width: 25px;
+  height: 25px;
+  z-index: 9;
 }
