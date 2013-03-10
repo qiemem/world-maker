@@ -24,6 +24,9 @@
 .completions {
   overflow:auto;
   height:30%;
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  column-count: 2;
 }
 
 li.completion {

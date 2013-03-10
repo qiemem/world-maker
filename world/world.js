@@ -162,7 +162,7 @@ World = (function () {
   }
 
   AgentProto.rollLeft = AgentProto.rl = function(angle) {
-    return this.rl(-angle);
+    return this.rr(-angle);
   }
 
   // TODO: Scalar methods do not use matrix multiplication.
