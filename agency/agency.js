@@ -103,6 +103,7 @@ agency = function() {
     if (this.obj.material) {
       agent.obj.material.color.copy(this.obj.material.color);
     }
+    return agent;
   }
 
   Agent.prototype.make = function(agentType) {
