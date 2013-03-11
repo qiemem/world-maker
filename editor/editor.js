@@ -84,7 +84,7 @@ Editor = (function() {
 
   Editor.prototype.getCompletions = function(position) {
     return [ ";\n"
-      ,"cursor"
+      ,"scene"
       ,".cube()"
       , ".sphere()"
       , ".color('red')"
@@ -132,10 +132,22 @@ Editor = (function() {
   Editor.prototype.mouseOnToken = function(loc, token) {
     switch (token.type) {
       case "number":
-        // TODO: Make this tolerant of ".1"
         this.numberSelector.style.display = "inline";
         var startLoc = {line: loc.line, ch: token.start};
         var endLoc = {line: loc.line, ch: token.end};
+
+        // Code Mirror doesn't detect, eg, ".1" properly, so check for it.
+        var checkStart = {line: loc.line, ch: token.start - 1};
+        if (token.string.indexOf(".")<0 
+            && this.editor.getRange(checkStart, endLoc).indexOf(".") >= 0) {
+          startLoc = checkStart;
+        }
+
+        var string = this.editor.getRange(startLoc, endLoc);
+        if (string.charAt(0) === ".") {
+          string = "0" + string;
+        }
+          
         var startPos = this.editor.cursorCoords(startLoc);
         var endPos = this.editor.cursorCoords(endLoc);
 
@@ -143,8 +155,7 @@ Editor = (function() {
         this.numberSelector.style.left = startPos.left + "px";
         this.numberSelector.style.width = (endPos.left - startPos.left) + "px";
 
-        var string = token.string;
-        var decimal = token.string.indexOf(".");
+        var decimal = string.indexOf(".");
         var numDecimals = decimal < 0 ? 0 : string.length - decimal - 1;
         var value = parseFloat(string);
         var me = this;
