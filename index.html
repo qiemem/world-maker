@@ -2,8 +2,8 @@
 <html>
   <head>
     <title>World Maker</title>
-    <link rel="stylesheet" href="libs/codemirror/codemirror.css" />
-    <link rel="stylesheet" href="libs/codemirror/solarized.css" />
+    <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="node_modules/codemirror/theme/solarized.css" />
     <link rel="stylesheet" href="editor/editor.css" />
     <link rel="stylesheet" href="world/world.css" />
     <style type="text/css">
@@ -17,15 +17,12 @@
     <script src="http://localhost:9001/ws"></script>
   </head>
   <body onload="init();">
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="libs/three.min.js"></script>
-    <script src="libs/FirstPersonControls.js"></script>
+    <script src ="node_modules/d3/d3.min.js"></script>
+    <script src="node_modules/three/three.min.js"></script>
+    <script src="node_modules/three/examples/js/controls/FirstPersonControls.js"></script>
     <script src="libs/THREEx.WindowResize.js"></script>
-    <script src="libs/codemirror/codemirror.js"></script>
-    <script src="libs/codemirror/javascript.js"></script>
-    <script src="http://marijnhaverbeke.nl/acorn/acorn.js"></script>
-    <script src="http://marijnhaverbeke.nl/acorn/acorn_loose.js"></script>
-    <script src="http://marijnhaverbeke.nl/acorn/util/walk.js"></script>
+    <script src="node_modules/codemirror/lib/codemirror.js"></script>
+    <script src="node_modules/codemirror/mode/javascript/javascript.js"></script>
     <script src="editor/editor.js"></script>
     <script src="world/world.js"></script>
     <script>

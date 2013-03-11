@@ -26,14 +26,11 @@ Editor = (function() {
     this.numberSelector.id = ("number-selector");
     container.appendChild(this.numberSelector);
 
-    this.ast;
-
     this.evalListeners = [];
     var me = this;
     this.editor.on('change', function() {
       clearTimeout(me.evalTimeout);
       me.evalTimeout = setTimeout(function() {
-        me.ast = self.acorn.parse_dammit(me.editor.getValue());
         me.evalContents();
       }, 100);
     });
@@ -158,19 +155,19 @@ Editor = (function() {
             var curVal = e.pageY;
             var diff = Math.round((lastVal - curVal)/2);
             var changeBy = numDecimals === 0 ? diff : diff / Math.pow(10, numDecimals);
-            console.log(changeBy);
             var newStr = (value + changeBy).toFixed(numDecimals);
             me.editor.replaceRange(newStr, startLoc, endLoc);
             endLoc.ch = startLoc.ch + newStr.length;
             me.evalContents();
           }
 
-          window.addEventListener("mousemove", drag);
-          window.addEventListener("mouseup", stop);
           function stop(e) {
-            window.removeEventListener("mousemove", drag);
-            window.removeEventListener("mouseup", stop);
+            document.removeEventListener("mousemove", drag);
+            document.removeEventListener("mouseup", stop);
           }
+
+          document.addEventListener("mousemove", drag);
+          document.addEventListener("mouseup", stop);
         };
         break;
       default:
