@@ -33,12 +33,15 @@
         World.init(document.body);
         scene = new agency.Agent(World.scene);
         editor = new Editor(document.body);
+        editor.editor.setValue("var cursor = scene.cursor().fd(5);\n");
+        editor.editor.setCursor({line: 2, ch:1});
         document.body.addEventListener('keypress', function(e) {
           if (e.keyCode === '`'.charCodeAt(0)) {
             editor.toggleSlide();
             World.controls.freeze = editor.visible;
             if (editor.visible) {
-              // Otherwise the key actually registers in the editor, typing `
+              // Need setTimeout; otherwise the key actually registers in the 
+              // editor, typing `
               setTimeout(function(){editor.editor.focus();});
             } else {
               editor.editor.getInputField().blur();

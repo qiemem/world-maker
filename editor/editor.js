@@ -84,6 +84,7 @@ Editor = (function() {
 
   Editor.prototype.getCompletions = function(position) {
     return [ ";\n"
+      ,"cursor"
       ,"scene"
       ,".cube()"
       , ".sphere()"
