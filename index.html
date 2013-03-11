@@ -25,11 +25,13 @@
     <script src="node_modules/codemirror/mode/javascript/javascript.js"></script>
     <script src="editor/editor.js"></script>
     <script src="world/world.js"></script>
+    <script src="agency/agency.js"></script>
     <script>
-      var editor;
+      var editor, scene;
       
       function init() {
         World.init(document.body);
+        scene = new agency.Agent(World.scene);
         editor = new Editor(document.body);
         document.body.addEventListener('keypress', function(e) {
           if (e.keyCode === '`'.charCodeAt(0)) {
@@ -44,9 +46,8 @@
           }
           return false;
         });
+        // TODO: Reset scene matrix on eval
         editor.addEvalListener(World.reset);
-
-
       }
     </script>
   </body>

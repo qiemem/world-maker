@@ -49,7 +49,7 @@ World = (function () {
       }
     }
 
-    window.cursor = World.cursor().fd(5);
+    //window.cursor = World.cursor().fd(5);
 
     World.playerLight = new THREE.PointLight(0xFFFFFF);
     scene.add(World.playerLight);
@@ -84,32 +84,6 @@ World = (function () {
     return World.compositeObject(back, right, left, backBottom, bottom);
   }
 
-  World.sphere = function() {
-    var material = new THREE.MeshPhongMaterial();
-    material.side = THREE.DoubleSide;
-    var sphere = new THREE.Mesh(new THREE.SphereGeometry(.5,16,16), material);
-
-    scene.add(sphere);
-    return sphere;
-  }
-
-  World.cube = function() {
-    var material = new THREE.MeshPhongMaterial();
-    material.side = THREE.DoubleSide;
-    var cube = new THREE.Mesh(new THREE.CubeGeometry(1,1,1), material);
-    scene.add(cube);
-    return cube;
-  }
-
-  World.compositeObject = function() {
-    var obj = new THREE.Object3D();
-    for (var i=0; i<arguments.length; i++) {
-      obj.add(arguments[i]);
-    }
-    scene.add(obj);
-    return obj;
-  }
-
 
   var AgentProto = THREE.Object3D.prototype;
 
@@ -120,116 +94,6 @@ World = (function () {
     var dist = this._vector.length();
     this.translate(dist, this._vector.setLength(1));
     return this;
-  }
-
-  AgentProto.forward = AgentProto.fd = function(distance) {
-    this.translateX(distance);
-    this.updateMatrix();
-    return this;
-  }
-
-  AgentProto.backward = AgentProto.bk = function(distance) {
-    return this.fd(-distance);
-  }
-    
-  AgentProto.right = AgentProto.rt = function(angle) {
-    return this.lt(-angle);
-  }
-
-  AgentProto.left = AgentProto.lt = function(angle) {
-    this.matrix.multiply(new THREE.Matrix4().makeRotationY(2*Math.PI*angle/360));
-    var mat = new THREE.Matrix4().extractRotation( this.matrix );
-    this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
-    return this;
-  }
-
-  AgentProto.upward = AgentProto.uw = function(angle) {
-    this.matrix.multiply(new THREE.Matrix4().makeRotationZ(2*Math.PI*angle/360));
-    var mat = new THREE.Matrix4().extractRotation( this.matrix );
-    this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
-    return this;
-  }
-
-  AgentProto.downward = AgentProto.dw = function(angle) {
-    return this.uw(-angle);
-  }
-
-  AgentProto.rollRight = AgentProto.rr = function(angle) {
-    this.matrix.multiply(new THREE.Matrix4().makeRotationX(2*Math.PI*angle/360));
-    var mat = new THREE.Matrix4().extractRotation( this.matrix );
-    this.rotation.setEulerFromRotationMatrix( mat, this.eulerOrder );
-    return this;
-  }
-
-  AgentProto.rollLeft = AgentProto.rl = function(angle) {
-    return this.rr(-angle);
-  }
-
-  // TODO: Scalar methods do not use matrix multiplication.
-  AgentProto.grow = function(amount) {
-    return this.gw(amount).gl(amount).gt(amount);
-  }
-
-  AgentProto.growWide = AgentProto.gw = function(amount) {
-    this.scale.z += amount;
-    this.updateMatrix();
-    return this;
-  }
-
-  AgentProto.growLong = AgentProto.gl = function(amount) {
-    this.scale.x += amount;
-    this.updateMatrix();
-    return this;
-  }
-
-  AgentProto.growTall = AgentProto.gt = function(amount) {
-    this.scale.y += amount;
-    this.updateMatrix();
-    return this;
-  }
-
-  AgentProto.color = function(color) {
-    this.material.color.set(color);
-    return this;
-  }
-
-  AgentProto.rgb = function(red, green, blue) {
-    this.material.color.setRGB(red, green, blue);
-    return this;
-  }
-
-  AgentProto.hsl = function(hue, saturation, lightness) {
-    this.material.color.setHSL(hue, saturation, lightness);
-    return this;
-  }
-
-  AgentProto.transparency = function(amount) {
-    if (amount > 0 && amount <= 1) {
-      this.material.transparent = true;
-      this.material.opacity = 1-amount;
-    } else {
-      this.material.transparent = false;
-      this.material.opacity = 1;
-    }
-    return this;
-  }
-
-  AgentProto.sphere = function() {
-    var sphere = World.sphere();
-    if (this.material) {
-      sphere.material.color.copy(this.material.color);
-    }
-    sphere.applyMatrix(this.matrix);
-    return sphere;
-  }
-
-  AgentProto.cube = function() {
-    var cube = World.cube();
-    if (this.material) {
-      cube.material.color.copy(this.material.color);
-    }
-    cube.applyMatrix(this.matrix);
-    return cube;
   }
 
   return World;
