@@ -3,6 +3,7 @@ agency = function() {
     this.obj = obj;
   }
 
+  // TODO: Translate methods only use rotation, not scaling, from matrix
   Agent.prototype.forward = Agent.prototype.fd = function(distance) {
     this.obj.translateX(distance);
     this.obj.updateMatrix();
@@ -24,15 +25,15 @@ agency = function() {
     return this;
   }
 
-  Agent.prototype.upward = Agent.prototype.uw = function(angle) {
+  Agent.prototype.up = function(angle) {
     this.obj.matrix.multiply(new THREE.Matrix4().makeRotationZ(2*Math.PI*angle/360));
     var mat = new THREE.Matrix4().extractRotation( this.obj.matrix );
     this.obj.rotation.setEulerFromRotationMatrix( mat, this.obj.eulerOrder );
     return this;
   }
 
-  Agent.prototype.downward = Agent.prototype.dw = function(angle) {
-    return this.uw(-angle);
+  Agent.prototype.down = Agent.prototype.dn = function(angle) {
+    return this.up(-angle);
   }
 
   Agent.prototype.rollRight = Agent.prototype.rr = function(angle) {
@@ -118,7 +119,7 @@ agency = function() {
 
   Agent.prototype.makeChild = function(agentType) {
     var agent = this.__make(agentType);
-    this.obj.add(agent);
+    this.obj.add(agent.obj);
     return agent;
   }
 
@@ -128,6 +129,10 @@ agency = function() {
 
   Agent.prototype.sphere = function() {
     return this.make(SphereAgent);
+  }
+
+  Agent.prototype.cursor = function() {
+    return this.make(CursorAgent);
   }
 
   function CubeAgent() {
@@ -156,7 +161,27 @@ agency = function() {
     Agent.call(this, obj);
   }
 
-  CompositeAgent = Object.create(Agent.prototype);
+  CompositeAgent.prototype = Object.create(Agent.prototype);
+
+  function CursorAgent() {
+    CompositeAgent.call(this);
+    var back = this.makeChild(CubeAgent).bk(.635).gl(-.75).gt(-.75);
+    back.transparency(.2);
+
+    var right = this.makeChild(CubeAgent).bk(.135).rt(90).fd(.625).lt(90).gw(-.75).gt(-.75).gl(.25);
+    console.log(right);
+    right.transparency(.2);
+    var left = right.cube().lt(90).fd(1.25).lt(90);
+    left.transparency(.2);
+
+    var backBottom = this.makeChild(CubeAgent).bk(.635).gl(-.75).gt(-.5).gw(-.75).dn(90).fd(.25).up(90);
+    backBottom.transparency(.2);
+
+    var bottom = right.cube().dn(90).fd(.625).up(90).lt(90).fd(.625).rt(90);
+    bottom.transparency(.2);
+  }
+
+  CursorAgent.prototype = Object.create(CompositeAgent.prototype);
 
   return {
     Agent: Agent,

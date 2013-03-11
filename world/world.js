@@ -88,17 +88,5 @@ World = (function () {
     return World.compositeObject(back, right, left, backBottom, bottom);
   }
 
-
-  var AgentProto = THREE.Object3D.prototype;
-
-  // TODO: Translate methods only use rotation, not scaling, from matrix
-
-  AgentProto.trans = function(xDist, yDist, zDist) {
-    this._vector.set(xDist, yDist, zDist);
-    var dist = this._vector.length();
-    this.translate(dist, this._vector.setLength(1));
-    return this;
-  }
-
   return World;
 }());
