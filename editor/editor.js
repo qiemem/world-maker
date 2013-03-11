@@ -184,7 +184,6 @@ Editor = (function() {
       default:
         this.numberSelector.style.display = "none";
         this.numberSelector.onmousedown = null;
-        this.editor.focus();
     }
   }
 
