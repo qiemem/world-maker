@@ -49,6 +49,10 @@ World = (function () {
       }
     }
 
+    scene.rotation.set(0,0,0);
+    scene.scale.set(1,1,1);
+    scene.position.set(0,0,0);
+
     //window.cursor = World.cursor().fd(5);
 
     World.playerLight = new THREE.PointLight(0xFFFFFF);
