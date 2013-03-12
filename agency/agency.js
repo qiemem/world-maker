@@ -138,18 +138,22 @@ agency = function() {
   function CubeAgent() {
     var material = new THREE.MeshPhongMaterial();
     material.side = THREE.DoubleSide;
-    var cube = new THREE.Mesh(new THREE.CubeGeometry(1,1,1), material);
+    var cube = new THREE.Mesh(CubeAgent.geometry, material);
     Agent.call(this, cube);
   }
+  
+  CubeAgent.geometry = new THREE.CubeGeometry(1,1,1);
 
   CubeAgent.prototype = Object.create(Agent.prototype);
 
   function SphereAgent() {
     var material = new THREE.MeshPhongMaterial();
     material.side = THREE.DoubleSide;
-    var sphere = new THREE.Mesh(new THREE.SphereGeometry(.5,16,16), material);
+    var sphere = new THREE.Mesh(SphereAgent.geometry, material);
     Agent.call(this, sphere);
   }
+
+  SphereAgent.geometry = new THREE.SphereGeometry(.5, 16, 16);
 
   SphereAgent.prototype = Object.create(Agent.prototype);
 
