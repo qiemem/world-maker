@@ -7,7 +7,14 @@ World = (function () {
 
   var renderer,
       camera,
-      scene;
+      scene,
+      controlModes,
+      controls;
+
+  World.ControlModes = {
+    FIRST_PERSON: "firstPerson",
+    TRACKBALL:    "trackball"
+  }
 
   var clock = new THREE.Clock();
 
@@ -17,16 +24,50 @@ World = (function () {
     var aspect = window.innerWidth/window.innerHeight;
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, aspect, NEAR, FAR);
 
-    //controls = new THREE.FirstPersonControls(camera);
-    controls = new THREE.TrackballControls(camera);
-    controls.rotateSpeed = 1.5;
-    controls.zoomSpeed = 12.0;
-    controls.panSpeed = 1.0;
-    camera.position.z = 20;
-    controls.staticMoving = true;
+    trackballControls = new THREE.TrackballControls(camera, renderer.domElement);
+    World.trackballControls = trackballControls
+    trackballControls.rotateSpeed = 1.5;
+    trackballControls.zoomSpeed = 12.0;
+    trackballControls.panSpeed = 1.0;
+    trackballControls.staticMoving = true;
+    trackballPosition = camera.position.clone().setZ(20);
+    trackballRotation = camera.rotation.clone();
+    trackballControls.setActive = function(val) {
+      console.log(this.noRotate);
+      this.noRotate = val;
+      this.noZoom = val;
+      this.noPan = val;
+    };
+      
+    trackballControls.setActive(false);
     
-    //controls.lookSpeed = .1;
-    //controls.movementSpeed = 2;
+    fpControls = new THREE.FirstPersonControls(camera);
+    fpControls.lookSpeed = .1;
+    fpControls.movementSpeed = 2;
+    fpPosition = camera.position.clone();
+    fpRotation = camera.rotation.clone();
+    fpControls.setActive = function(val) {
+      this.freeze = !val;
+    };
+    fpControls.setActive(false);;
+
+    controlModes = {
+      trackball: {
+        controls: trackballControls,
+        position: trackballPosition,
+        rotation: trackballRotation
+      }, 
+      firstPerson: {
+        controls: fpControls,
+        position: fpPosition,
+        rotation: fpRotation
+      }
+    }
+
+    controls = controlModes.firstPerson.controls;
+    controls.setActive(true);
+    camera.position.copy(controlModes.firstPerson.position);
+    camera.rotation.copy(controlModes.firstPerson.rotation);
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(new THREE.Color(0x000000, 1));
@@ -65,6 +106,14 @@ World = (function () {
 
     World.playerLight = new THREE.PointLight(0xFFFFFF);
     scene.add(World.playerLight);
+  }
+
+  World.switchControls = function(controlMode) {
+    controls.setActive(false);
+    var cm = controlModes[controlMode];
+    controls = cm.controls
+    camera.position.copy(cm.position);
+    camera.rotation.copy(cm.rotation);
   }
 
   World.animate = function() {
