@@ -17,9 +17,16 @@ World = (function () {
     var aspect = window.innerWidth/window.innerHeight;
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, aspect, NEAR, FAR);
 
-    controls = new THREE.FirstPersonControls(camera);
-    controls.lookSpeed = .1;
-    controls.movementSpeed = 2;
+    //controls = new THREE.FirstPersonControls(camera);
+    controls = new THREE.TrackballControls(camera);
+    controls.rotateSpeed = 1.5;
+    controls.zoomSpeed = 12.0;
+    controls.panSpeed = 1.0;
+    camera.position.z = 20;
+    controls.staticMoving = true;
+    
+    //controls.lookSpeed = .1;
+    //controls.movementSpeed = 2;
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(new THREE.Color(0x000000, 1));
