@@ -25,6 +25,7 @@ World = (function () {
     renderer.setClearColor(new THREE.Color(0x000000, 1));
 
     THREEx.WindowResize(renderer, camera);
+    window.addEventListener('resize', function() {controls.handleResize();});
 
     scene = new THREE.Scene();
     scene.add(camera);
@@ -64,28 +65,6 @@ World = (function () {
     controls.update(clock.getDelta());
     renderer.render(scene, camera);
     requestAnimationFrame(World.animate);
-  }
-
-  World.cursor = function() {
-    //var outerSphere = World.sphere().color(0xFFFFAA).transparency(0.5);
-
-    //var innerSphere = World.sphere().grow(-.5).color(0xAAAAAAFF).transparency(0.5);
-
-    var back = World.cube().bk(.635).gl(-.75).gt(-.75);
-    back.transparency(.2);
-
-    var right = World.cube().bk(.135).rt(90).fd(.625).lt(90).gw(-.75).gt(-.75).gl(.25);
-    right.transparency(.2);
-    var left = right.cube().lt(90).fd(1.25).lt(90);
-    left.transparency(.2);
-
-    var backBottom = World.cube().bk(.635).gl(-.75).gt(-.5).gw(-.75).dw(90).fd(.25).uw(90);
-    backBottom.transparency(.2);
-
-    var bottom = right.cube().dw(90).fd(.625).uw(90).lt(90).fd(.625).rt(90);
-    bottom.transparency(.2);
-
-    return World.compositeObject(back, right, left, backBottom, bottom);
   }
 
   return World;
