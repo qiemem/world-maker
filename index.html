@@ -33,7 +33,7 @@
       
       function init() {
         World.init(document.body);
-        scene = new agency.Agent(World.scene);
+        scene = new agency.Agent(World.scene());
         editor = new Editor(document.body);
         editor.editor.setValue("var cursor = scene.cursor().fd(5);\n");
         editor.editor.setCursor({line: 2, ch:1});
@@ -45,8 +45,10 @@
               // Need setTimeout; otherwise the key actually registers in the 
               // editor, typing `
               setTimeout(function(){editor.editor.focus();});
+              World.switchControls(World.ControlModes.TRACKBALL);
             } else {
               editor.editor.getInputField().blur();
+              World.switchControls(World.ControlModes.FIRST_PERSON);
             }
           }
           return false;
