@@ -173,7 +173,6 @@ agency = function() {
     back.transparency(.2);
 
     var right = this.makeChild(CubeAgent).bk(.135).rt(90).fd(.625).lt(90).gw(-.75).gt(-.75).gl(.25);
-    console.log(right);
     right.transparency(.2);
     var left = right.cube().lt(90).fd(1.25).lt(90);
     left.transparency(.2);
