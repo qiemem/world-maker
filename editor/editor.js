@@ -208,53 +208,18 @@ Editor = (function() {
     }
   }
 
-  /**
-   * Picks the longest node per start location. Thus, if you have:
-   * var cursor = scene.cursor.fd(5);
-   * and loc is in "scene", the available nodes are 
-   *
-   * var cursor = scene.cursor.fd(5);
-   * scene.cursor.fd(5)
-   * scene.cursor
-   * scene
-   *
-   * "var cursor = scene.cursor.fd(5);" and "scene.cursor.fd(5)" will be 
-   * returned. This strategy is meant to pick nodes that could be removed
-   * and not complete destroy the integrity of the programs. If "scene" or
-   * "scene.cursor" are remove, you're left with a method without an object.
-   * If "scene.cursor.fd(5)" is removed, you're left with an assignment with no
-   * value, but that's simpler to fill in.
-   *
-   * There are UI considerations for doing this too. In the interface, if the
-   * user mouses over "fd" and "scene.cursor.fd(5)" would be highlighted. If
-   * they then mouse over "scene" in order to grab that box, we want
-   * "scene.cursor.fd(5)" to remain highlighted, not "scene".
-   */
   Editor.prototype.getNodes = function(loc) {
     var matchingNodes = [];
     var me = this;
-
     var index = this.editor.indexFromPos(loc);
-    function nodesAt(node) {
-      if (node.start<=index && node.end>=index) {
-        if (!matchingNodes[node.start] 
-            || node.end > matchingNodes[node.start].end) {
-          matchingNodes[node.start] = node;
+    acorn.walk.simple(this.ast, {
+      Statement: function(node) {
+        if (node.start <= index && node.end > index) {
+          matchingNodes.push(node);
         }
       }
-    }
-    acorn.walk.simple(this.ast, {
-      Statement: nodesAt,
-      Expression: nodesAt,
-      ScopeBody: nodesAt
     });
-    var nodes = [];
-    for (var i=0; i<matchingNodes.length; i++) {
-      if (matchingNodes[i]) {
-        nodes.push(matchingNodes[i]);
-      }
-    }
-    return nodes;
+    return matchingNodes;
   }
 
   Editor.prototype.getSmallestNode = function(loc) {
@@ -274,4 +239,3 @@ Editor = (function() {
     
   return Editor;
 }());
-
