@@ -109,18 +109,31 @@ Editor = (function() {
   Editor.prototype.showCompletions = function(completions) {
     var li = d3.select(this.completionsList).selectAll("li").data(completions);
     var me = this;
+
+    // Preserves selected text if the user doesn't click on anything.
+    var lastSelected;
+    var chosen;
     li.enter().append("li")
       .text(function (d) {return d;})
       .classed("completion", 1)
       .on("mouseover", function(d) {
+        lastSelected = me.editor.getSelection();
         me.editor.replaceSelection(d);
       })
       .on("mouseout", function(d) {
-        me.editor.replaceSelection("");
+        if (!chosen) {
+          // Don't mess up undo history
+          var hist = me.editor.getHistory();
+          me.editor.replaceSelection(lastSelected);
+          hist.done.splice(hist.done.length-1);
+          me.editor.setHistory(hist);
+        }
+        chosen = false;
       })
       .on("click", function() {
         me.editor.setCursor(me.editor.getCursor("end"));
         me.editor.focus();
+        chosen = true;
       })
         ;
       
