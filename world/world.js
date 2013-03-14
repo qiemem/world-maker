@@ -105,6 +105,7 @@ World = (function () {
   }
 
   var switchControls = function(controlMode) {
+    var SWITCH_TIME = 500;
     if (controls) {
       controls.setActive(false);
     }
@@ -113,16 +114,36 @@ World = (function () {
       activeControlMode.up.copy(camera.up);
     }
     activeControlMode = controlModes[controlMode];
+    var oldControls = controls;
     controls = activeControlMode.controls;
-    controls.setActive(true);      
-    camera.position.copy(activeControlMode.position);
-    camera.up.copy(activeControlMode.up);
-    camera.updateMatrix();
+    var targetPos = activeControlMode.position;
+    var posTween = new TWEEN.Tween(camera.position)
+      .to({x: targetPos.x, y: targetPos.y, z: targetPos.z}, SWITCH_TIME)
+      .onComplete(function() {
+        controls.setActive(true);
+      })
+      .start();
+    var targetUp = activeControlMode.up;
+    var upTween = new TWEEN.Tween(camera.up)
+      .to({x: targetUp.x, y: targetUp.y, z: targetUp.z}, SWITCH_TIME)
+      .start();
+    
+    if (oldControls) {
+      var lookingAt = oldControls.target.clone();
+      var lookTarget = controls.target;
+      var lookingAtTween = new TWEEN.Tween(lookingAt)
+        .to({x: lookTarget.x, y: lookTarget.y, z: lookTarget.z}, SWITCH_TIME)
+        .onUpdate(function () {
+          camera.lookAt(lookingAt);
+        })
+        .start();
+    }
   }
 
   var animate = function() {
     playerLight.position.copy(camera.position);
     controls.update(clock.getDelta());
+    TWEEN.update();
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
   }
