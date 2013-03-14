@@ -32,6 +32,7 @@ World = (function () {
     trackballControls.zoomSpeed = 12.0;
     trackballControls.panSpeed = 1.0;
     trackballControls.staticMoving = true;
+    // TODO: Set default trackball position
     trackballPosition = camera.position.clone().setZ(20);
     trackballUp = camera.up.clone();
     trackballControls.setActive = function(val) {
@@ -129,8 +130,8 @@ World = (function () {
       .start();
     
     if (oldControls) {
-      var lookingAt = oldControls.target.clone();
-      var lookTarget = controls.target;
+      var lookingAt = oldControls.target.clone().normalize().multiplyScalar(10);
+      var lookTarget = controls.target.clone().normalize().multiplyScalar(10);
       var lookingAtTween = new TWEEN.Tween(lookingAt)
         .to({x: lookTarget.x, y: lookTarget.y, z: lookTarget.z}, SWITCH_TIME)
         .onUpdate(function () {
