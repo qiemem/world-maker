@@ -50,7 +50,7 @@
               setTimeout(function(){editor.editor.focus();});
               World.switchControls(World.ControlModes.TRACKBALL);
             } else {
-              editor.editor.getInputField().blur();
+              editor.editor.blur();
               World.switchControls(World.ControlModes.FIRST_PERSON);
             }
           }

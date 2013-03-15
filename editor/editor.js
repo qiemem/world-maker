@@ -28,15 +28,16 @@ Editor = (function() {
 
     this.evalListeners = [];
     var me = this;
-    /*
-    this.editor.on('change', function() {
+    this.editor.addEventListener('input', function() {
+      console.log('change');
       clearTimeout(me.evalTimeout);
       me.evalTimeout = setTimeout(function() {
-        me.ast = acorn.parse_dammit(me.editor.getValue());
+        me.ast = acorn.parse_dammit(me.editor.innerText);
         me.evalContents();
       }, 100);
     });
 
+    /*
     var complete = function() {me.doCompletions();};
     this.editor.on('cursorActivity', complete);
     this.editor.on('focus', complete);
@@ -59,7 +60,7 @@ Editor = (function() {
     for (var i = 0; i < this.evalListeners.length; i++) {
       this.evalListeners[i]();
     }
-    eval(this.editor.getValue());
+    eval(this.editor.innerText);
     console.log('Eval successful');
   }
 
