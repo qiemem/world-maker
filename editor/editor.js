@@ -3,12 +3,11 @@ Editor = (function() {
     this.container = container;
     this.drawer = document.createElement("div");
     this.drawer.classList.add("drawer");
-    this.editor = CodeMirror(this.drawer, {
-      mode: "javascript",
-      lineNumbers: false,
-      theme: "solarized dark"
-
-    });
+    this.editor = document.createElement("div");
+    this.editor.classList.add("editor");
+    this.editor.contentEditable = "true";
+    this.editor.innerText = "test";
+    this.drawer.appendChild(this.editor);
 
     this.completions = document.createElement("div");
     this.completions.classList.add("completions");
@@ -29,6 +28,7 @@ Editor = (function() {
 
     this.evalListeners = [];
     var me = this;
+    /*
     this.editor.on('change', function() {
       clearTimeout(me.evalTimeout);
       me.evalTimeout = setTimeout(function() {
@@ -52,6 +52,7 @@ Editor = (function() {
       var token = me.editor.getTokenAt(loc);
       me.mouseOnToken(loc, token);
     });
+    */
   }
 
   Editor.prototype.evalContents = function() {

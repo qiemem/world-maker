@@ -12,9 +12,10 @@
   z-index: 8;
 }
 
-.CodeMirror {
+div.editor {
   height: 70%;
-  padding: 0px 5px 0px 5px;
+  padding: 0px 10px 0px 10px;
+  font: 14px monospace;
 }
 
 .cm-s-solarized.cm-s-dark .CodeMirror-selected {

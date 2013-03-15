@@ -19,7 +19,7 @@
   <body onload="init();">
     <script src ="node_modules/d3/d3.min.js"></script>
     <script src="node_modules/three/three.min.js"></script>
-    <script src="node_modules/three/examples/js/controls/FirstPersonControls.js"></script>
+    <script src="libs/FirstPersonControls.js"></script>
     <script src="node_modules/three/examples/js/controls/TrackballControls.js"></script>
     <script src="node_modules/three/examples/js/libs/tween.min.js"></script>
     <script src="libs/THREEx.WindowResize.js"></script>
@@ -38,8 +38,8 @@
         World.init(document.body);
         scene = new agency.Agent(World.scene());
         editor = new Editor(document.body);
-        editor.editor.setValue("var cursor = scene.cursor().fd(5);\n");
-        editor.editor.setCursor({line: 2, ch:1});
+        //editor.editor.setValue("var cursor = scene.cursor().fd(5);\n");
+        //editor.editor.setCursor({line: 2, ch:1});
         document.body.addEventListener('keypress', function(e) {
           if (e.keyCode === '`'.charCodeAt(0)) {
             editor.toggleSlide();
