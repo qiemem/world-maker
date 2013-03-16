@@ -189,6 +189,18 @@ Editor = (function() {
     });
 
     function textNode(start, end) {
+      /*
+      var frag = document.createDocumentFragment();
+      var i = start,
+          substr = text.substr(start, end-start);
+      while (i = substr.indexOf("\n") >= 0) {
+        frag.appendChild(document.createTextNode(substr.substr(0, i)));
+        frag.appendChild(document.createElement("br"));
+        substr = substr.substr(i+1);
+      }
+      frag.appendChild(document.createTextNode(substr.substr(i)));
+      return frag;
+      */
       return document.createTextNode(text.substr(start, end-start));
     }
 
@@ -210,7 +222,8 @@ Editor = (function() {
       return elt;
     }
     var parsedCode = makeTreeDOM(tree);
-    console.log(parsedCode.innerText == text, parsedCode.innerText, text);
+    parsedCode.innerHTML = parsedCode.innerHTML.split("\n").join("<br/>\n");
+    console.log(parsedCode.innerText == text, parsedCode.innerHTML, text);
     return parsedCode;
   };
 
