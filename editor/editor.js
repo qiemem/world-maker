@@ -3,11 +3,8 @@ Editor = (function() {
     this.container = container;
     this.drawer = document.createElement("div");
     this.drawer.classList.add("drawer");
-    this.editor = document.createElement("div");
-    this.editor.classList.add("editor");
-    this.editor.contentEditable = "true";
-    this.editor.innerText = "test";
-    this.drawer.appendChild(this.editor);
+    this.editor = new SimpleEditor();
+    this.drawer.appendChild(this.editor.domElement);
 
     this.completions = document.createElement("div");
     this.completions.classList.add("completions");
@@ -28,20 +25,24 @@ Editor = (function() {
 
     this.evalListeners = [];
     var me = this;
-    this.editor.addEventListener('input', function() {
-      console.log('change');
+    function changeListener() {
       clearTimeout(me.evalTimeout);
       me.evalTimeout = setTimeout(function() {
-        me.ast = acorn.parse_dammit(me.editor.innerText);
+        me.ast = acorn.parse_dammit(me.editor.getValue());
         me.evalContents();
       }, 100);
-    });
+    }
+    this.editor.onChange(changeListener);
+    //this.editor.domElement.addEventListener("focus", changeListener);
 
-    /*
     var complete = function() {me.doCompletions();};
-    this.editor.on('cursorActivity', complete);
-    this.editor.on('focus', complete);
-
+    this.editor.domElement.addEventListener("mousedown", complete);
+    this.editor.domElement.addEventListener("mouseup", complete);
+    this.editor.domElement.addEventListener("keydown", complete);
+    this.editor.domElement.addEventListener("keyup", complete);
+    //this.editor.on('cursorActivity', complete);
+    //this.editor.on('focus', complete);
+/*
     this.editor.getScrollerElement().addEventListener("mousemove", function(e) {
       var pos = {top: e.pageY, left: e.pageX};
       var loc = me.editor.coordsChar(pos);
@@ -60,7 +61,7 @@ Editor = (function() {
     for (var i = 0; i < this.evalListeners.length; i++) {
       this.evalListeners[i]();
     }
-    eval(this.editor.innerText);
+    eval(this.editor.getValue());
     console.log('Eval successful');
   }
 
@@ -88,7 +89,7 @@ Editor = (function() {
   }
 
   Editor.prototype.doCompletions = function() {
-    this.showCompletions(this.getCompletions(this.editor.selectionStart));
+    this.showCompletions(this.getCompletions(this.editor.getSelectionStart()));
   }
 
   Editor.prototype.getCompletions = function(position) {
@@ -119,7 +120,7 @@ Editor = (function() {
     var li = d3.select(this.completionsList).selectAll("li").data(completions);
     var me = this;
 
-    // Preserves selected text if the user doesn't click on anything.
+    // TODO: Make this play nice with undo history
     var lastSelected;
     var chosen;
     li.enter().append("li")
@@ -131,17 +132,12 @@ Editor = (function() {
       })
       .on("mouseout", function(d) {
         if (!chosen) {
-          // Don't mess up undo history
-          var hist = me.editor.getHistory();
           me.editor.replaceSelection(lastSelected);
-          hist.done.splice(hist.done.length-1);
-          me.editor.setHistory(hist);
         }
         chosen = false;
       })
       .on("click", function() {
-        me.editor.setCursor(me.editor.getCursor("end"));
-        me.editor.focus();
+        me.editor.collapseSelectionRight();
         chosen = true;
       })
         ;
