@@ -28,8 +28,15 @@ Editor = (function() {
     function changeListener() {
       clearTimeout(me.evalTimeout);
       me.evalTimeout = setTimeout(function() {
+        // Since this changes the dom content of the editor, the Range object
+        // will get screwed up. Thus, we keep track of cursor by character
+        // index
+        var start = me.editor.getSelectionStart(),
+            end   = me.editor.getSelectionEnd();
         me.parsedCode = me.updateEditorTree();
         me.editor.setHTML(me.parsedCode.innerHTML);
+        var length = me.editor.getValue().length;
+        me.editor.select(Math.min(start, length), Math.min(end, length));
         me.evalContents();
       }, 100);
     }

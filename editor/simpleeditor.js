@@ -5,18 +5,20 @@ SimpleEditor = (function() {
     this.domElement.classList.add("editor");
     this.domElement.contentEditable = "true";
     this.hasFocus = false;
-    this._range = null;
+    this.range = null;
     this.changeListeners = [];
 
     function trackSelection(e) {
       if (me.hasFocus) {
-        me._range = window.getSelection().getRangeAt(0);
+        me.range = window.getSelection().getRangeAt(0);
+        console.log('save', me.range);
       }
     }
     document.addEventListener('mousedown', trackSelection);
     document.addEventListener('mouseup', trackSelection);
     document.addEventListener('keydown', trackSelection);
     document.addEventListener('keyup', trackSelection);
+    this.onChange(trackSelection);
 
     var lastValue = "";
     this.domElement.addEventListener('DOMSubtreeModified', function(e) {
@@ -30,10 +32,10 @@ SimpleEditor = (function() {
 
     this.domElement.addEventListener('focus', function() {
       me.hasFocus=true;
-      if (me._range) {
+      if (me.range) {
         var selection = window.getSelection();
         selection.removeAllRanges();
-        selection.addRange(me._range);
+        selection.addRange(me.range);
       }
     });
     this.domElement.addEventListener('blur', function() {me.hasFocus=false;});
@@ -66,11 +68,11 @@ SimpleEditor = (function() {
   SimpleEditor.prototype.replaceSelection = function(text) {
     var selection = window.getSelection(),
         textNode  = document.createTextNode(text);
-    this._range.deleteContents();
-    this._range.insertNode(textNode);
-    this._range.selectNode(textNode);
+    this.range.deleteContents();
+    this.range.insertNode(textNode);
+    this.range.selectNode(textNode);
     selection.removeAllRanges();
-    selection.addRange(this._range);
+    selection.addRange(this.range);
   };
 
   // Thanks to
@@ -78,18 +80,18 @@ SimpleEditor = (function() {
   // for the idea for the selection methods.
 
   SimpleEditor.prototype.getSelectionStart = function() {
-    if (!this._range) return 0;
-    var preCursorRange = this._range.cloneRange();
+    if (!this.range) return 0;
+    var preCursorRange = this.range.cloneRange();
     preCursorRange.selectNodeContents(this.domElement);
-    preCursorRange.setEnd(this._range.startContainer, this._range.startOffset);
+    preCursorRange.setEnd(this.range.startContainer, this.range.startOffset);
     return preCursorRange.toString().length;
   };
 
   SimpleEditor.prototype.getSelectionEnd = function() {
-    if (!this._range) return 0;
-    var preCursorRange = this._range.cloneRange();
+    if (!this.range) return 0;
+    var preCursorRange = this.range.cloneRange();
     preCursorRange.selectNodeContents(this.domElement);
-    preCursorRange.setEnd(this._range.endContainer, this._range.endOffset);
+    preCursorRange.setEnd(this.range.endContainer, this.range.endOffset);
     return preCursorRange.toString().length;
   };
 
@@ -101,26 +103,53 @@ SimpleEditor = (function() {
     var selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
+    this.range = range.cloneRange();
   };
 
   SimpleEditor.prototype.collapseSelectionLeft = function() {
-    if (!this._range) return;
-    this._range.collapse(true);
-    this.selectRange(this._range);
+    if (!this.range) return;
+    this.range.collapse(true);
+    this.selectRange(this.range);
   };
 
   SimpleEditor.prototype.collapseSelectionRight = function() {
-    if (!this._range) return;
-    this._range.collapse(false);
-    this.selectRange(this._range);
+    if (!this.range) return;
+    this.range.collapse(false);
+    this.selectRange(this.range);
   };
 
   SimpleEditor.prototype.cursorToEnd = function() {
-    if (!this._range) {
-      this._range = document.createRange();
+    if (!this.range) {
+      this.range = document.createRange();
     }
-    this._range.selectNodeContents(this.domElement);
+    this.range.selectNodeContents(this.domElement);
     this.collapseSelectionRight();
+  };
+
+  SimpleEditor.prototype.select = function(start, end) {
+    var startLoc = this.indexToNode(start - 1),
+        endLoc   = this.indexToNode(end - 1);
+    this.range.setStart(startLoc.node, startLoc.offset + 1);
+    this.range.setEnd(endLoc.node, endLoc.offset + 1);
+    this.selectRange(this.range);
+  }
+
+  SimpleEditor.prototype.indexToNode = function(index) {
+    function indexToNode(index, node) {
+      if (node.hasChildNodes()) {
+        for (var i=0; i<node.childNodes.length; i++) {
+          var c    = node.childNodes[i],
+              text = c.textContent;
+          if (index < text.length) {
+            return indexToNode(index, c);
+          }
+          index -= text.length
+        }
+      } else {
+        return {node: node, offset: index}
+      }
+    }
+    return indexToNode(index, this.domElement);
   };
 
   return SimpleEditor;
