@@ -15,24 +15,12 @@ SimpleEditor = (function() {
         //console.log("save", e.type, me.getSelectionStart(), me.getSelectionEnd(), me.getRange());
       }
     }
-    //document.addEventListener('mousedown', trackSelection);
     document.addEventListener('mouseup', trackSelection);
-    //document.addEventListener('mouseclick', trackSelection);
-    //document.addEventListener('keydown', trackSelection);
     document.addEventListener('keyup', trackSelection);
     document.addEventListener('selectionchange', trackSelection);
-    //document.addEventListener('keypress', trackSelection);
 
-    var lastValue = "";
-    this.domElement.addEventListener('DOMSubtreeModified', function(e) {
-      if (me.getValue() != "" && lastValue != me.getValue()) {
-        //console.log('change', me.getSelectionStart(), me.getSelectionEnd());
-        lastValue = me.getValue();
-        for (var i=0; i<me.changeListeners.length; i++) {
-          me.changeListeners[i](e);
-        }
-      }
-    });
+    this.domElement.addEventListener('keyup', function() {me.change();});
+    this.domElement.addEventListener('input', function() {me.change();});
 
     this.domElement.addEventListener('focus', function() {
       if (me.getRange()) {
@@ -49,6 +37,7 @@ SimpleEditor = (function() {
 
   SimpleEditor.prototype.setValue = function(value) {
     this.domElement.innerText = value;
+    this.change();
   };
 
   SimpleEditor.prototype.setHTML = function(value) {
@@ -70,21 +59,15 @@ SimpleEditor = (function() {
     this.changeListeners.push(callback);
   };
 
-  SimpleEditor.prototype.getRange = function() {
-    /*
-    var selection = window.getSelection();
-    // Always prefer the current range object if we've got it.
-    if (selection.rangeCount) {
-      var range = selection.getRangeAt(0);
-      if (this.range.startContainer === range.startContainer &&
-          this.range.startOffset    === range.startOffset    &&
-          this.range.endContainer   === range.endContainer   &&
-          this.range.endOffset      === range.endOffset      &&
-          this.domElement.contains(range.commonAncestorContainer)) {
-        this.range = range.cloneRange();
-      }
+  SimpleEditor.prototype.change = function() {
+    //console.log('change', this.getSelectionStart(), this.getSelectionEnd());
+    lastValue = this.getValue();
+    for (var i=0; i<this.changeListeners.length; i++) {
+      this.changeListeners[i]();
     }
-    */
+  }
+
+  SimpleEditor.prototype.getRange = function() {
     if (!this.range) {
       this.range = document.createRange();
     }
@@ -100,16 +83,22 @@ SimpleEditor = (function() {
     range.selectNode(textNode);
     selection.removeAllRanges();
     selection.addRange(range);
+    this.change();
   };
 
   // Thanks to
   // http://stackoverflow.com/questions/4811822/get-a-ranges-start-and-end-offsets-relative-to-its-parent-container/4812022#4812022
   // for the idea for the selection methods.
 
+  // FIXME: This methods don't account for line breaks due to divs. It's not
+  // a super big deal in this case  as divs get swapped out for brs with the
+  // AST embedding stuff, but it makes it so that the cursor doesn't change
+  // lines when the user presses enter (though the newline is created).
   SimpleEditor.prototype.getSelectionStart = function() {
     if (!this.getRange()) return 0;
-    var range = this.getRange();
+    var range = this.getRange(),
         preCursorRange = range.cloneRange();
+    //console.log(range.cloneContents());
     preCursorRange.selectNodeContents(this.domElement);
     preCursorRange.setEnd(this.getRange().startContainer, this.getRange().startOffset);
     // range.toString() doesn't show newlines (but selection.toString()
@@ -117,12 +106,13 @@ SimpleEditor = (function() {
     // and use that divs innerText, which will have the newlines.
     var tempDiv = document.createElement('div');
     tempDiv.appendChild(preCursorRange.cloneContents());
+    //console.log(preCursorRange.cloneContents());
     return tempDiv.innerText.length;
   };
 
   SimpleEditor.prototype.getSelectionEnd = function() {
     if (!this.getRange()) return 0;
-    var range = this.getRange();
+    var range = this.getRange(),
         preCursorRange = range.cloneRange();
     preCursorRange.selectNodeContents(this.domElement);
     preCursorRange.setEnd(this.getRange().endContainer, this.getRange().endOffset);
