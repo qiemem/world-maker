@@ -47,3 +47,11 @@ li.completion:hover {
   height: 14px;
   z-index: 9;
 }
+
+.Statement {
+  border: 1px solid #FFF;
+  border-left: double;
+  margin-left: 20px;
+  padding-left: 50px;
+  display: block;
+}

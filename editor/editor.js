@@ -141,7 +141,7 @@ Editor = (function() {
     window.ast = ast;
 
     var tree = {
-      type:     "Program",
+      types:    ["Program"],
       start:    0,
       end:      text.length,
       children: []
@@ -168,44 +168,34 @@ Editor = (function() {
       tree.children.push(node);
     }
 
-    function normalize(astNode) {
-      return {
-        type: astNode.type,
-        start: astNode.start,
-        end: astNode.end,
-        children: []
-      }
+    function insertASTNode(types, start, end) {
+      insert(tree, {types: types, start: start, end: end, children: []});
     }
 
-    function insertASTNode(astNode) {
-      insert(tree, normalize(astNode));
-    }
-
+    // TODO: acorn.walk.simple doesn't walk into VariableDeclarations properly;
+    // it only processes the right hand side.
+    // TODO: BlockStatement extends to the close '}'. This is stupid.
     acorn.walk.simple(ast, {
-      Expression: insertASTNode,
-      Statement: insertASTNode,
-      ScopeBody: insertASTNode
+      Expression: function(node) {
+        insertASTNode([node.type, "Expression"], node.start, node.end);
+      },
+      Statement: function(node) {
+        insertASTNode([node.type, "Statement"], node.start, node.end)
+      },
+      ScopeBody: function(node) {
+        insertASTNode([node.type, "ScopeBody"], node.start, node.end)
+      }
     });
 
     function textNode(start, end) {
-      /*
-      var frag = document.createDocumentFragment();
-      var i = start,
-          substr = text.substr(start, end-start);
-      while (i = substr.indexOf("\n") >= 0) {
-        frag.appendChild(document.createTextNode(substr.substr(0, i)));
-        frag.appendChild(document.createElement("br"));
-        substr = substr.substr(i+1);
-      }
-      frag.appendChild(document.createTextNode(substr.substr(i)));
-      return frag;
-      */
       return document.createTextNode(text.substr(start, end-start));
     }
 
     function makeTreeDOM(tree) {
       var elt = document.createElement("span");
-      elt.classList.add(tree.type);
+      for (var i=0; i < tree.types.length; i++) {
+        elt.classList.add(tree.types[i]);
+      }
       var written = tree.start;
       for (var i=0; i < tree.children.length; i++) {
         var c = tree.children[i];
@@ -221,7 +211,7 @@ Editor = (function() {
       return elt;
     }
     var parsedCode = makeTreeDOM(tree);
-    parsedCode.innerHTML = parsedCode.innerHTML.replace(/\n/g, "<br/>");
+    //parsedCode.innerHTML = parsedCode.innerHTML.replace(/\n/g, "<br/>");
     return parsedCode;
   };
 

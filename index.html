@@ -39,7 +39,7 @@
         World.init(document.body);
         scene = new agency.Agent(World.scene());
         editor = new Editor(document.body);
-        editor.editor.setHTML("<span class='Statement'>var cursor = scene.cursor().fd(<span class='Literal'>5</span>);</span>\n");
+        editor.editor.setValue("var cursor = scene.cursor().fd(5);\n");
         editor.editor.cursorToEnd();
         editor.editor.blur();
         document.body.addEventListener('keypress', function(e) {
