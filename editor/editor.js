@@ -33,10 +33,11 @@ Editor = (function() {
         // index
         var start = me.editor.getSelectionStart(),
             end   = me.editor.getSelectionEnd();
+        console.log(start, end, me.editor.domElement.innerHTML);
         me.parsedCode = me.updateEditorTree();
         me.editor.setHTML(me.parsedCode.innerHTML);
         var length = me.editor.getValue().length;
-        me.editor.select(Math.min(start, length), Math.min(end, length));
+        me.editor.select(Math.min(start, length-1), Math.min(end, length-1));
         me.evalContents();
       }, 100);
     }
@@ -223,6 +224,7 @@ Editor = (function() {
     }
     var parsedCode = makeTreeDOM(tree);
     parsedCode.innerHTML = parsedCode.innerHTML.replace(/\n/g, "<br/>");
+    console.log(parsedCode.innerHTML);
     return parsedCode;
   };
 

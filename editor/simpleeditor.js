@@ -169,24 +169,33 @@ SimpleEditor = (function() {
   };
 
   SimpleEditor.prototype.select = function(start, end) {
-    var startLoc = this.indexToNode(start - 1),
-        endLoc   = this.indexToNode(end - 1),
+    var startLoc = this.indexToNode(start),
+        endLoc   = this.indexToNode(end),
         range    = this.getRange();
-    range.setStart(startLoc.node, startLoc.offset + 1);
-    range.setEnd(endLoc.node, endLoc.offset + 1);
+    range.setStart(startLoc.node, startLoc.offset);
+    range.setEnd(endLoc.node, endLoc.offset);
     this.selectRange(range);
   }
 
   SimpleEditor.prototype.indexToNode = function(index) {
     function indexToNode(index, node) {
+      if (index === 0) {
+        return {node: node, offset: 0}
+      }
       if (node.hasChildNodes()) {
         for (var i=0; i<node.childNodes.length; i++) {
           var c    = node.childNodes[i],
               text = c.innerText || c.textContent;
-          if (index < text.length) {
+          if (c.tagName === "BR") {
+            index--;
+          } else if (index < text.length) {
             return indexToNode(index, c);
+          } else {
+            index -= text.length
           }
-          index -= text.length
+          if (index === 0) {
+            return {node: node, offset: i+1}
+          }
         }
       } else {
         return {node: node, offset: index}
