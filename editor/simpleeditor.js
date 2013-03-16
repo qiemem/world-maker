@@ -4,25 +4,29 @@ SimpleEditor = (function() {
     this.domElement = document.createElement("div");
     this.domElement.classList.add("editor");
     this.domElement.contentEditable = "true";
-    this.hasFocus = false;
     this.range = null;
     this.changeListeners = [];
 
     function trackSelection(e) {
-      if (me.hasFocus) {
-        me.range = window.getSelection().getRangeAt(0);
-        console.log('save', me.range);
+      //console.log('track', e);
+      if (me.hasFocus()) {
+        // getRange() updates the stored range
+        me._updateRange();
+        //console.log("save", e.type, me.getSelectionStart(), me.getSelectionEnd(), me.getRange());
       }
     }
-    document.addEventListener('mousedown', trackSelection);
+    //document.addEventListener('mousedown', trackSelection);
     document.addEventListener('mouseup', trackSelection);
-    document.addEventListener('keydown', trackSelection);
+    //document.addEventListener('mouseclick', trackSelection);
+    //document.addEventListener('keydown', trackSelection);
     document.addEventListener('keyup', trackSelection);
-    this.onChange(trackSelection);
+    document.addEventListener('selectionchange', trackSelection);
+    //document.addEventListener('keypress', trackSelection);
 
     var lastValue = "";
     this.domElement.addEventListener('DOMSubtreeModified', function(e) {
       if (me.getValue() != "" && lastValue != me.getValue()) {
+        //console.log('change', me.getSelectionStart(), me.getSelectionEnd());
         lastValue = me.getValue();
         for (var i=0; i<me.changeListeners.length; i++) {
           me.changeListeners[i](e);
@@ -31,14 +35,12 @@ SimpleEditor = (function() {
     });
 
     this.domElement.addEventListener('focus', function() {
-      me.hasFocus=true;
-      if (me.range) {
+      if (me.getRange()) {
         var selection = window.getSelection();
         selection.removeAllRanges();
-        selection.addRange(me.range);
+        selection.addRange(me.getRange());
       }
     });
-    this.domElement.addEventListener('blur', function() {me.hasFocus=false;});
   }
 
   SimpleEditor.prototype.getValue = function() {
@@ -53,6 +55,9 @@ SimpleEditor = (function() {
     this.domElement.innerHTML = value;
   };
 
+  SimpleEditor.prototype.hasFocus = function() {
+    return this.domElement.contains(window.getSelection().focusNode);
+  };
   SimpleEditor.prototype.focus = function() {
     this.domElement.focus();
   };
@@ -65,14 +70,36 @@ SimpleEditor = (function() {
     this.changeListeners.push(callback);
   };
 
+  SimpleEditor.prototype.getRange = function() {
+    /*
+    var selection = window.getSelection();
+    // Always prefer the current range object if we've got it.
+    if (selection.rangeCount) {
+      var range = selection.getRangeAt(0);
+      if (this.range.startContainer === range.startContainer &&
+          this.range.startOffset    === range.startOffset    &&
+          this.range.endContainer   === range.endContainer   &&
+          this.range.endOffset      === range.endOffset      &&
+          this.domElement.contains(range.commonAncestorContainer)) {
+        this.range = range.cloneRange();
+      }
+    }
+    */
+    if (!this.range) {
+      this.range = document.createRange();
+    }
+    return this.range
+  }
+
   SimpleEditor.prototype.replaceSelection = function(text) {
     var selection = window.getSelection(),
-        textNode  = document.createTextNode(text);
-    this.range.deleteContents();
-    this.range.insertNode(textNode);
-    this.range.selectNode(textNode);
+        textNode  = document.createTextNode(text),
+        range     = this.getRange();
+    range.deleteContents();
+    range.insertNode(textNode);
+    range.selectNode(textNode);
     selection.removeAllRanges();
-    selection.addRange(this.range);
+    selection.addRange(range);
   };
 
   // Thanks to
@@ -80,23 +107,39 @@ SimpleEditor = (function() {
   // for the idea for the selection methods.
 
   SimpleEditor.prototype.getSelectionStart = function() {
-    if (!this.range) return 0;
-    var preCursorRange = this.range.cloneRange();
+    if (!this.getRange()) return 0;
+    var range = this.getRange();
+        preCursorRange = range.cloneRange();
     preCursorRange.selectNodeContents(this.domElement);
-    preCursorRange.setEnd(this.range.startContainer, this.range.startOffset);
-    return preCursorRange.toString().length;
+    preCursorRange.setEnd(this.getRange().startContainer, this.getRange().startOffset);
+    // range.toString() doesn't show newlines (but selection.toString()
+    // does...), so we extract the dom content of the range, stick it in a div
+    // and use that divs innerText, which will have the newlines.
+    var tempDiv = document.createElement('div');
+    tempDiv.appendChild(preCursorRange.cloneContents());
+    return tempDiv.innerText.length;
   };
 
   SimpleEditor.prototype.getSelectionEnd = function() {
-    if (!this.range) return 0;
-    var preCursorRange = this.range.cloneRange();
+    if (!this.getRange()) return 0;
+    var range = this.getRange();
+        preCursorRange = range.cloneRange();
     preCursorRange.selectNodeContents(this.domElement);
-    preCursorRange.setEnd(this.range.endContainer, this.range.endOffset);
-    return preCursorRange.toString().length;
+    preCursorRange.setEnd(this.getRange().endContainer, this.getRange().endOffset);
+    // range.toString() doesn't show newlines (but selection.toString()
+    // does...), so we extract the dom content of the range, stick it in a div
+    // and use that divs innerText, which will have the newlines.
+    var tempDiv = document.createElement('div');
+    tempDiv.appendChild(preCursorRange.cloneContents());
+    return tempDiv.innerText.length;
   };
 
   SimpleEditor.prototype.getSelection = function() {
     return window.getSelection().toString();
+  };
+
+  SimpleEditor.prototype._updateRange = function() {
+    this.range = window.getSelection().getRangeAt(0);
   };
 
   SimpleEditor.prototype.selectRange = function(range) {
@@ -107,31 +150,31 @@ SimpleEditor = (function() {
   };
 
   SimpleEditor.prototype.collapseSelectionLeft = function() {
-    if (!this.range) return;
-    this.range.collapse(true);
-    this.selectRange(this.range);
+    var range = this.getRange();
+    range.collapse(true);
+    this.selectRange(range);
   };
 
   SimpleEditor.prototype.collapseSelectionRight = function() {
-    if (!this.range) return;
-    this.range.collapse(false);
-    this.selectRange(this.range);
+    var range = this.getRange();
+    range.collapse(false);
+    this.selectRange(range);
   };
 
   SimpleEditor.prototype.cursorToEnd = function() {
-    if (!this.range) {
-      this.range = document.createRange();
-    }
-    this.range.selectNodeContents(this.domElement);
+    var range = this.getRange();
+    range.selectNodeContents(this.domElement);
+    this.selectRange(range);
     this.collapseSelectionRight();
   };
 
   SimpleEditor.prototype.select = function(start, end) {
     var startLoc = this.indexToNode(start - 1),
-        endLoc   = this.indexToNode(end - 1);
-    this.range.setStart(startLoc.node, startLoc.offset + 1);
-    this.range.setEnd(endLoc.node, endLoc.offset + 1);
-    this.selectRange(this.range);
+        endLoc   = this.indexToNode(end - 1),
+        range    = this.getRange();
+    range.setStart(startLoc.node, startLoc.offset + 1);
+    range.setEnd(endLoc.node, endLoc.offset + 1);
+    this.selectRange(range);
   }
 
   SimpleEditor.prototype.indexToNode = function(index) {
@@ -139,7 +182,7 @@ SimpleEditor = (function() {
       if (node.hasChildNodes()) {
         for (var i=0; i<node.childNodes.length; i++) {
           var c    = node.childNodes[i],
-              text = c.textContent;
+              text = c.innerText || c.textContent;
           if (index < text.length) {
             return indexToNode(index, c);
           }

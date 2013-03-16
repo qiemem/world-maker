@@ -222,8 +222,7 @@ Editor = (function() {
       return elt;
     }
     var parsedCode = makeTreeDOM(tree);
-    parsedCode.innerHTML = parsedCode.innerHTML.split("\n").join("<br/>\n");
-    console.log(parsedCode.innerText == text, parsedCode.innerHTML, text);
+    parsedCode.innerHTML = parsedCode.innerHTML.replace(/\n/g, "<br/>");
     return parsedCode;
   };
 
