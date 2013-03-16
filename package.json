@@ -20,6 +20,6 @@
     "three": "~0.56.4",
     "d3": "~3.0.8",
     "codemirror": "https://github.com/marijnh/CodeMirror/tarball/master",
-    "acorn": "~0.1.0"
+    "acorn": "https://github.com/marijnh/acorn/tarball/master"
   }
 }

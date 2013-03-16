@@ -28,33 +28,18 @@ Editor = (function() {
     function changeListener() {
       clearTimeout(me.evalTimeout);
       me.evalTimeout = setTimeout(function() {
-        me.ast = acorn.parse_dammit(me.editor.getValue());
+        me.parsedCode = me.updateEditorTree();
+        me.editor.setHTML(me.parsedCode.innerHTML);
         me.evalContents();
       }, 100);
     }
     this.editor.onChange(changeListener);
-    //this.editor.domElement.addEventListener("focus", changeListener);
 
     var complete = function() {me.doCompletions();};
     this.editor.domElement.addEventListener("mousedown", complete);
     this.editor.domElement.addEventListener("mouseup", complete);
     this.editor.domElement.addEventListener("keydown", complete);
     this.editor.domElement.addEventListener("keyup", complete);
-    //this.editor.on('cursorActivity', complete);
-    //this.editor.on('focus', complete);
-/*
-    this.editor.getScrollerElement().addEventListener("mousemove", function(e) {
-      var pos = {top: e.pageY, left: e.pageX};
-      var loc = me.editor.coordsChar(pos);
-      var node = me.getSmallestNode(loc);
-      if (node) {
-        console.log(node);
-        console.log(me.editor.getValue().substr(node.start, node.end-node.start));
-      }
-      var token = me.editor.getTokenAt(loc);
-      me.mouseOnToken(loc, token);
-    });
-    */
   }
 
   Editor.prototype.evalContents = function() {
@@ -139,101 +124,89 @@ Editor = (function() {
       .on("click", function() {
         me.editor.collapseSelectionRight();
         chosen = true;
-      })
-        ;
+      });
       
     li.exit().remove();
-  }
+  };
 
-  /**
-   * loc - {line, ch}
-   */
-  Editor.prototype.mouseOnToken = function(loc, token) {
-    switch (token.type) {
-      case "number":
-        this.numberSelector.style.display = "inline";
-        var startLoc = {line: loc.line, ch: token.start};
-        var endLoc = {line: loc.line, ch: token.end};
+  Editor.prototype.updateEditorTree = function() {
+    var text = this.editor.getValue(),
+        ast  = acorn.parse_dammit(text);
+    window.ast = ast;
 
-        // Code Mirror doesn't detect, eg, ".1" properly, so check for it.
-        var checkStart = {line: loc.line, ch: token.start - 1};
-        if (token.string.indexOf(".")<0 
-            && this.editor.getRange(checkStart, endLoc).indexOf(".") >= 0) {
-          startLoc = checkStart;
-        }
-
-        var string = this.editor.getRange(startLoc, endLoc);
-        if (string.charAt(0) === ".") {
-          string = "0" + string;
-        }
-          
-        var startPos = this.editor.cursorCoords(startLoc);
-        var endPos = this.editor.cursorCoords(endLoc);
-
-        this.numberSelector.style.top = startPos.top + "px";
-        this.numberSelector.style.left = startPos.left + "px";
-        this.numberSelector.style.width = (endPos.left - startPos.left) + "px";
-
-        var decimal = string.indexOf(".");
-        var numDecimals = decimal < 0 ? 0 : string.length - decimal - 1;
-        var value = parseFloat(string);
-        var me = this;
-        this.numberSelector.onmousedown = function(e) {
-          var lastVal = e.pageY;
-
-          function drag(e) {
-            var curVal = e.pageY;
-            var diff = Math.round((lastVal - curVal)/2);
-            var changeBy = numDecimals === 0 ? diff : diff / Math.pow(10, numDecimals);
-            var newStr = (value + changeBy).toFixed(numDecimals);
-            me.editor.replaceRange(newStr, startLoc, endLoc);
-            endLoc.ch = startLoc.ch + newStr.length;
-            me.evalContents();
-          }
-
-          function stop(e) {
-            document.removeEventListener("mousemove", drag);
-            document.removeEventListener("mouseup", stop);
-          }
-
-          document.addEventListener("mousemove", drag);
-          document.addEventListener("mouseup", stop);
-        };
-        break;
-      default:
-        this.numberSelector.style.display = "none";
-        this.numberSelector.onmousedown = null;
+    var tree = {
+      type:     "Program",
+      start:    0,
+      end:      text.length,
+      children: []
     }
-  }
-
-  Editor.prototype.getNodes = function(loc) {
-    var matchingNodes = [];
-    var me = this;
-    var index = this.editor.indexFromPos(loc);
-    acorn.walk.simple(this.ast, {
-      Statement: function(node) {
-        if (node.start <= index && node.end > index) {
-          matchingNodes.push(node);
+    
+    function insert(tree, node) {
+      for (var i=0; i<tree.children.length; i++) {
+        var c = tree.children[i];
+        if (node.end <= c.start) {
+          // node is before this child; insert it here
+          tree.children.splice(i, 0, node);
+          return
+        } else if (c.start <= node.start && node.end <= c.end) {
+          insert(c, node);
+          return;
+        } else if (node.start <= c.start && c.end <= node.end) {
+          //tree.children[i] = node;
+          tree.children.splice(i,1);
+          insert(node, c);
+          i--;
         }
       }
+      // Node didn't belong in any child; push it on the end:
+      tree.children.push(node);
+    }
+
+    function normalize(astNode) {
+      return {
+        type: astNode.type,
+        start: astNode.start,
+        end: astNode.end,
+        children: []
+      }
+    }
+
+    function insertASTNode(astNode) {
+      insert(tree, normalize(astNode));
+    }
+
+    acorn.walk.simple(ast, {
+      Expression: insertASTNode,
+      Statement: insertASTNode,
+      ScopeBody: insertASTNode
     });
-    return matchingNodes;
-  }
 
-  Editor.prototype.getSmallestNode = function(loc) {
-    var matchingNodes = this.getNodes(loc);
-    var smallest = null, smallestLength = Infinity;
-    var length = matchingNodes.length;
-    for (var i=0; i<length; i++) {
-      var node = matchingNodes[i];
-      var nodeLength = node.end - node.start;
-      if (nodeLength < smallestLength) {
-        smallest = node;
-        smallestLength = nodeLength;
-      }
+    function textNode(start, end) {
+      return document.createTextNode(text.substr(start, end-start));
     }
-    return smallest;
-  }
+
+    function makeTreeDOM(tree) {
+      var elt = document.createElement("span");
+      elt.classList.add(tree.type);
+      var written = tree.start;
+      for (var i=0; i < tree.children.length; i++) {
+        var c = tree.children[i];
+        if (c.start > written) {
+          elt.appendChild(textNode(written, c.start));
+        }
+        elt.appendChild(makeTreeDOM(c));
+        written = c.end;
+      }
+      if (tree.end > written) {
+        elt.appendChild(textNode(written, tree.end));
+      }
+      return elt;
+    }
+    var parsedCode = makeTreeDOM(tree);
+    console.log(parsedCode.innerText == text, parsedCode.innerText, text);
+    return parsedCode;
+  };
+
     
   return Editor;
 }());

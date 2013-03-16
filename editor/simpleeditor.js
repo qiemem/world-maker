@@ -20,7 +20,7 @@ SimpleEditor = (function() {
 
     var lastValue = "";
     this.domElement.addEventListener('DOMSubtreeModified', function(e) {
-      if (lastValue != me.getValue()) {
+      if (me.getValue() != "" && lastValue != me.getValue()) {
         lastValue = me.getValue();
         for (var i=0; i<me.changeListeners.length; i++) {
           me.changeListeners[i](e);
