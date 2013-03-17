@@ -138,18 +138,18 @@ Editor = (function() {
     }
     eval(this.editor.getValue());
     console.log('Eval successful');
-  }
+  };
 
   Editor.prototype.slideIn = function() {
     d3.select(this.drawer).transition().style("left", "0px");
     this.visible = true;
-  }
+  };
 
   Editor.prototype.slideOut = function() {
     var drawer = d3.select(this.drawer);
     drawer.transition().style("left", "-" + drawer.style("width"));
     this.visible = false;
-  }
+  };
 
   Editor.prototype.toggleSlide = function() {
     if (this.visible) {
@@ -157,40 +157,40 @@ Editor = (function() {
     } else {
       this.slideIn();
     }
-  }
+  };
 
   Editor.prototype.addEvalListener = function(func) {
     this.evalListeners.push(func);
-  }
+  };
 
   Editor.prototype.doCompletions = function() {
     this.showCompletions(this.getCompletions(this.editor.selectionStart));
-  }
+  };
 
   Editor.prototype.getCompletions = function(position) {
-    return [ ";\n"
-      ,"cursor"
-      ,"scene"
-      ,".cube()"
-      , ".sphere()"
-      , ".color('red')"
-      , ".rgb(0.20, 0.50, 0.70)"
-      , ".hsl(0.20, 1.0, 0.5)"
-      , ".forward(1.0)"
-      , ".backward(1.0)"
-      , ".right(90)"
-      , ".left(90)"
-      , ".up(90)"
-      , ".down(90)"
-      , ".rollRight(90)"
-      , ".rollLeft(90)"
-      , ".grow(1.0)"
-      , ".growWide(1.0)"
-      , ".growLong(1.0)"
-      , ".growTall(1.0)"
-      , ".transparency(0.5)"
-      , "for (var i=0; i<10; i++) {\n}\n"];
-  }
+    return [ ";\n", 
+      "cursor",
+      "scene",
+      ".cube()",
+      ".sphere()",
+      ".color('red')",
+      ".rgb(0.20, 0.50, 0.70)",
+      ".hsl(0.20, 1.0, 0.5)",
+      ".forward(1.0)",
+      ".backward(1.0)",
+      ".right(90)",
+      ".left(90)",
+      ".up(90)",
+      ".down(90)",
+      ".rollRight(90)",
+      ".rollLeft(90)",
+      ".grow(1.0)",
+      ".growWide(1.0)",
+      ".growLong(1.0)",
+      ".growTall(1.0)",
+      ".transparency(0.5)",
+      "for (var i=0; i<10; i++) {\n}\n"];
+  };
 
   Editor.prototype.showCompletions = function(completions) {
     var li = d3.select(this.completionsList).selectAll("li").data(completions);
@@ -224,7 +224,7 @@ Editor = (function() {
         ;
       
     li.exit().remove();
-  }
+  };
 
   /**
    * loc - {line, ch}
@@ -239,8 +239,8 @@ Editor = (function() {
 
         // Code Mirror doesn't detect, eg, ".1" properly, so check for it.
         var checkStart = {line: loc.line, ch: token.start - 1};
-        if (token.string.indexOf(".")<0 
-            && this.editor.getRange(checkStart, endLoc).indexOf(".") >= 0) {
+        if (token.string.indexOf(".")<0 &&
+            this.editor.getRange(checkStart, endLoc).indexOf(".") >= 0) {
           startLoc = checkStart;
         }
 
@@ -286,7 +286,7 @@ Editor = (function() {
         this.numberSelector.style.display = "none";
         this.numberSelector.onmousedown = null;
     }
-  }
+  };
 
   Editor.prototype.getNodes = function(loc) {
     var matchingNodes = [];
@@ -301,7 +301,7 @@ Editor = (function() {
       }
     });
     return matchingNodes;
-  }
+  };
 
   Editor.prototype.getSmallestNode = function(loc) {
     var matchingNodes = this.getNodes(loc);
@@ -316,7 +316,7 @@ Editor = (function() {
       }
     }
     return smallest;
-  }
+  };
     
   return Editor;
 }());

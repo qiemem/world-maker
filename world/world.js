@@ -16,18 +16,18 @@ World = (function () {
   var ControlModes = {
     FIRST_PERSON: "firstPerson",
     TRACKBALL:    "trackball"
-  }
+  };
 
   var clock = new THREE.Clock();
 
   var init = function(container) {
     renderer = new THREE.WebGLRenderer();
-    
+
     var aspect = window.innerWidth/window.innerHeight;
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, aspect, NEAR, FAR);
 
     trackballControls = new THREE.TrackballControls(camera, renderer.domElement);
-    trackballControls = trackballControls
+    trackballControls = trackballControls;
     trackballControls.rotateSpeed = 1.5;
     trackballControls.zoomSpeed = 12.0;
     trackballControls.panSpeed = 1.0;
@@ -38,11 +38,11 @@ World = (function () {
     trackballControls.setActive = function(val) {
       this.enabled = val;
     };
-      
+
     trackballControls.setActive(false);
-    
+
     fpControls = new THREE.FirstPersonControls(camera);
-    fpControls.lookSpeed = .1;
+    fpControls.lookSpeed = 0.1;
     fpControls.movementSpeed = 2;
     fpPosition = camera.position.clone();
     fpUp = camera.up.clone();
@@ -50,7 +50,7 @@ World = (function () {
       this.freeze = !val;
       this.activeLook = val;
     };
-    fpControls.setActive(false);;
+    fpControls.setActive(false);
 
     controlList = [trackballControls, fpControls];
     controlModes = {
@@ -58,13 +58,13 @@ World = (function () {
         controls: trackballControls,
         position: trackballPosition,
         up: trackballUp
-      }, 
+      },
       firstPerson: {
         controls: fpControls,
         position: fpPosition,
         up: fpUp
       }
-    }
+    };
 
     switchControls(ControlModes.FIRST_PERSON);
 
@@ -72,22 +72,21 @@ World = (function () {
     renderer.setClearColor(new THREE.Color(0x000000, 1));
 
     THREEx.WindowResize(renderer, camera);
-    for (var i=0; i<controlList.length; i++) {
-      var c = controlList[i];
+    controlList.forEach(function(c) {
       if (c.handleResize) {
         window.addEventListener('resize', function() {c.handleResize();});
       }
-    }
+    });
 
     scene = new THREE.Scene();
     scene.add(camera);
-    
+
     container.appendChild(renderer.domElement);
 
     reset();
 
     animate();
-  }
+  };
 
   var reset = function() {
     for (var i = scene.children.length - 1; i>=0; i--) {
@@ -103,7 +102,7 @@ World = (function () {
 
     playerLight = new THREE.PointLight(0xFFFFFF);
     scene.add(playerLight);
-  }
+  };
 
   var switchControls = function(controlMode) {
     var SWITCH_TIME = 500;
@@ -128,7 +127,7 @@ World = (function () {
     var upTween = new TWEEN.Tween(camera.up)
       .to({x: targetUp.x, y: targetUp.y, z: targetUp.z}, SWITCH_TIME)
       .start();
-    
+
     if (oldControls) {
       var lookingAt = oldControls.target.clone().normalize().multiplyScalar(10);
       var lookTarget = controls.target.clone().normalize().multiplyScalar(10);
@@ -139,7 +138,7 @@ World = (function () {
         })
         .start();
     }
-  }
+  };
 
   var animate = function() {
     playerLight.position.copy(camera.position);
@@ -147,19 +146,18 @@ World = (function () {
     TWEEN.update();
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
-  }
+  };
 
   return {
     ControlModes: ControlModes,
     init: init,
     switchControls: switchControls,
-    scene: function() {return scene},
-    camera: function() {return camera},
-    controls: function() {return controls},
-    renderer: function() {return renderer},
+    scene: function() {return scene;},
+    camera: function() {return camera;},
+    controls: function() {return controls;},
+    renderer: function() {return renderer;},
     reset: reset,
-    playerLight: function() {return playerLight},
+    playerLight: function() {return playerLight;},
     animate: animate
-  }
-  return World;
+  };
 }());
