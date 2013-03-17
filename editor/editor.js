@@ -1,29 +1,29 @@
 Editor = (function() {
   function Editor(container) {
     this.container = container;
-    this.drawer = document.createElement("div");
-    this.drawer.classList.add("drawer");
+    this.drawer = document.createElement('div');
+    this.drawer.classList.add('drawer');
     this.editor = CodeMirror(this.drawer, {
-      mode: "javascript",
+      mode: 'javascript',
       lineNumbers: false,
-      theme: "solarized dark"
+      theme: 'solarized dark'
 
     });
 
-    this.completions = document.createElement("div");
-    this.completions.classList.add("completions");
+    this.completions = document.createElement('div');
+    this.completions.classList.add('completions');
     this.drawer.appendChild(this.completions);
 
-    this.completionsList = document.createElement("ul");
-    this.completionsList.classList.add("completions-list");
+    this.completionsList = document.createElement('ul');
+    this.completionsList.classList.add('completions-list');
     this.completions.appendChild(this.completionsList);
 
     this.container.appendChild(this.drawer);
     this.visible = false;
     this.evalTimeout = -1;
 
-    this.numberSelector = document.createElement("div");
-    this.numberSelector.id = ("number-selector");
+    this.numberSelector = document.createElement('div');
+    this.numberSelector.id = ('number-selector');
     container.appendChild(this.numberSelector);
 
 
@@ -47,7 +47,7 @@ Editor = (function() {
     var blockHandle;
     var hoverHandle = false;
     var gotBlock = false;
-    this.editor.getScrollerElement().addEventListener("mousemove", function(e) {
+    this.editor.getScrollerElement().addEventListener('mousemove', function(e) {
       if (!hoverHandle && !gotBlock) {
         var pos = {top: e.pageY, left: e.pageX};
         var loc = me.editor.coordsChar(pos);
@@ -61,33 +61,35 @@ Editor = (function() {
         }
         if (node) {
           var start = me.editor.posFromIndex(node.start);
-          var end   = me.editor.posFromIndex(node.end);
-          markedStatement = me.editor.markText(start, end, {className: 'statement'});
+          var end = me.editor.posFromIndex(node.end);
+          markedStatement = me.editor.markText(start, end, {
+            className: 'statement'
+          });
 
-          blockHandle = document.createElement("div");
-          blockHandle.classList.add("block-handle");
-          blockHandle.addEventListener("mouseover", function() {
+          blockHandle = document.createElement('div');
+          blockHandle.classList.add('block-handle');
+          blockHandle.addEventListener('mouseover', function() {
             hoverHandle = true;
           });
-          blockHandle.addEventListener("mouseout", function() {
+          blockHandle.addEventListener('mouseout', function() {
             hoverHandle = false;
             blockHandle.parentNode.removeChild(blockHandle);
             blockHandle = null;
             if (gotBlock) {
-              var block = document.createElement("div");
-              block.classList.add("block");
+              var block = document.createElement('div');
+              block.classList.add('block');
               block.innerText = me.editor.getSelection();
               document.body.appendChild(block);
-              var blockInsert = document.createElement("div");
-              var insertWidget; 
-              blockInsert.classList.add("block-insert");
-              me.editor.replaceSelection("");
-              if (me.editor.getLine(me.editor.getCursor().line)==="") {
+              var blockInsert = document.createElement('div');
+              var insertWidget;
+              blockInsert.classList.add('block-insert');
+              me.editor.replaceSelection('');
+              if (me.editor.getLine(me.editor.getCursor().line) === '') {
                 me.editor.removeLine(me.editor.getCursor().line);
               }
-              function followMouse (e) {
-                block.style.top = e.pageY + "px";
-                block.style.left = e.pageX + "px";
+              function followMouse(e) {
+                block.style.top = e.pageY + 'px';
+                block.style.left = e.pageX + 'px';
                 var loc = me.editor.coordsChar({left: e.pageX, top: e.pageY});
                 if (insertWidget) {
                   insertWidget.clear();
@@ -98,12 +100,12 @@ Editor = (function() {
                       above: true
                     });
               }
-              document.addEventListener("mousemove", followMouse);
+              document.addEventListener('mousemove', followMouse);
               function cleanUp() {
-                document.removeEventListener("mousemove", followMouse);
-                document.removeEventListener("mouseup", cleanUp);
+                document.removeEventListener('mousemove', followMouse);
+                document.removeEventListener('mouseup', cleanUp);
                 me.editor.setCursor({line: insertionLine, ch: 0});
-                me.editor.replaceSelection(block.innerText+"\n");
+                me.editor.replaceSelection(block.innerText + '\n');
                 block.parentNode.removeChild(block);
                 block = null;
                 if (insertWidget) {
@@ -111,18 +113,18 @@ Editor = (function() {
                 }
                 gotBlock = false;
               }
-              document.addEventListener("mouseup", cleanUp);
+              document.addEventListener('mouseup', cleanUp);
             }
           });
-          blockHandle.addEventListener("mousedown", function(e) {
+          blockHandle.addEventListener('mousedown', function(e) {
             me.editor.setSelection(start, end);
             gotBlock = true;
             e.preventDefault();
           });
-          blockHandle.addEventListener("mouseup", function() {
+          blockHandle.addEventListener('mouseup', function() {
             gotBlock = false;
           });
-          blockHandle.addEventListener("mousemove", function() {
+          blockHandle.addEventListener('mousemove', function() {
           });
           me.editor.addWidget(start, blockHandle);
         }
@@ -141,13 +143,13 @@ Editor = (function() {
   };
 
   Editor.prototype.slideIn = function() {
-    d3.select(this.drawer).transition().style("left", "0px");
+    d3.select(this.drawer).transition().style('left', '0px');
     this.visible = true;
   };
 
   Editor.prototype.slideOut = function() {
     var drawer = d3.select(this.drawer);
-    drawer.transition().style("left", "-" + drawer.style("width"));
+    drawer.transition().style('left', '-' + drawer.style('width'));
     this.visible = false;
   };
 
@@ -168,61 +170,61 @@ Editor = (function() {
   };
 
   Editor.prototype.getCompletions = function(position) {
-    return [ ";\n", 
-      "cursor",
-      "scene",
-      ".cube()",
-      ".sphere()",
+    return [';\n',
+      'cursor',
+      'scene',
+      '.cube()',
+      '.sphere()',
       ".color('red')",
-      ".rgb(0.20, 0.50, 0.70)",
-      ".hsl(0.20, 1.0, 0.5)",
-      ".forward(1.0)",
-      ".backward(1.0)",
-      ".right(90)",
-      ".left(90)",
-      ".up(90)",
-      ".down(90)",
-      ".rollRight(90)",
-      ".rollLeft(90)",
-      ".grow(1.0)",
-      ".growWide(1.0)",
-      ".growLong(1.0)",
-      ".growTall(1.0)",
-      ".transparency(0.5)",
-      "for (var i=0; i<10; i++) {\n}\n"];
+      '.rgb(0.20, 0.50, 0.70)',
+      '.hsl(0.20, 1.0, 0.5)',
+      '.forward(1.0)',
+      '.backward(1.0)',
+      '.right(90)',
+      '.left(90)',
+      '.up(90)',
+      '.down(90)',
+      '.rollRight(90)',
+      '.rollLeft(90)',
+      '.grow(1.0)',
+      '.growWide(1.0)',
+      '.growLong(1.0)',
+      '.growTall(1.0)',
+      '.transparency(0.5)',
+      'for (var i=0; i<10; i++) {\n}\n'];
   };
 
   Editor.prototype.showCompletions = function(completions) {
-    var li = d3.select(this.completionsList).selectAll("li").data(completions);
+    var li = d3.select(this.completionsList).selectAll('li').data(completions);
     var me = this;
 
     // Preserves selected text if the user doesn't click on anything.
     var lastSelected;
     var chosen;
-    li.enter().append("li")
-      .text(function (d) {return d;})
-      .classed("completion", 1)
-      .on("mouseover", function(d) {
+    li.enter().append('li')
+      .text(function(d) {return d;})
+      .classed('completion', 1)
+      .on('mouseover', function(d) {
         lastSelected = me.editor.getSelection();
         me.editor.replaceSelection(d);
       })
-      .on("mouseout", function(d) {
+      .on('mouseout', function(d) {
         if (!chosen) {
           // Don't mess up undo history
           var hist = me.editor.getHistory();
           me.editor.replaceSelection(lastSelected);
-          hist.done.splice(hist.done.length-1);
+          hist.done.splice(hist.done.length - 1);
           me.editor.setHistory(hist);
         }
         chosen = false;
       })
-      .on("click", function() {
-        me.editor.setCursor(me.editor.getCursor("end"));
+      .on('click', function() {
+        me.editor.setCursor(me.editor.getCursor('end'));
         me.editor.focus();
         chosen = true;
-      })
-        ;
-      
+      });
+
+
     li.exit().remove();
   };
 
@@ -232,32 +234,33 @@ Editor = (function() {
   Editor.prototype.mouseOnToken = function(loc, token) {
     // TODO: Use a widget instead. Makes it so you can still select the numbers
     switch (token.type) {
-      case "number":
-        this.numberSelector.style.display = "inline";
+      case 'number':
+        this.numberSelector.style.display = 'inline';
         var startLoc = {line: loc.line, ch: token.start};
         var endLoc = {line: loc.line, ch: token.end};
 
         // Code Mirror doesn't detect, eg, ".1" properly, so check for it.
         var checkStart = {line: loc.line, ch: token.start - 1};
-        if (token.string.indexOf(".")<0 &&
-            this.editor.getRange(checkStart, endLoc).indexOf(".") >= 0) {
+        if (token.string.indexOf('.') < 0 &&
+            this.editor.getRange(checkStart, endLoc).indexOf('.') >= 0) {
           startLoc = checkStart;
         }
 
         var string = this.editor.getRange(startLoc, endLoc);
-        if (string.charAt(0) === ".") {
-          string = "0" + string;
+        if (string.charAt(0) === '.') {
+          string = '0' + string;
         }
-          
+
         var startPos = this.editor.cursorCoords(startLoc);
         var endPos = this.editor.cursorCoords(endLoc);
 
-        this.numberSelector.style.top = startPos.top + "px";
-        this.numberSelector.style.left = startPos.left + "px";
-        this.numberSelector.style.width = (endPos.left - startPos.left) + "px";
+        this.numberSelector.style.top = startPos.top + 'px';
+        this.numberSelector.style.left = startPos.left + 'px';
+        this.numberSelector.style.width = (endPos.left - startPos.left) + 'px';
 
-        var decimal = string.indexOf(".");
+        var decimal = string.indexOf('.');
         var numDecimals = decimal < 0 ? 0 : string.length - decimal - 1;
+        var scale = 1 / Math.pow(10, numDecimals);
         var value = parseFloat(string);
         var me = this;
         this.numberSelector.onmousedown = function(e) {
@@ -265,8 +268,8 @@ Editor = (function() {
 
           function drag(e) {
             var curVal = e.pageY;
-            var diff = Math.round((lastVal - curVal)/2);
-            var changeBy = numDecimals === 0 ? diff : diff / Math.pow(10, numDecimals);
+            var diff = Math.round((lastVal - curVal) / 2);
+            var changeBy = numDecimals === 0 ? diff : diff / scale;
             var newStr = (value + changeBy).toFixed(numDecimals);
             me.editor.replaceRange(newStr, startLoc, endLoc);
             endLoc.ch = startLoc.ch + newStr.length;
@@ -274,16 +277,16 @@ Editor = (function() {
           }
 
           function stop(e) {
-            document.removeEventListener("mousemove", drag);
-            document.removeEventListener("mouseup", stop);
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stop);
           }
 
-          document.addEventListener("mousemove", drag);
-          document.addEventListener("mouseup", stop);
+          document.addEventListener('mousemove', drag);
+          document.addEventListener('mouseup', stop);
         };
         break;
       default:
-        this.numberSelector.style.display = "none";
+        this.numberSelector.style.display = 'none';
         this.numberSelector.onmousedown = null;
     }
   };
@@ -307,7 +310,7 @@ Editor = (function() {
     var matchingNodes = this.getNodes(loc);
     var smallest = null, smallestLength = Infinity;
     var length = matchingNodes.length;
-    for (var i=0; i<length; i++) {
+    for (var i = 0; i < length; i++) {
       var node = matchingNodes[i];
       var nodeLength = node.end - node.start;
       if (nodeLength < smallestLength) {
@@ -317,6 +320,6 @@ Editor = (function() {
     }
     return smallest;
   };
-    
+
   return Editor;
 }());

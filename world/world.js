@@ -1,4 +1,4 @@
-World = (function () {
+World = (function() {
   World = {};
 
   var VIEW_ANGLE = 45,
@@ -14,8 +14,8 @@ World = (function () {
       playerLight;
 
   var ControlModes = {
-    FIRST_PERSON: "firstPerson",
-    TRACKBALL:    "trackball"
+    FIRST_PERSON: 'firstPerson',
+    TRACKBALL: 'trackball'
   };
 
   var clock = new THREE.Clock();
@@ -23,7 +23,7 @@ World = (function () {
   var init = function(container) {
     renderer = new THREE.WebGLRenderer();
 
-    var aspect = window.innerWidth/window.innerHeight;
+    var aspect = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, aspect, NEAR, FAR);
 
     trackballControls = new THREE.TrackballControls(camera, renderer.domElement);
@@ -89,16 +89,16 @@ World = (function () {
   };
 
   var reset = function() {
-    for (var i = scene.children.length - 1; i>=0; i--) {
+    for (var i = scene.children.length - 1; i >= 0; i--) {
       obj = scene.children[i];
       if (obj !== camera) {
         scene.remove(obj);
       }
     }
 
-    scene.rotation.set(0,0,0);
-    scene.scale.set(1,1,1);
-    scene.position.set(0,0,0);
+    scene.rotation.set(0, 0, 0);
+    scene.scale.set(1, 1, 1);
+    scene.position.set(0, 0, 0);
 
     playerLight = new THREE.PointLight(0xFFFFFF);
     scene.add(playerLight);
@@ -133,7 +133,7 @@ World = (function () {
       var lookTarget = controls.target.clone().normalize().multiplyScalar(10);
       var lookingAtTween = new TWEEN.Tween(lookingAt)
         .to({x: lookTarget.x, y: lookTarget.y, z: lookTarget.z}, SWITCH_TIME)
-        .onUpdate(function () {
+        .onUpdate(function() {
           camera.lookAt(lookingAt);
         })
         .start();
