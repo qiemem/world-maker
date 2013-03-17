@@ -1,4 +1,5 @@
-agency = function() {
+var agency = (function(THREE) {
+  'use strict';
   function Agent(obj) {
     this.obj = obj;
   }
@@ -99,10 +100,10 @@ agency = function() {
     return this;
   };
 
-  Agent.prototype.__make = function(agentType) {
+  Agent.prototype.__make = function(AgentType) {
     // arguments isn't actually an array, but is enough like one that we can
     // call slice on it
-    var agent = new agentType(Array.prototype.slice.call(arguments, 1));
+    var agent = new AgentType(Array.prototype.slice.call(arguments, 1));
     agent.obj.applyMatrix(this.obj.matrix);
     if (this.obj.material) {
       agent.obj.material.color.copy(this.obj.material.color);
@@ -197,4 +198,4 @@ agency = function() {
     SphereAgent: SphereAgent,
     CompositeAgent: CompositeAgent
   };
-}();
+})(THREE);

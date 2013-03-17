@@ -1,4 +1,6 @@
-Editor = (function() {
+var Editor = (function(d3, acorn) {
+  'use strict';
+
   function Editor(container) {
     this.container = container;
     this.drawer = document.createElement('div');
@@ -7,7 +9,6 @@ Editor = (function() {
       mode: 'javascript',
       lineNumbers: false,
       theme: 'solarized dark'
-
     });
 
     this.completions = document.createElement('div');
@@ -82,12 +83,13 @@ Editor = (function() {
               document.body.appendChild(block);
               var blockInsert = document.createElement('div');
               var insertWidget;
+              var insertionLine;
               blockInsert.classList.add('block-insert');
               me.editor.replaceSelection('');
               if (me.editor.getLine(me.editor.getCursor().line) === '') {
                 me.editor.removeLine(me.editor.getCursor().line);
               }
-              function followMouse(e) {
+              var followMouse = function (e) {
                 block.style.top = e.pageY + 'px';
                 block.style.left = e.pageX + 'px';
                 var loc = me.editor.coordsChar({left: e.pageX, top: e.pageY});
@@ -99,9 +101,9 @@ Editor = (function() {
                     insertionLine, blockInsert, {
                       above: true
                     });
-              }
+              };
               document.addEventListener('mousemove', followMouse);
-              function cleanUp() {
+              var cleanUp = function () {
                 document.removeEventListener('mousemove', followMouse);
                 document.removeEventListener('mouseup', cleanUp);
                 me.editor.setCursor({line: insertionLine, ch: 0});
@@ -112,7 +114,7 @@ Editor = (function() {
                   insertWidget.clear();
                 }
                 gotBlock = false;
-              }
+              };
               document.addEventListener('mouseup', cleanUp);
             }
           });
@@ -175,7 +177,7 @@ Editor = (function() {
       'scene',
       '.cube()',
       '.sphere()',
-      ".color('red')",
+      '.color("red")',
       '.rgb(0.20, 0.50, 0.70)',
       '.hsl(0.20, 1.0, 0.5)',
       '.forward(1.0)',
@@ -208,7 +210,7 @@ Editor = (function() {
         lastSelected = me.editor.getSelection();
         me.editor.replaceSelection(d);
       })
-      .on('mouseout', function(d) {
+      .on('mouseout', function() {
         if (!chosen) {
           // Don't mess up undo history
           var hist = me.editor.getHistory();
@@ -276,7 +278,7 @@ Editor = (function() {
             me.evalContents();
           }
 
-          function stop(e) {
+          function stop() {
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('mouseup', stop);
           }
@@ -293,7 +295,6 @@ Editor = (function() {
 
   Editor.prototype.getNodes = function(loc) {
     var matchingNodes = [];
-    var me = this;
     var index = this.editor.indexFromPos(loc);
     // TODO: Include semicolons in statements
     acorn.walk.simple(this.ast, {
@@ -322,4 +323,4 @@ Editor = (function() {
   };
 
   return Editor;
-}());
+}(d3, acorn));

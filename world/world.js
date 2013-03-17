@@ -1,5 +1,5 @@
-World = (function() {
-  World = {};
+var World = (function(THREE, THREEx, TWEEN) {
+  'use strict';
 
   var VIEW_ANGLE = 45,
       NEAR = 0.1,
@@ -26,33 +26,34 @@ World = (function() {
     var aspect = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, aspect, NEAR, FAR);
 
-    trackballControls = new THREE.TrackballControls(camera, renderer.domElement);
+    var trackballControls =
+      new THREE.TrackballControls(camera, renderer.domElement);
     trackballControls = trackballControls;
     trackballControls.rotateSpeed = 1.5;
     trackballControls.zoomSpeed = 12.0;
     trackballControls.panSpeed = 1.0;
     trackballControls.staticMoving = true;
     // TODO: Set default trackball position
-    trackballPosition = camera.position.clone().setZ(20);
-    trackballUp = camera.up.clone();
+    var trackballPosition = camera.position.clone().setZ(20);
+    var trackballUp = camera.up.clone();
     trackballControls.setActive = function(val) {
       this.enabled = val;
     };
 
     trackballControls.setActive(false);
 
-    fpControls = new THREE.FirstPersonControls(camera);
+    var fpControls = new THREE.FirstPersonControls(camera);
     fpControls.lookSpeed = 0.1;
     fpControls.movementSpeed = 2;
-    fpPosition = camera.position.clone();
-    fpUp = camera.up.clone();
+    var fpPosition = camera.position.clone();
+    var fpUp = camera.up.clone();
     fpControls.setActive = function(val) {
       this.freeze = !val;
       this.activeLook = val;
     };
     fpControls.setActive(false);
 
-    controlList = [trackballControls, fpControls];
+    var controlList = [trackballControls, fpControls];
     controlModes = {
       trackball: {
         controls: trackballControls,
@@ -90,7 +91,7 @@ World = (function() {
 
   var reset = function() {
     for (var i = scene.children.length - 1; i >= 0; i--) {
-      obj = scene.children[i];
+      var obj = scene.children[i];
       if (obj !== camera) {
         scene.remove(obj);
       }
@@ -160,4 +161,4 @@ World = (function() {
     playerLight: function() {return playerLight;},
     animate: animate
   };
-}());
+})(THREE, THREEx, TWEEN);
