@@ -8,6 +8,10 @@ var block = (function() {
            startPos.ch <= pos.ch && pos.ch <= endPos.ch;
   }
 
+  /**
+   * The Block super-prototype defines basic block and block handle showing and
+   * hiding
+   */
   function Block(cm, startPos, endPos) {
     gotBlock = this;
     this.priority = 0;
@@ -192,6 +196,56 @@ var block = (function() {
       }
     }
     return smallest;
+  };
+
+  CodeBlock.prototype.handleMouseDown = function (e) {
+    Block.prototype.handleMouseDown.call(this, e);
+
+    this.blockHandle.addEventListener('mouseout', function (){
+      this.pickedBlock = document.createElement('div');
+      this.pickedBlock.classList.add('picked-block');
+      this.pickedBlock.innerText = this.cm.getSelection();
+      this.cm.replaceSelection('');
+      if (this.cm.getLine(this.cm.getCursor().line) === '') {
+        this.cm.removeLine(this.cm.getCursor().line);
+      }
+      document.body.appendChild(this.pickedBlock);
+
+      var blockInsert = document.createElement('div');
+      blockInsert.classList.add('block-insert');
+
+      this.boundHandleMouseMove = function (e) {
+        this.pickedBlock.style.top = e.pageY + 'px';
+        this.pickedBlock.style.left = e.pageX + 'px';
+        this.blockHandle.style.top = e.pageY + 'px';
+        this.blockHandle.style.left = e.pageX + 'px';
+        this.insertLine = this.cm.coordsChar({top: e.pageY, left: e.pageX}).line;
+        if (this.insertWidget) {
+          this.insertWidget.clear();
+        }
+        this.insertWidget = this.cm.addLineWidget(this.insertLine, blockInsert, {
+          above: true
+        });
+      }.bind(this);
+
+      document.addEventListener('mousemove', this.boundHandleMouseMove);
+    }.bind(this));
+  };
+
+  CodeBlock.prototype.handleMouseUp = function (e) {
+    if (typeof this.insertLine !== 'undefined' && this.pickedBlock) {
+      this.cm.setCursor({line: this.insertLine, ch: 0});
+      this.cm.replaceSelection(this.pickedBlock.innerText + '\n');
+    }
+    Block.prototype.handleMouseUp.call(this, e);
+    if (this.insertWidget) {
+      this.insertWidget.clear();
+    }
+    document.removeEventListener('mousemove', this.boundHandleMouseMove);
+    if (this.pickedBlock) {
+      this.pickedBlock.parentNode.removeChild(this.pickedBlock);
+
+    }
   };
 
   return{
