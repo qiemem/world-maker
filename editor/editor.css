@@ -16,11 +16,11 @@
   height: 70%;
   padding: 0px 5px 0px 5px;
 }
-
+/*
 .cm-s-solarized.cm-s-dark .CodeMirror-selected {
   background: #fdf6e3;
 }
-
+*/
 .completions {
   overflow:auto;
   height:30%;
@@ -34,10 +34,16 @@ li.completion:hover {
   background:#444;
 }
 
-/* FIXME: This is overriding the selection coloring, which is bad */
+
 .statement {
   background: #204b56;
 }
+
+
+.CodeMirror-selectedtext {
+  background: #fdf6e3;
+}
+
 
 .block-handle {
   border-radius: 50%;

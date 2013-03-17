@@ -8,7 +8,8 @@ var Editor = (function(d3, acorn) {
     this.editor = CodeMirror(this.drawer, {
       mode: 'javascript',
       lineNumbers: false,
-      theme: 'solarized dark'
+      theme: 'solarized dark',
+      styleSelectedText: true
     });
 
     this.completions = document.createElement('div');
