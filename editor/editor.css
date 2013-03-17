@@ -34,6 +34,36 @@ li.completion:hover {
   background:#444;
 }
 
+/* FIXME: This is overriding the selection coloring, which is bad */
+.statement {
+  background: #204b56;
+}
+
+.block-handle {
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  /*background: #305b66;*/
+  background: #CCC;
+  opacity: 0.5;
+  position: absolute;
+  z-index: 10;
+}
+
+.block {
+  position: absolute;
+  background: #444;
+  z-index: 10;
+  font-family: monospace;
+  font-size: 14px;
+  color: rgb(196, 196, 196);
+}
+
+.block-insert {
+  height: 1px;
+  background: #CCC;
+}
+
 #number-selector {
   display:none;
   background:#888;

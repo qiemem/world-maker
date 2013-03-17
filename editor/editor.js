@@ -41,16 +41,90 @@ Editor = (function() {
     this.editor.on('cursorActivity', complete);
     this.editor.on('focus', complete);
 
+    // TODO: Need some serious refactoring here. Works, but very ugly
+    var markedStatement;
+    var blockHandle;
+    var hoverHandle = false;
+    var gotBlock = false;
     this.editor.getScrollerElement().addEventListener("mousemove", function(e) {
-      var pos = {top: e.pageY, left: e.pageX};
-      var loc = me.editor.coordsChar(pos);
-      var node = me.getSmallestNode(loc);
-      if (node) {
-        console.log(node);
-        console.log(me.editor.getValue().substr(node.start, node.end-node.start));
+      if (!hoverHandle && !gotBlock) {
+        var pos = {top: e.pageY, left: e.pageX};
+        var loc = me.editor.coordsChar(pos);
+        var node = me.getSmallestNode(loc);
+        if (markedStatement) {
+          markedStatement.clear();
+        }
+        if (blockHandle) {
+          blockHandle.parentNode.removeChild(blockHandle);
+          blockHandle = null;
+        }
+        if (node) {
+          var start = me.editor.posFromIndex(node.start);
+          var end   = me.editor.posFromIndex(node.end);
+          markedStatement = me.editor.markText(start, end, {className: 'statement'});
+
+          blockHandle = document.createElement("div");
+          blockHandle.classList.add("block-handle");
+          blockHandle.addEventListener("mouseover", function() {
+            hoverHandle = true;
+          });
+          blockHandle.addEventListener("mouseout", function() {
+            hoverHandle = false;
+            blockHandle.parentNode.removeChild(blockHandle);
+            blockHandle = null;
+            if (gotBlock) {
+              var block = document.createElement("div");
+              block.classList.add("block");
+              block.innerText = me.editor.getSelection();
+              document.body.appendChild(block);
+              var blockInsert = document.createElement("div");
+              var insertWidget; 
+              blockInsert.classList.add("block-insert");
+              me.editor.replaceSelection("");
+              if (me.editor.getLine(me.editor.getCursor().line)==="") {
+                me.editor.removeLine(me.editor.getCursor().line);
+              }
+              function followMouse (e) {
+                block.style.top = e.pageY + "px";
+                block.style.left = e.pageX + "px";
+                var loc = me.editor.coordsChar({left: e.pageX, top: e.pageY});
+                if (insertWidget) {
+                  insertWidget.clear();
+                }
+                insertionLine = loc.line;
+                insertWidget = me.editor.addLineWidget(insertionLine, blockInsert);
+              }
+              document.addEventListener("mousemove", followMouse);
+              function cleanUp() {
+                document.removeEventListener("mousemove", followMouse);
+                document.removeEventListener("mouseup", cleanUp);
+                me.editor.setCursor({line: insertionLine+1, ch: 0});
+                me.editor.replaceSelection(block.innerText+"\n");
+                block.parentNode.removeChild(block);
+                block = null;
+                if (insertWidget) {
+                  insertWidget.clear();
+                }
+                gotBlock = false;
+              }
+              document.addEventListener("mouseup", cleanUp);
+            }
+          });
+          blockHandle.addEventListener("mousedown", function(e) {
+            me.editor.setSelection(start, end);
+            gotBlock = true;
+            e.preventDefault();
+          });
+          blockHandle.addEventListener("mouseup", function() {
+            gotBlock = false;
+          });
+          blockHandle.addEventListener("mousemove", function() {
+          });
+          me.editor.addWidget(start, blockHandle);
+        }
+        var token = me.editor.getTokenAt(loc);
+        me.mouseOnToken(loc, token);
       }
-      var token = me.editor.getTokenAt(loc);
-      me.mouseOnToken(loc, token);
     });
   }
 
@@ -212,6 +286,7 @@ Editor = (function() {
     var matchingNodes = [];
     var me = this;
     var index = this.editor.indexFromPos(loc);
+    // TODO: Include semicolons in statements
     acorn.walk.simple(this.ast, {
       Statement: function(node) {
         if (node.start <= index && node.end > index) {
