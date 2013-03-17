@@ -19,15 +19,45 @@ var block = (function() {
     this.blockHandle.classList.add('block-handle');
     cm.addWidget(startPos, this.blockHandle);
     document.body.appendChild(this.blockHandle);
+
+    this.boundMouseMove = this.onMouseMove.bind(this);
+    this.container.addEventListener('mousemove', this.boundMouseMove);
+  }
+
+  Block.prototype.clear = function () {
+    console.log('clear');
+    this.mark.clear();
+    this.container.removeEventListener('mousemove', this.boundMouseMove);
+    this.blockHandle.parentNode.removeChild(this.blockHandle);
+    gotBlock = false;
+  };
+
+  Block.prototype.onMouseMove = function (e) {
+    var mousePos = this.cm.coordsChar({top: e.pageY, left: e.pageX});
+    if (!contains(this.startPos, this.endPos, mousePos)) {
+      this.clear();
+    }
+  };
+
+  Block.prototype.handleMouseDown = function (e) {
+    e.preventDefault();
+    // So we don't clear
+    this.container.removeEventListener('mousemove', this.boundMouseMove);
+
+    this.cm.setSelection(this.startPos, this.endPos);
+
+    this.boundHandleMouseUp = this.handleMouseUp.bind(this);
+    document.addEventListener('mouseup', this.boundHandleMouseUp);
+  };
+
+  Block.prototype.handleMouseUp = function (e) {
+    document.removeEventListener('mouseup', this.boundHandleMouseUp);
+    this.clear();
   }
 
   function NumberBlock(cm,  startPos, endPos) {
     Block.call(this, cm, startPos, endPos);
     this.blockHandle.classList.add('number-block-handle');
-
-    this.boundMouseMove = this.onMouseMove.bind(this);
-    this.container.addEventListener('mousemove', this.boundMouseMove);
-    this.blockHandle.addEventListener('mouseover', function() {console.log('hi');});
     this.blockHandle.addEventListener('mousedown', this.handleMouseDown.bind(this));
   }
 
@@ -61,37 +91,18 @@ var block = (function() {
     }
   };
 
-  NumberBlock.prototype.clear = function () {
-    console.log('clear');
-    this.mark.clear();
-    this.blockHandle.parentNode.removeChild(this.blockHandle);
-    this.container.removeEventListener('mousemove', this.boundMouseMove);
-    gotBlock = false;
-  };
-
-  NumberBlock.prototype.onMouseMove = function (e) {
-    var mousePos = this.cm.coordsChar({top: e.pageY, left: e.pageX});
-    if (!contains(this.startPos, this.endPos, mousePos)) {
-      this.clear();
-    }
-  };
-
   NumberBlock.prototype.handleMouseDown = function (e) {
-    e.preventDefault();
-    // So we don't clear
-    this.container.removeEventListener('mousemove', this.boundMouseMove);
+    Block.prototype.handleMouseDown.call(this, e);
 
-    this.cm.setSelection(this.startPos, this.endPos);
     var string = this.cm.getSelection();
 
     var decimal = string.indexOf('.');
     var numDecimals = decimal < 0 ? 0 : string.length - decimal - 1;
     var scale = 1 / Math.pow(10, numDecimals);
-    console.log(scale);
 
     var lastY = e.pageY;
 
-    var mouseMove = function (e) {
+    this.boundHandleMouseMove = function (e) {
       e.preventDefault();
 
       var value = parseFloat(this.cm.getSelection());
@@ -110,14 +121,12 @@ var block = (function() {
       this.blockHandle.style.top = curY + 'px';
     }.bind(this);
 
-    var mouseUp = function (e) {
-      document.removeEventListener('mouseup', mouseUp);
-      document.removeEventListener('mousemove', mouseMove);
-      this.clear();
-    }.bind(this);
+    document.addEventListener('mousemove', this.boundHandleMouseMove);
+  };
 
-    document.addEventListener('mousemove', mouseMove);
-    document.addEventListener('mouseup', mouseUp);
+  NumberBlock.prototype.handleMouseUp  = function (e) {
+    document.removeEventListener('mousemove', this.boundHandleMouseMove);
+    Block.prototype.handleMouseUp.call(this, e);
   };
 
   return{
