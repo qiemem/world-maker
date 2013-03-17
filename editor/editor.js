@@ -12,6 +12,8 @@ var Editor = (function(d3, acorn) {
       styleSelectedText: true
     });
 
+    block.NumberBlock.watch(this.editor);
+
     this.completions = document.createElement('div');
     this.completions.classList.add('completions');
     this.drawer.appendChild(this.completions);
@@ -49,6 +51,7 @@ var Editor = (function(d3, acorn) {
     var blockHandle;
     var hoverHandle = false;
     var gotBlock = false;
+
     this.editor.getScrollerElement().addEventListener('mousemove', function(e) {
       if (!hoverHandle && !gotBlock) {
         var pos = {top: e.pageY, left: e.pageX};
@@ -79,7 +82,7 @@ var Editor = (function(d3, acorn) {
             blockHandle = null;
             if (gotBlock) {
               var block = document.createElement('div');
-              block.classList.add('block');
+              block.classList.add('picked-block');
               block.innerText = me.editor.getSelection();
               document.body.appendChild(block);
               var blockInsert = document.createElement('div');
@@ -131,8 +134,6 @@ var Editor = (function(d3, acorn) {
           });
           me.editor.addWidget(start, blockHandle);
         }
-        var token = me.editor.getTokenAt(loc);
-        me.mouseOnToken(loc, token);
       }
     });
   }
@@ -229,69 +230,6 @@ var Editor = (function(d3, acorn) {
 
 
     li.exit().remove();
-  };
-
-  /**
-   * loc - {line, ch}
-   */
-  Editor.prototype.mouseOnToken = function(loc, token) {
-    // TODO: Use a widget instead. Makes it so you can still select the numbers
-    switch (token.type) {
-      case 'number':
-        this.numberSelector.style.display = 'inline';
-        var startLoc = {line: loc.line, ch: token.start};
-        var endLoc = {line: loc.line, ch: token.end};
-
-        // Code Mirror doesn't detect, eg, ".1" properly, so check for it.
-        var checkStart = {line: loc.line, ch: token.start - 1};
-        if (token.string.indexOf('.') < 0 &&
-            this.editor.getRange(checkStart, endLoc).indexOf('.') >= 0) {
-          startLoc = checkStart;
-        }
-
-        var string = this.editor.getRange(startLoc, endLoc);
-        if (string.charAt(0) === '.') {
-          string = '0' + string;
-        }
-
-        var startPos = this.editor.cursorCoords(startLoc);
-        var endPos = this.editor.cursorCoords(endLoc);
-
-        this.numberSelector.style.top = startPos.top + 'px';
-        this.numberSelector.style.left = startPos.left + 'px';
-        this.numberSelector.style.width = (endPos.left - startPos.left) + 'px';
-
-        var decimal = string.indexOf('.');
-        var numDecimals = decimal < 0 ? 0 : string.length - decimal - 1;
-        var scale = 1 / Math.pow(10, numDecimals);
-        var value = parseFloat(string);
-        var me = this;
-        this.numberSelector.onmousedown = function(e) {
-          var lastVal = e.pageY;
-
-          function drag(e) {
-            var curVal = e.pageY;
-            var diff = Math.round((lastVal - curVal) / 2);
-            var changeBy = numDecimals === 0 ? diff : diff / scale;
-            var newStr = (value + changeBy).toFixed(numDecimals);
-            me.editor.replaceRange(newStr, startLoc, endLoc);
-            endLoc.ch = startLoc.ch + newStr.length;
-            me.evalContents();
-          }
-
-          function stop() {
-            document.removeEventListener('mousemove', drag);
-            document.removeEventListener('mouseup', stop);
-          }
-
-          document.addEventListener('mousemove', drag);
-          document.addEventListener('mouseup', stop);
-        };
-        break;
-      default:
-        this.numberSelector.style.display = 'none';
-        this.numberSelector.onmousedown = null;
-    }
   };
 
   Editor.prototype.getNodes = function(loc) {

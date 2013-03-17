@@ -16,11 +16,11 @@
   height: 70%;
   padding: 0px 5px 0px 5px;
 }
-/*
+
 .cm-s-solarized.cm-s-dark .CodeMirror-selected {
   background: #fdf6e3;
 }
-*/
+
 .completions {
   overflow:auto;
   height:30%;
@@ -40,8 +40,8 @@ li.completion:hover {
 }
 
 
-.CodeMirror-selectedtext {
-  background: #fdf6e3;
+.block {
+  background: #204b56;
 }
 
 
@@ -57,7 +57,20 @@ li.completion:hover {
   cursor: move;
 }
 
-.block {
+.block-handle.number-block-handle {
+  cursor: ns-resize;
+}
+
+/*
+The .cm-s-solarized.cm-s-dark increases the specificity to override other
+in certain corner cases (replacing selection). But I still want to allow
+the general rule
+*/
+.cm-s-solarized.cm-s-dark.CodeMirror-selectedtext,.CodeMirror-selectedtext {
+  background: #fdf6e3;
+}
+
+.picked-block {
   position: absolute;
   background: #444;
   z-index: 10;
@@ -69,17 +82,4 @@ li.completion:hover {
 .block-insert {
   height: 1px;
   background: #CCC;
-}
-
-#number-selector {
-  display:none;
-  background:#888;
-  opacity:.2;
-  border:solid 2px #FFF;
-  position:absolute;
-  /*cursor:ns-resize;*/
-  cursor:ns-resize;
-  width: 25px;
-  height: 14px;
-  z-index: 9;
 }
