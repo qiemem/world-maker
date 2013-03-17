@@ -230,6 +230,7 @@ Editor = (function() {
    * loc - {line, ch}
    */
   Editor.prototype.mouseOnToken = function(loc, token) {
+    // TODO: Use a widget instead. Makes it so you can still select the numbers
     switch (token.type) {
       case "number":
         this.numberSelector.style.display = "inline";
