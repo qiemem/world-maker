@@ -42,6 +42,7 @@ Editor = (function() {
     this.editor.on('focus', complete);
 
     // TODO: Need some serious refactoring here. Works, but very ugly
+    // TODO: Put in signifier of where block came from.
     var markedStatement;
     var blockHandle;
     var hoverHandle = false;
@@ -92,13 +93,16 @@ Editor = (function() {
                   insertWidget.clear();
                 }
                 insertionLine = loc.line;
-                insertWidget = me.editor.addLineWidget(insertionLine, blockInsert);
+                insertWidget = me.editor.addLineWidget(
+                    insertionLine, blockInsert, {
+                      above: true
+                    });
               }
               document.addEventListener("mousemove", followMouse);
               function cleanUp() {
                 document.removeEventListener("mousemove", followMouse);
                 document.removeEventListener("mouseup", cleanUp);
-                me.editor.setCursor({line: insertionLine+1, ch: 0});
+                me.editor.setCursor({line: insertionLine, ch: 0});
                 me.editor.replaceSelection(block.innerText+"\n");
                 block.parentNode.removeChild(block);
                 block = null;
