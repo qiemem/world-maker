@@ -188,7 +188,8 @@ Editor = (function() {
       , ".growWide(1.0)"
       , ".growLong(1.0)"
       , ".growTall(1.0)"
-      , ".transparency(0.5)"];
+      , ".transparency(0.5)"
+      , "for (var i=0; i<10; i++) {\n}\n"];
   }
 
   Editor.prototype.showCompletions = function(completions) {
