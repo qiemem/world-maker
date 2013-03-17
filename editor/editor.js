@@ -12,8 +12,6 @@ var Editor = (function(d3, acorn) {
       styleSelectedText: true
     });
 
-    block.NumberBlock.watch(this.editor);
-
     this.completions = document.createElement('div');
     this.completions.classList.add('completions');
     this.drawer.appendChild(this.completions);
@@ -41,10 +39,14 @@ var Editor = (function(d3, acorn) {
       }, 100);
     });
 
+
+    block.CodeBlock.watch(this.editor, function(){return me.ast;});
+    block.NumberBlock.watch(this.editor);
+
     var complete = function() {me.doCompletions();};
     this.editor.on('cursorActivity', complete);
     this.editor.on('focus', complete);
-
+/*
     // TODO: Need some serious refactoring here. Works, but very ugly
     // TODO: Put in signifier of where block came from.
     var markedStatement;
@@ -135,7 +137,7 @@ var Editor = (function(d3, acorn) {
           me.editor.addWidget(start, blockHandle);
         }
       }
-    });
+    });*/
   }
 
   Editor.prototype.evalContents = function() {

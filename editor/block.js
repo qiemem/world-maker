@@ -1,7 +1,7 @@
 var block = (function() {
   'use strict';
 
-  var gotBlock = false;
+  var gotBlock = null;
 
   function contains(startPos, endPos, pos) {
     return startPos.line <= pos.line && pos.line <= endPos.line && 
@@ -9,7 +9,8 @@ var block = (function() {
   }
 
   function Block(cm, startPos, endPos) {
-    gotBlock = true;
+    gotBlock = this;
+    this.priority = 0;
     this.cm = cm;
     this.startPos = startPos;
     this.endPos = endPos;
@@ -22,6 +23,7 @@ var block = (function() {
 
     this.boundMouseMove = this.onMouseMove.bind(this);
     this.container.addEventListener('mousemove', this.boundMouseMove);
+    this.blockHandle.addEventListener('mousedown', this.handleMouseDown.bind(this));
   }
 
   Block.prototype.clear = function () {
@@ -53,17 +55,18 @@ var block = (function() {
   Block.prototype.handleMouseUp = function (e) {
     document.removeEventListener('mouseup', this.boundHandleMouseUp);
     this.clear();
-  }
+  };
 
   function NumberBlock(cm,  startPos, endPos) {
+    this.priority = NumberBlock.PRIORITY;
     Block.call(this, cm, startPos, endPos);
     this.blockHandle.classList.add('number-block-handle');
-    this.blockHandle.addEventListener('mousedown', this.handleMouseDown.bind(this));
   }
 
   NumberBlock.prototype = Object.create(Block.prototype);
 
   NumberBlock.SENSITIVITY = 3;
+  NumberBlock.PRIORITY = 10;
 
   NumberBlock.watch = function (cm) {
     cm.getWrapperElement().addEventListener('mousemove',
@@ -71,11 +74,14 @@ var block = (function() {
   };
 
   NumberBlock.onMouseMove = function (cm, e) {
-    if (!gotBlock) {
+    if (!gotBlock || gotBlock.priority < NumberBlock.PRIORITY) {
       var mousePos = cm.coordsChar({top: e.pageY, left: e.pageX});
       var token = cm.getTokenAt(mousePos);
 
       if (token.type === "number") {
+        if (gotBlock) {
+          gotBlock.clear();
+        }
         var startPos   = {line: mousePos.line, ch: token.start},
         endPos     = {line: mousePos.line, ch: token.end},
         checkStart = {line: mousePos.line, ch: token.start - 1};
@@ -129,7 +135,67 @@ var block = (function() {
     Block.prototype.handleMouseUp.call(this, e);
   };
 
+  function CodeBlock(cm, startPos, endPos) {
+    this.priority = CodeBlock.PRIORITY;
+    Block.call(this, cm, startPos, endPos);
+  }
+
+  CodeBlock.prototype = Object.create(Block.prototype);
+
+  CodeBlock.PRIORITY = 0;
+
+  CodeBlock.watch = function (cm, getAST) {
+    cm.getWrapperElement().addEventListener('mousemove',
+      CodeBlock.onMouseMove.bind(CodeBlock, cm, getAST));
+  };
+
+  CodeBlock.onMouseMove = function (cm, getAST, e) {
+    if (!gotBlock || gotBlock.priority < CodeBlock.PRIORITY) {
+      var mousePos = cm.coordsChar({top: e.pageY, left: e.pageX}),
+          node = CodeBlock.getSmallestNode(cm, getAST, mousePos);
+      if (node) {
+        if (gotBlock) {
+          gotBlock.clear();
+        }
+        var startPos = cm.posFromIndex(node.start),
+            endPos = cm.posFromIndex(node.end);
+
+        new CodeBlock(cm, startPos, endPos);
+      }
+    }
+  };
+
+  CodeBlock.getNodes = function (cm, getAST, pos) {
+    var matchingNodes = [];
+    var index = cm.indexFromPos(pos);
+    // TODO: Include semicolons in VariableDeclaration
+    acorn.walk.simple(getAST(), {
+      Statement: function(node) {
+        if (node.start <= index && node.end > index) {
+          matchingNodes.push(node);
+        }
+      }
+    });
+    return matchingNodes;
+  };
+
+  CodeBlock.getSmallestNode = function(cm, getAST, pos) {
+    var matchingNodes = CodeBlock.getNodes(cm, getAST, pos);
+    var smallest = null, smallestLength = Infinity;
+    var length = matchingNodes.length;
+    for (var i = 0; i < length; i++) {
+      var node = matchingNodes[i];
+      var nodeLength = node.end - node.start;
+      if (nodeLength < smallestLength) {
+        smallest = node;
+        smallestLength = nodeLength;
+      }
+    }
+    return smallest;
+  };
+
   return{
-    NumberBlock: NumberBlock
+    NumberBlock: NumberBlock,
+    CodeBlock:   CodeBlock
   };
 })();
