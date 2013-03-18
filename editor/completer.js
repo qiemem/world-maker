@@ -50,9 +50,10 @@ var Completer = (function (tern, d3) {
           end = this.cm.indexFromPos(this.cm.getCursor('end')),
           // We want to replace the currently selected text. Hence, we pretend
           // it's not there. This removes it:
-          text = this.cm.getValue().substr(0, start) + 
-                 this.cm.getValue().substr(end),
-          doc = {
+          startText = this.cm.getValue().substr(0, start),
+          endText = this.cm.getValue().substr(end),
+          text = startText + endText,
+          req = {
             query: {
               file: EDITOR_NAME,
               end:  start,  // since we cut out the selected text
@@ -64,14 +65,33 @@ var Completer = (function (tern, d3) {
               text: text,
               type: 'full'
             }]
+          },
+          dotText = startText + '.' + endText,
+          dotReq = {
+            query: {
+              file: EDITOR_NAME,
+              end: start + 1, // since we added the '.'
+              type: 'completions'
+            },
+            files: [{
+              name: EDITOR_NAME,
+              text: dotText,
+              type: 'full'
+            }]
           };
 
-      this.server.request(doc, function (err, results) {
+      this.server.request(req, function (err, results) {
         console.log(err, results);
-        callback(results.completions.map(function (compObj) {
-          return compObj.name;
-        }));
-      });
+        this.server.request(dotReq, function (dotErr, dotResults) {
+          var comps = results.completions.map(function (compObj) {
+            return compObj.name;
+          });
+          var dotComps = dotResults.completions.map(function (compObj) {
+            return '.' + compObj.name;
+          });
+          callback(dotComps.concat(comps));
+        });
+      }.bind(this));
     }.bind(this);
 
     loadEnvironment(this.jsonLibs, function (env) {

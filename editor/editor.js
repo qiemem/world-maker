@@ -116,6 +116,7 @@ var Editor = (function(d3, acorn, block, Completer) {
     var li = d3.select(this.completionsList).selectAll('li').data(completions);
     var me = this;
 
+    // FIXME: Changing list breaks this strategy of preserving selected text
     // Preserves selected text if the user doesn't click on anything.
     var lastSelected;
     var chosen;
