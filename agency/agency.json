@@ -1,0 +1,28 @@
+{
+  "agency": {
+    "Agent": {
+      "!type": "fn(obj: Object3D)",
+      "prototype": {
+        "forward": "fn(distance: number) -> $this",
+        "backward": "fn(distance: number) -> $this",
+        "right": "fn(angle: number) -> $this",
+        "left": "fn(angle: number) -> $this",
+        "up": "fn(angle: number) -> $this",
+        "down": "fn(angle: number) -> $this",
+        "rollRight": "fn(angle: number) -> $this",
+        "rollLeft": "fn(angle: number) -> $this",
+        "grow": "fn(amount: number) -> $this",
+        "growWide": "fn(amount: number) -> $this",
+        "growLong": "fn(amount: number) -> $this",
+        "growTall": "fn(amount: number) -> $this",
+        "color": "fn(color: string) -> $this",
+        "rgb": "fn(red: number, green: number, blue: number) -> $this",
+        "hsl": "fn(hue: number, saturation: number, lightness: number) -> $this",
+        "transparency": "fn(amount: number) -> $this",
+        "cube": "fn() -> +agency.Agent",
+        "sphere": "fn() -> +agency.Agent",
+        "cursor": "fn() -> +agency.Agent"
+      }
+    }
+  }
+}

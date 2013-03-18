@@ -43,8 +43,16 @@
         World.init(document.body);
         scene = new agency.Agent(World.scene());
         editor = new Editor(document.body);
-        editor.editor.setValue("var scene = new agency.Agent(World.scene());\nvar cursor = scene.cursor().fd(5);\n");
-        editor.editor.setCursor({line: 2, ch:1});
+        var cm = editor.editor;
+        cm.setValue([
+          "// This creates a cursor inside the scene",
+          "var scene = new agency.Agent(World.scene());",
+          "var cursor = scene.cursor().forward(5);",
+          "// Use the cursor to create your world!",
+          "// Try entering: cursor.up(90).forward(1).cube();",
+          "\n"
+        ].join('\n'));
+        cm.setCursor(cm.posFromIndex(cm.getValue().length));
         document.body.addEventListener('keypress', function(e) {
           if (e.keyCode === '`'.charCodeAt(0)) {
             editor.toggleSlide();
