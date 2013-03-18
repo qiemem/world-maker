@@ -1,5 +1,6 @@
 {
   "agency": {
+    "repeat": "fn(times: number, fn(iteration: number))",
     "Agent": {
       "!type": "fn(obj: Object3D)",
       "prototype": {

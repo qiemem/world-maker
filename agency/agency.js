@@ -1,5 +1,12 @@
 var agency = (function(THREE) {
   'use strict';
+
+  function repeat(times, func) {
+    for (var i=0; i < times; i++) {
+      func(i);
+    }
+  }
+
   function Agent(obj) {
     this.obj = obj;
   }
@@ -193,6 +200,7 @@ var agency = (function(THREE) {
   CursorAgent.prototype = Object.create(CompositeAgent.prototype);
 
   return {
+    repeat: repeat,
     Agent: Agent,
     CubeAgent: CubeAgent,
     SphereAgent: SphereAgent,

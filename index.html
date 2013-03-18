@@ -45,7 +45,8 @@
         editor = new Editor(document.body);
         var cm = editor.editor;
         cm.setValue([
-          "// This creates a cursor inside the scene",
+          "// This code sets things up for you to make exploring a little easier",
+          "var repeat = agency.repeat;",
           "var scene = new agency.Agent(World.scene());",
           "var cursor = scene.cursor().forward(5);",
           "// Use the cursor to create your world!",
