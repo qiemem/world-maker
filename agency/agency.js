@@ -1,12 +1,33 @@
+/**
+ * agency.js
+ *
+ * The agency module defines the agent-based API that hopefully allows users to
+ * intuitively manipulate the 3D objects.
+ */
+
 var agency = (function(THREE) {
   'use strict';
 
+  /**
+   * Calls `func` `times` times, passing in the iteration number. This enables
+   * users to play around with loops without having to worry about infinite
+   * loops or loop variables conflicting. Note that if the user does not want
+   * the iteration variable, they can simply pass in a function that takes no
+   * arguments.
+   */
   function repeat(times, func) {
     for (var i=0; i < times; i++) {
       func(i);
     }
   }
 
+  /**
+   * Agent's move in a very Logo-like way. However, Agent objects themselves
+   * are just thin wrapper's around THREE.js's Object3Ds, which have
+   * customizable definable geometry and material properties. Hence, if a user
+   * wishes to invoke advanced features from THREE.js, while still using the
+   * agent-based API, she can
+   */
   function Agent(obj) {
     this.obj = obj;
   }
