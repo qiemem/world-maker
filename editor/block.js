@@ -4,7 +4,7 @@ var block = (function() {
   var gotBlock = null;
 
   function contains(startPos, endPos, pos) {
-    return startPos.line <= pos.line && pos.line <= endPos.line && 
+    return startPos.line <= pos.line && pos.line <= endPos.line &&
            startPos.ch <= pos.ch && pos.ch <= endPos.ch;
   }
 

@@ -27,7 +27,12 @@
     <script src="node_modules/acorn/acorn.js"></script>
     <script src="node_modules/acorn/acorn_loose.js"></script>
     <script src="node_modules/acorn/util/walk.js"></script>
+    <script src="node_modules/tern/tern.js"></script>
+    <script src="node_modules/tern/infer.js"></script>
+    <script src="node_modules/tern/env.js"></script>
+    <script src="node_modules/tern/jsdoc.js"></script>
     <script src="editor/block.js"></script>
+    <script src="editor/completer.js"></script>
     <script src="editor/editor.js"></script>
     <script src="world/world.js"></script>
     <script src="agency/agency.js"></script>
@@ -38,7 +43,7 @@
         World.init(document.body);
         scene = new agency.Agent(World.scene());
         editor = new Editor(document.body);
-        editor.editor.setValue("var cursor = scene.cursor().fd(5);\n");
+        editor.editor.setValue("var scene = new agency.Agent(World.scene());\nvar cursor = scene.cursor().fd(5);\n");
         editor.editor.setCursor({line: 2, ch:1});
         document.body.addEventListener('keypress', function(e) {
           if (e.keyCode === '`'.charCodeAt(0)) {

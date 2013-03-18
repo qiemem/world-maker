@@ -1,4 +1,4 @@
-var Editor = (function(d3, acorn, block) {
+var Editor = (function(d3, acorn, block, Completer) {
   'use strict';
 
   function Editor(container) {
@@ -12,6 +12,7 @@ var Editor = (function(d3, acorn, block) {
       styleSelectedText: true
     });
 
+    this.completer = new Completer(this.editor, ['agency/agency.js'], []);
     this.completions = document.createElement('div');
     this.completions.classList.add('completions');
     this.drawer.appendChild(this.completions);
@@ -80,7 +81,10 @@ var Editor = (function(d3, acorn, block) {
   };
 
   Editor.prototype.doCompletions = function() {
-    this.showCompletions(this.getCompletions(this.editor.selectionStart));
+    console.log(this.editor.getCursor('start'));
+    this.completer.complete(this.editor.getCursor('start'),
+       this.showCompletions.bind(this));
+    //this.showCompletions(this.getCompletions(this.editor.selectionStart));
   };
 
   Editor.prototype.getCompletions = function(position) {
@@ -115,8 +119,8 @@ var Editor = (function(d3, acorn, block) {
     // Preserves selected text if the user doesn't click on anything.
     var lastSelected;
     var chosen;
-    li.enter().append('li')
-      .text(function(d) {return d;})
+    li.enter().append('li');
+    li.text(function(d) {return d;})
       .classed('completion', 1)
       .on('mouseover', function(d) {
         lastSelected = me.editor.getSelection();
@@ -172,4 +176,4 @@ var Editor = (function(d3, acorn, block) {
   };
 
   return Editor;
-}(d3, acorn, block));
+}(d3, acorn, block, Completer));
