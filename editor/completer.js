@@ -48,20 +48,24 @@ var Completer = (function (tern, d3) {
     var complete = function (pos, callback) {
       var start = this.cm.indexFromPos(this.cm.getCursor('start')),
           end = this.cm.indexFromPos(this.cm.getCursor('end')),
+          // We want to replace the currently selected text. Hence, we pretend
+          // it's not there. This removes it:
+          text = this.cm.getValue().substr(0, start) + 
+                 this.cm.getValue().substr(end),
           doc = {
             query: {
               file: EDITOR_NAME,
-              start: start,
-              end:  end,
+              end:  start,  // since we cut out the selected text
               type: 'completions'
             },
             // The editor won't get very big, so just reload it every time
             files: [{
               name: EDITOR_NAME,
-              text: this.cm.getValue(),
+              text: text,
               type: 'full'
             }]
           };
+
       this.server.request(doc, function (err, results) {
         console.log(err, results);
         callback(results.completions.map(function (compObj) {
