@@ -122,14 +122,17 @@ var block = (function(acorn) {
       var diff = Math.round((lastY - curY)/NumberBlock.SENSITIVITY);
       if (Math.abs(diff) >= 1) {
         var changeBy = numDecimals === 0 ? diff : diff * scale;
-        var newStr = (value + changeBy).toFixed(numDecimals);
-        this.cm.replaceSelection(newStr);
-        lastY = curY;
+        var newValue = value + changeBy;
+        if (!isNaN(newValue)){
+          var newStr = (newValue).toFixed(numDecimals);
+          this.cm.replaceSelection(newStr);
 
-        this.endPos.ch = this.startPos.ch + newStr.length;
-        if (this.changeCallback) {
-          this.changeCallback();
+          this.endPos.ch = this.startPos.ch + newStr.length;
+          if (this.changeCallback) {
+            this.changeCallback();
+          }
         }
+        lastY = curY;
       }
 
       this.blockHandle.style.top = curY + 'px';
