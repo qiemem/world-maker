@@ -139,6 +139,7 @@ var block = (function() {
     Block.prototype.handleMouseUp.call(this, e);
   };
 
+  // FIXME: Clicking on handle causes picked block to stick forever
   function CodeBlock(cm, startPos, endPos) {
     this.priority = CodeBlock.PRIORITY;
     Block.call(this, cm, startPos, endPos);

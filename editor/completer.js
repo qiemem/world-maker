@@ -19,10 +19,47 @@ var Completer = (function (tern, d3) {
     }
   }
 
+  function buildRequest(text, type, end) {
+    return {
+      query: {
+        file: EDITOR_NAME,
+        end:  end,
+        type: type
+      },
+      // The editor won't get very big, so just reload it every time
+      files: [{
+        name: EDITOR_NAME,
+        text: text,
+        type: 'full'
+      }]
+    };
+  }
+
+  /**
+      Calls each each function in asyncFuncs and collects their results in an
+      array. Then calls callback with the resulting array. Each async function
+      should take exactly one argument: a callback function which takes an
+      error and a result.
+    */
+  function collectAsync(asyncFuncs, callback) {
+    var results = [],
+        n = asyncFuncs.length,
+        returned = 0;
+    asyncFuncs.forEach(function(async, i) {
+      async(function (err, res) {
+        results[i] = [err, res];
+        if (++returned === n) {
+          callback(results);
+        }
+      });
+    });
+  }
+
   function Completer(cm, jsLibs, jsonLibs) {
     this.cm = cm;
     this.jsLibs = jsLibs;
     this.jsonLibs = jsonLibs;
+    this.env = {};
   }
 
   Completer.prototype.getFile = function (name, callback) {
@@ -44,60 +81,47 @@ var Completer = (function (tern, d3) {
     this.server.addFile(EDITOR_NAME);
   };
 
+  Completer.prototype.unsafeComplete = function (pos, callback) {
+    var start = this.cm.indexFromPos(this.cm.getCursor('start')),
+        end = this.cm.indexFromPos(this.cm.getCursor('end')),
+        // We want to replace the currently selected text. Hence, we pretend
+        // it's not there. This removes it:
+        startText = this.cm.getValue().substr(0, start),
+        endText = this.cm.getValue().substr(end),
+        text = startText + endText,
+        // complete at start since we cut out the selected text
+        req = buildRequest(text, 'completions', start),
+        dotText = startText + '.' + endText,
+        dotReq = buildRequest(dotText, 'completions', start + 1);
+    collectAsync([
+      this.server.request.bind(this.server, req),
+      this.server.request.bind(this.server, dotReq)
+    ], function (results) {
+      var expressions = results[0][1].completions.map(function (exp) {
+            return exp.name;
+          }),
+          methods = results[1][1].completions.map(function (method) {
+            return '.' + method.name;
+          });
+      callback(methods.concat(expressions));
+    });
+  };
+
   Completer.prototype.complete = function (pos, callback) {
-    var complete = function (pos, callback) {
-      var start = this.cm.indexFromPos(this.cm.getCursor('start')),
-          end = this.cm.indexFromPos(this.cm.getCursor('end')),
-          // We want to replace the currently selected text. Hence, we pretend
-          // it's not there. This removes it:
-          startText = this.cm.getValue().substr(0, start),
-          endText = this.cm.getValue().substr(end),
-          text = startText + endText,
-          req = {
-            query: {
-              file: EDITOR_NAME,
-              end:  start,  // since we cut out the selected text
-              type: 'completions'
-            },
-            // The editor won't get very big, so just reload it every time
-            files: [{
-              name: EDITOR_NAME,
-              text: text,
-              type: 'full'
-            }]
-          },
-          dotText = startText + '.' + endText,
-          dotReq = {
-            query: {
-              file: EDITOR_NAME,
-              end: start + 1, // since we added the '.'
-              type: 'completions'
-            },
-            files: [{
-              name: EDITOR_NAME,
-              text: dotText,
-              type: 'full'
-            }]
-          };
-
-      this.server.request(req, function (err, results) {
-        console.log(err, results);
-        this.server.request(dotReq, function (dotErr, dotResults) {
-          var comps = results.completions.map(function (compObj) {
-            return compObj.name;
-          });
-          var dotComps = dotResults.completions.map(function (compObj) {
-            return '.' + compObj.name;
-          });
-          callback(dotComps.concat(comps));
-        });
+    if (this.server) {
+      this.unsafeComplete(pos, callback);
+    } else {
+      loadEnvironment(this.jsonLibs, function (env) {
+        // TODO: Make this recursive
+        for (var i=0; i<env.length; i++) {
+          for (var key in env[i]) {
+            this.env[key] = env[i][key];
+          }
+        }
+        this.startServer(env);
+        this.unsafeComplete(pos, callback);
       }.bind(this));
-    }.bind(this);
-
-    loadEnvironment(this.jsonLibs, function (env) {
-      this.startServer(env);
-      complete(pos, callback);
-    }.bind(this));
+    }
   };
 
   return Completer;

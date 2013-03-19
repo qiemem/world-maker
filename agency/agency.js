@@ -22,17 +22,23 @@ var agency = (function(THREE) {
   }
 
   /**
-   * Agent's move in a very Logo-like way. However, Agent objects themselves
-   * are just thin wrapper's around THREE.js's Object3Ds, which have
-   * customizable definable geometry and material properties. Hence, if a user
-   * wishes to invoke advanced features from THREE.js, while still using the
-   * agent-based API, she can
+      Agent's move in a very Logo-like way. However, Agent objects themselves
+      are just thin wrapper's around THREE.js's Object3Ds, which have
+      customizable definable geometry and material properties. Hence, if a user
+      wishes to invoke advanced features from THREE.js, while still using the
+      agent-based API, she can.
+      @constructor
    */
   function Agent(obj) {
     this.obj = obj;
   }
 
   // TODO: Translate methods only use rotation, not scaling, from matrix
+  /**
+      Moves the agent forward (along the x-axis) by distance.
+      @param {number} distance The distance to move
+      @returns {Agent}
+    */
   Agent.prototype.forward = Agent.prototype.fd = function(distance) {
     this.obj.translateX(distance);
     this.obj.updateMatrix();
@@ -155,6 +161,9 @@ var agency = (function(THREE) {
     return agent;
   };
 
+  /**
+      @returns {Agent}
+   */
   Agent.prototype.cube = function() {
     return this.make(CubeAgent);
   };
@@ -167,6 +176,10 @@ var agency = (function(THREE) {
     return this.make(CursorAgent);
   };
 
+  /**
+      @constructor
+      @extends {Agent}
+    */
   function CubeAgent() {
     var material = new THREE.MeshPhongMaterial();
     material.side = THREE.DoubleSide;

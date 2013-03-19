@@ -1,28 +1,88 @@
 {
   "agency": {
-    "repeat": "fn(times: number, fn(iteration: number))",
+    "repeat": {
+      "!type": "fn(times: number, fn(iteration: number))",
+      "!suggest": "10, function() {\n\n}"
+    },
     "Agent": {
       "!type": "fn(obj: Object3D)",
       "prototype": {
-        "forward": "fn(distance: number) -> $this",
-        "backward": "fn(distance: number) -> $this",
-        "right": "fn(angle: number) -> $this",
-        "left": "fn(angle: number) -> $this",
-        "up": "fn(angle: number) -> $this",
-        "down": "fn(angle: number) -> $this",
-        "rollRight": "fn(angle: number) -> $this",
-        "rollLeft": "fn(angle: number) -> $this",
-        "grow": "fn(amount: number) -> $this",
-        "growWide": "fn(amount: number) -> $this",
-        "growLong": "fn(amount: number) -> $this",
-        "growTall": "fn(amount: number) -> $this",
-        "color": "fn(color: string) -> $this",
-        "rgb": "fn(red: number, green: number, blue: number) -> $this",
-        "hsl": "fn(hue: number, saturation: number, lightness: number) -> $this",
-        "transparency": "fn(amount: number) -> $this",
-        "cube": "fn() -> +agency.Agent",
-        "sphere": "fn() -> +agency.Agent",
-        "cursor": "fn() -> +agency.Agent"
+        "forward": {
+          "!type": "fn(distance: number) -> $this",
+          "!suggest": "1.0"
+        },
+        "backward": {
+          "!type": "fn(distance: number) -> $this",
+          "!suggest": "1.0"
+        },
+        "right": {
+          "!type": "fn(angle: number) -> $this",
+          "!suggest": "45"
+        },
+        "left": {
+          "!type": "fn(angle: number) -> $this",
+          "!suggest": "45"
+        },
+        "up": {
+          "!type": "fn(angle: number) -> $this",
+          "!suggest": "45"
+        },
+        "down": {
+          "!type": "fn(angle: number) -> $this",
+          "!suggest": "45"
+        },
+        "rollRight": {
+          "!type": "fn(angle: number) -> $this",
+          "!suggest": "45"
+        },
+        "rollLeft": {
+          "!type": "fn(angle: number) -> $this",
+          "!suggest": "45"
+        },
+        "grow": {
+          "!type": "fn(amount: number) -> $this",
+          "!suggest": "1.0"
+        },
+        "growWide": {
+          "!type": "fn(amount: number) -> $this",
+          "!suggest": "1.0"
+        },
+        "growLong": {
+          "!type": "fn(amount: number) -> $this",
+          "!suggest": "1.0"
+        },
+        "growTall": {
+          "!type": "fn(amount: number) -> $this",
+          "!suggest": "1.0"
+        },
+        "color": {
+          "!type": "fn(color: string) -> $this",
+          "!suggest": "'red'"
+        },
+        "rgb": {
+          "!type": "fn(red: number, green: number, blue: number) -> $this",
+          "!suggest": "0.20, 0.50, 0.70"
+        },
+        "hsl": {
+          "!type": "fn(hue: number, saturation: number, lightness: number) -> $this",
+          "!suggest": "0.20, 1.0, 0.5"
+        },
+        "transparency": {
+          "!type": "fn(amount: number) -> $this",
+          "!suggest": "0.5"
+        },
+        "cube": {
+          "!type": "fn() -> +agency.Agent",
+          "!suggest": ""
+        },
+        "sphere": {
+          "!type": "fn() -> +agency.Agent",
+          "!suggest":  ""
+        },
+        "cursor": {
+          "!type": "fn() -> +agency.Agent",
+          "!suggest": ""
+        }
       }
     }
   }
