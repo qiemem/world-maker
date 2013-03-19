@@ -1,4 +1,4 @@
-var block = (function() {
+var block = (function(acorn) {
   'use strict';
 
   var gotBlock = null;
@@ -143,7 +143,6 @@ var block = (function() {
     Block.prototype.handleMouseUp.call(this, e);
   };
 
-  // FIXME: Clicking on handle causes picked block to stick forever
   function CodeBlock(cm, startPos, endPos) {
     this.priority = CodeBlock.PRIORITY;
     Block.call(this, cm, startPos, endPos);
@@ -206,7 +205,7 @@ var block = (function() {
   CodeBlock.prototype.handleMouseDown = function (e) {
     Block.prototype.handleMouseDown.call(this, e);
 
-    this.blockHandle.addEventListener('mouseout', function (){
+    this.handleMouseUp = function (){
       this.pickedBlock = document.createElement('div');
       this.pickedBlock.classList.add('picked-block');
       this.pickedBlock.innerText = this.cm.getSelection();
@@ -234,17 +233,26 @@ var block = (function() {
       }.bind(this);
 
       document.addEventListener('mousemove', this.boundHandleMouseMove);
-    }.bind(this));
+    }.bind(this);
+    this.blockHandle.addEventListener('mouseout', this.handleMouseUp);
   };
+
 
   CodeBlock.prototype.handleMouseUp = function (e) {
     if (typeof this.insertLine !== 'undefined' && this.pickedBlock) {
       this.cm.setCursor({line: this.insertLine, ch: 0});
       this.cm.replaceSelection(this.pickedBlock.innerText + '\n');
     }
+    console.log('super mouse up');
     Block.prototype.handleMouseUp.call(this, e);
+    console.log('super mouse up done');
     if (this.insertWidget) {
       this.insertWidget.clear();
+    }
+    if (this.handleMouseUp) {
+      // Chrome seems to fire the mouseout event even if the node's been
+      // removed
+      this.blockHandle.removeEventListener('mouseout', this.handleMouseUp);
     }
     document.removeEventListener('mousemove', this.boundHandleMouseMove);
     if (this.pickedBlock) {
@@ -257,4 +265,4 @@ var block = (function() {
     NumberBlock: NumberBlock,
     CodeBlock:   CodeBlock
   };
-})();
+})(acorn);
