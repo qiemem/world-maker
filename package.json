@@ -17,7 +17,6 @@
   "readmeFilename": "README.md",
   "gitHead": "540a6bfa82cefe9e706387dd3620639286392f69",
   "dependencies": {
-    "three": "~0.56.4",
     "d3": "~3.0.8",
     "codemirror": "https://github.com/marijnh/CodeMirror/tarball/master",
     "acorn": "~0.1.0",
