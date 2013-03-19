@@ -88,60 +88,30 @@ var Editor = (function(d3, acorn, block, Completer) {
     //this.showCompletions(this.getCompletions(this.editor.selectionStart));
   };
 
-  Editor.prototype.getCompletions = function(position) {
-    return [';\n',
-      'cursor',
-      'scene',
-      '.cube()',
-      '.sphere()',
-      '.color("red")',
-      '.rgb(0.20, 0.50, 0.70)',
-      '.hsl(0.20, 1.0, 0.5)',
-      '.forward(1.0)',
-      '.backward(1.0)',
-      '.right(90)',
-      '.left(90)',
-      '.up(90)',
-      '.down(90)',
-      '.rollRight(90)',
-      '.rollLeft(90)',
-      '.grow(1.0)',
-      '.growWide(1.0)',
-      '.growLong(1.0)',
-      '.growTall(1.0)',
-      '.transparency(0.5)',
-      'for (var i=0; i<10; i++) {\n}\n'];
-  };
-
   Editor.prototype.showCompletions = function(completions) {
     var li = d3.select(this.completionsList).selectAll('li').data(completions);
     var me = this;
 
-    // FIXME: Changing list breaks this strategy of preserving selected text
     // Preserves selected text if the user doesn't click on anything.
-    var lastSelected;
-    var chosen;
     li.enter().append('li');
     li.text(function(d) {return d;})
       .classed('completion', 1)
       .on('mouseover', function(d) {
-        lastSelected = me.editor.getSelection();
         me.editor.replaceSelection(d);
       })
       .on('mouseout', function() {
-        if (!chosen) {
-          // Don't mess up undo history
-          var hist = me.editor.getHistory();
-          me.editor.replaceSelection(lastSelected);
-          hist.done.splice(hist.done.length - 1);
-          me.editor.setHistory(hist);
-        }
-        chosen = false;
+        // Don't want tons of completion events filling the undo history.
+        me.editor.undo();
       })
       .on('click', function() {
         me.editor.setCursor(me.editor.getCursor('end'));
+        // Adds an empty event to the undo history, so that when the mouseout
+        // event hits, the undo is innocuous. Note that since the list item
+        // changes after this click (the list of completions is different)
+        // closured variables will be lost.
+        me.editor.replaceSelection('');
+        me.editor.setCursor(me.editor.getCursor('end'));
         me.editor.focus();
-        chosen = true;
       });
 
 
