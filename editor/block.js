@@ -61,8 +61,9 @@ var block = (function() {
     this.clear();
   };
 
-  function NumberBlock(cm,  startPos, endPos) {
+  function NumberBlock(cm,  startPos, endPos, changeCallback) {
     this.priority = NumberBlock.PRIORITY;
+    this.changeCallback = changeCallback;
     Block.call(this, cm, startPos, endPos);
     this.blockHandle.classList.add('number-block-handle');
   }
@@ -72,31 +73,31 @@ var block = (function() {
   NumberBlock.SENSITIVITY = 3;
   NumberBlock.PRIORITY = 10;
 
-  NumberBlock.watch = function (cm) {
+  NumberBlock.watch = function (cm, changeCallback) {
     cm.getWrapperElement().addEventListener('mousemove',
-      NumberBlock.onMouseMove.bind(NumberBlock, cm));
+      NumberBlock.onMouseMove.bind(NumberBlock, cm, changeCallback));
   };
 
-  NumberBlock.onMouseMove = function (cm, e) {
+  NumberBlock.onMouseMove = function (cm, changeCallback, e) {
     if (!gotBlock || gotBlock.priority < NumberBlock.PRIORITY) {
       var mousePos = cm.coordsChar({top: e.pageY, left: e.pageX});
       var token = cm.getTokenAt(mousePos);
 
-      if (token.type === "number") {
+      if (token.type === 'number') {
         if (gotBlock) {
           gotBlock.clear();
         }
         var startPos   = {line: mousePos.line, ch: token.start},
         endPos     = {line: mousePos.line, ch: token.end},
         checkStart = {line: mousePos.line, ch: token.start - 1};
-        
+
         // Code Mirror doesn't detect, eg, ".1" properly, so check for it.
         if (token.string.indexOf('.') < 0 &&
-            checkStart.ch >= 0 && 
+            checkStart.ch >= 0 &&
             cm.getRange(checkStart, endPos).indexOf('.') >= 0) {
           startPos = checkStart;
         }
-        new NumberBlock(cm, startPos, endPos);
+        new NumberBlock(cm, startPos, endPos, changeCallback);
       }
     }
   };
@@ -126,6 +127,9 @@ var block = (function() {
         lastY = curY;
 
         this.endPos.ch = this.startPos.ch + newStr.length;
+        if (this.changeCallback) {
+          this.changeCallback();
+        }
       }
 
       this.blockHandle.style.top = curY + 'px';

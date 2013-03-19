@@ -43,7 +43,7 @@ var Editor = (function(d3, acorn, block, Completer) {
 
 
     block.CodeBlock.watch(this.editor, function(){return me.ast;});
-    block.NumberBlock.watch(this.editor);
+    block.NumberBlock.watch(this.editor, this.evalContents.bind(this));
 
     var complete = function() {me.doCompletions();};
     this.editor.on('cursorActivity', complete);
@@ -82,10 +82,8 @@ var Editor = (function(d3, acorn, block, Completer) {
   };
 
   Editor.prototype.doCompletions = function() {
-    console.log(this.editor.getCursor('start'));
     this.completer.complete(this.editor.getCursor('start'),
        this.showCompletions.bind(this));
-    //this.showCompletions(this.getCompletions(this.editor.selectionStart));
   };
 
   Editor.prototype.showCompletions = function(completions) {
@@ -117,6 +115,6 @@ var Editor = (function(d3, acorn, block, Completer) {
 
     li.exit().remove();
   };
-  
+
   return Editor;
 }(d3, acorn, block, Completer));
