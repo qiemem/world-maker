@@ -117,35 +117,6 @@ var Editor = (function(d3, acorn, block, Completer) {
 
     li.exit().remove();
   };
-
-  Editor.prototype.getNodes = function(loc) {
-    var matchingNodes = [];
-    var index = this.editor.indexFromPos(loc);
-    // TODO: Include semicolons in statements
-    acorn.walk.simple(this.ast, {
-      Statement: function(node) {
-        if (node.start <= index && node.end > index) {
-          matchingNodes.push(node);
-        }
-      }
-    });
-    return matchingNodes;
-  };
-
-  Editor.prototype.getSmallestNode = function(loc) {
-    var matchingNodes = this.getNodes(loc);
-    var smallest = null, smallestLength = Infinity;
-    var length = matchingNodes.length;
-    for (var i = 0; i < length; i++) {
-      var node = matchingNodes[i];
-      var nodeLength = node.end - node.start;
-      if (nodeLength < smallestLength) {
-        smallest = node;
-        smallestLength = nodeLength;
-      }
-    }
-    return smallest;
-  };
-
+  
   return Editor;
 }(d3, acorn, block, Completer));
