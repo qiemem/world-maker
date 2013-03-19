@@ -70,6 +70,21 @@ var Completer = (function (tern, d3) {
     }
   };
 
+  Completer.prototype.getMetadata = function (name) {
+    var env = this.env,
+        path = name.split('.');
+    for (var i = 0; i < path.length; i++) {
+      if (env[path[i]]) {
+        env = env[path[i]];
+      }
+    }
+    return env;
+  };
+
+  Completer.prototype.getSuggestion = function (name) {
+    return this.getMetadata(name)['!suggest'];
+  };
+
   Completer.prototype.startServer = function(environment) {
     this.server = new tern.Server({
       getFile: this.getFile.bind(this),
@@ -81,6 +96,9 @@ var Completer = (function (tern, d3) {
     this.server.addFile(EDITOR_NAME);
   };
 
+  /**
+      Requests completions from the server whether or not the server is ready.
+    */
   Completer.prototype.unsafeComplete = function (pos, callback) {
     var start = this.cm.indexFromPos(this.cm.getCursor('start')),
         end = this.cm.indexFromPos(this.cm.getCursor('end')),
@@ -93,6 +111,7 @@ var Completer = (function (tern, d3) {
         req = buildRequest(text, 'completions', start),
         dotText = startText + '.' + endText,
         dotReq = buildRequest(dotText, 'completions', start + 1);
+    // Request valid completion strings.
     collectAsync([
       this.server.request.bind(this.server, req),
       this.server.request.bind(this.server, dotReq)
@@ -102,9 +121,32 @@ var Completer = (function (tern, d3) {
           }),
           methods = results[1][1].completions.map(function (method) {
             return '.' + method.name;
-          });
-      callback(methods.concat(expressions));
-    });
+          }),
+          comps = methods.concat(expressions),
+          compTypeReqs = comps.map(function (comp) {
+          // TODO: Doesn't handle partial string completions
+            var compTypeReq = buildRequest(
+              startText + comp + endText,
+              'type',
+              start + comp.length);
+            return this.server.request.bind(this.server, compTypeReq);
+          }.bind(this));
+      // Insert those completion strings into the text and request the resulting
+      // type. Then, use that type to get argument suggestions.
+      collectAsync(compTypeReqs, function (typeResults) {
+        var filledCompletions = typeResults.map(function (typeRes, i) {
+          var comp = comps[i];
+          if (typeRes[1].name) {
+            var suggest = this.getSuggestion(typeRes[1].name);
+            if (suggest) {
+              return comp + suggest;
+            }
+          }
+          return comp;
+        }.bind(this));
+        callback(filledCompletions);
+      }.bind(this));
+    }.bind(this));
   };
 
   Completer.prototype.complete = function (pos, callback) {
