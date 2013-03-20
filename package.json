@@ -19,7 +19,6 @@
   "dependencies": {
     "d3": "~3.0.8",
     "codemirror": "https://github.com/marijnh/CodeMirror/tarball/master",
-    "acorn": "~0.1.0",
     "tern": "https://github.com/marijnh/tern/tarball/master"
   }
 }

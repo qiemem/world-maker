@@ -116,11 +116,9 @@ var Completer = (function (tern, d3) {
       this.server.request.bind(this.server, req),
       this.server.request.bind(this.server, dotReq)
     ], function (results) {
-      var expressions = results[0][1].completions.map(function (exp) {
-            return exp.name;
-          }),
+      var expressions = results[0][1].completions,
           methods = results[1][1].completions.map(function (method) {
-            return '.' + method.name;
+            return '.' + method;
           }),
           comps = methods.concat(expressions),
           compTypeReqs = comps.map(function (comp) {

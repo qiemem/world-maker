@@ -12,7 +12,7 @@ var Editor = (function(d3, acorn, block, Completer) {
       styleSelectedText: true
     });
 
-    this.completer = new Completer(this.editor, [], ['agency/agency.json']);
+    this.completer = new Completer(this.editor, ['agency/agency.js'], ['agency/agency.json']);
     //this.completer = new Completer(this.editor, ['agency/agency.js'], []);
     this.completions = document.createElement('div');
     this.completions.classList.add('completions');
