@@ -1,0 +1,25 @@
+{
+  "name": "world-maker",
+  "version": "0.0.0",
+  "description": "A game in which you program your world as you play.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qiemem/world-maker.git"
+  },
+  "keywords": [
+    "game"
+  ],
+  "author": "Bryan Head",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "540a6bfa82cefe9e706387dd3620639286392f69",
+  "dependencies": {
+    "d3": "~3.0.8",
+    "codemirror": "https://github.com/marijnh/CodeMirror/tarball/master",
+    "acorn": "~0.1.0",
+    "tern": "https://github.com/marijnh/tern/tarball/master"
+  }
+}
