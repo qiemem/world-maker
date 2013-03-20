@@ -119,8 +119,10 @@ var block = (function(acorn) {
       var value = parseFloat(this.cm.getSelection());
 
       var curY = e.pageY;
+      this.blockHandle.style.top = curY + 'px';
       var diff = Math.round((lastY - curY)/NumberBlock.SENSITIVITY);
       if (Math.abs(diff) >= 1) {
+        lastY = curY;
         var changeBy = numDecimals === 0 ? diff : diff * scale;
         var newValue = value + changeBy;
         if (!isNaN(newValue)){
@@ -132,10 +134,7 @@ var block = (function(acorn) {
             this.changeCallback();
           }
         }
-        lastY = curY;
       }
-
-      this.blockHandle.style.top = curY + 'px';
     }.bind(this);
 
     document.addEventListener('mousemove', this.boundHandleMouseMove);
@@ -246,9 +245,7 @@ var block = (function(acorn) {
       this.cm.setCursor({line: this.insertLine, ch: 0});
       this.cm.replaceSelection(this.pickedBlock.innerText + '\n');
     }
-    console.log('super mouse up');
     Block.prototype.handleMouseUp.call(this, e);
-    console.log('super mouse up done');
     if (this.insertWidget) {
       this.insertWidget.clear();
     }
