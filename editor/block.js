@@ -23,6 +23,7 @@ var block = (function(acorn) {
     this.blockHandle = document.createElement('div');
     this.blockHandle.classList.add('block-handle');
     cm.addWidget(startPos, this.blockHandle);
+    this.blockHandle.style.top = (parseInt(this.blockHandle.style.top) - 16) + 'px';
     document.body.appendChild(this.blockHandle);
 
     this.boundMouseMove = this.onMouseMove.bind(this);
