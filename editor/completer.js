@@ -136,7 +136,7 @@ var Completer = (function (tern, d3) {
       collectAsync(compTypeReqs, function (typeResults) {
         var filledCompletions = typeResults.map(function (typeRes, i) {
           var comp = comps[i];
-          if (typeRes[1].name) {
+          if (typeRes[1] && typeRes[1].name) {
             var suggest = this.getSuggestion(typeRes[1].name);
             if (suggest) {
               return comp + suggest;
