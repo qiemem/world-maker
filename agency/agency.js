@@ -172,6 +172,10 @@ var agency = (function(THREE) {
     return this.make(SphereAgent);
   };
 
+  Agent.prototype.text = function(text) {
+    return this.make(TextAgent.bind(undefined, text));
+  }
+
   Agent.prototype.cursor = function() {
     return this.make(CursorAgent);
   };
@@ -197,6 +201,23 @@ var agency = (function(THREE) {
     var sphere = new THREE.Mesh(SphereAgent.geometry, material);
     Agent.call(this, sphere);
   }
+
+  function TextAgent(text) {
+    var text3d = new THREE.TextGeometry(text, {
+      size: 1,
+      height: 1,
+      curveSegments: 2,
+      font: 'helvetiker'
+    });
+
+    text3d.computeBoundingBox();
+
+    var textMaterial = new THREE.MeshPhongMaterial();
+    var textMesh = new THREE.Mesh( text3d, textMaterial );
+    Agent.call(this, textMesh);
+  }
+
+  TextAgent.prototype = Object.create(Agent.prototype);
 
   SphereAgent.geometry = new THREE.SphereGeometry(0.5, 16, 16);
 
