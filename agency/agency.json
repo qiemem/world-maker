@@ -17,27 +17,27 @@
         },
         "right": {
           "!type": "fn(angle: number) -> $this",
-          "!suggest": "(45)"
+          "!suggest": "(90)"
         },
         "left": {
           "!type": "fn(angle: number) -> $this",
-          "!suggest": "(45)"
+          "!suggest": "(90)"
         },
         "up": {
           "!type": "fn(angle: number) -> $this",
-          "!suggest": "(45)"
+          "!suggest": "(90)"
         },
         "down": {
           "!type": "fn(angle: number) -> $this",
-          "!suggest": "(45)"
+          "!suggest": "(90)"
         },
         "rollRight": {
           "!type": "fn(angle: number) -> $this",
-          "!suggest": "(45)"
+          "!suggest": "(90)"
         },
         "rollLeft": {
           "!type": "fn(angle: number) -> $this",
-          "!suggest": "(45)"
+          "!suggest": "(90)"
         },
         "grow": {
           "!type": "fn(amount: number) -> $this",

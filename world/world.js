@@ -34,8 +34,8 @@ var World = (function(THREE, THREEx, TWEEN) {
     trackballControls.panSpeed = 1.0;
     trackballControls.staticMoving = true;
     // TODO: Set default trackball position
-    var trackballPosition = camera.position.clone().setZ(20);
-    var trackballUp = camera.up.clone();
+    var trackballPosition = camera.position.clone().setY(20);
+    var trackballUp = camera.up.clone().setX(1).setY(0);
     trackballControls.setActive = function(val) {
       this.enabled = val;
     };
@@ -45,7 +45,7 @@ var World = (function(THREE, THREEx, TWEEN) {
     var fpControls = new THREE.FirstPersonControls(camera);
     fpControls.lookSpeed = 0.1;
     fpControls.movementSpeed = 2;
-    var fpPosition = camera.position.clone();
+    var fpPosition = camera.position.clone().setX(-5.0);
     var fpUp = camera.up.clone();
     fpControls.setActive = function(val) {
       this.freeze = !val;
