@@ -30,7 +30,7 @@ var World = (function(THREE, THREEx, TWEEN) {
       new THREE.TrackballControls(camera, renderer.domElement);
     trackballControls = trackballControls;
     trackballControls.rotateSpeed = 1.5;
-    trackballControls.zoomSpeed = 0.12;
+    trackballControls.zoomSpeed = 12;
     trackballControls.panSpeed = 1.0;
     trackballControls.staticMoving = true;
     // TODO: Set default trackball position
