@@ -82,6 +82,10 @@
         "cursor": {
           "!type": "fn() -> +agency.Agent",
           "!suggest": "()"
+        },
+        "text": {
+          "!type": "fn(text: string) -> +agent.Agent",
+          "!suggest": "Hello world!"
         }
       }
     }
