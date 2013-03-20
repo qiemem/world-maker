@@ -85,7 +85,7 @@
         },
         "text": {
           "!type": "fn(text: string) -> +agent.Agent",
-          "!suggest": "(Hello world!)"
+          "!suggest": "('Hello world!')"
         }
       }
     }
