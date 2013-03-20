@@ -44,6 +44,9 @@
         scene = new agency.Agent(World.scene());
         editor = new Editor(document.body);
         var cm = editor.editor;
+        if (window.location.hash) {
+          cm.setValue(decodeURIComponent(window.location.hash.substr(1)));
+        } else {
         cm.setValue([
           "// This code sets things up for you to make exploring a little easier",
           "var repeat = agency.repeat;",
@@ -51,8 +54,8 @@
           "var cursor = scene.cursor().forward(5);",
           "// Use the cursor to create your world!",
           "// Try entering: cursor.up(90).forward(1).cube();",
-          "\n"
-        ].join('\n'));
+          "\n"].join('\n'));
+        }
         cm.setCursor(cm.posFromIndex(cm.getValue().length));
         document.body.addEventListener('keypress', function(e) {
           if (e.charCode === '`'.charCodeAt(0)) {
@@ -70,7 +73,10 @@
           }
           return false;
         });
-        editor.addEvalListener(World.reset);
+        editor.addPreEvalListener(World.reset);
+        editor.addPostEvalListener(function() {
+          window.location.hash = encodeURIComponent(cm.getValue());
+        });
       }
     </script>
   </body>

@@ -31,7 +31,8 @@ var Editor = (function(d3, acorn, block, Completer) {
     container.appendChild(this.numberSelector);
 
 
-    this.evalListeners = [];
+    this.preEvalListeners = [];
+    this.postEvalListeners = [];
     var me = this;
     this.editor.on('change', function() {
       clearTimeout(me.evalTimeout);
@@ -51,10 +52,13 @@ var Editor = (function(d3, acorn, block, Completer) {
   }
 
   Editor.prototype.evalContents = function() {
-    for (var i = 0; i < this.evalListeners.length; i++) {
-      this.evalListeners[i]();
+    for (var i = 0; i < this.preEvalListeners.length; i++) {
+      this.preEvalListeners[i]();
     }
     eval(this.editor.getValue());
+    for (var i = 0; i < this.postEvalListeners.length; i++) {
+      this.postEvalListeners[i]();
+    }
     console.log('Eval successful');
   };
 
@@ -77,8 +81,12 @@ var Editor = (function(d3, acorn, block, Completer) {
     }
   };
 
-  Editor.prototype.addEvalListener = function(func) {
-    this.evalListeners.push(func);
+  Editor.prototype.addPreEvalListener = function(func) {
+    this.preEvalListeners.push(func);
+  };
+
+  Editor.prototype.addPostEvalListener = function(func) {
+    this.postEvalListeners.push(func);
   };
 
   Editor.prototype.doCompletions = function() {
