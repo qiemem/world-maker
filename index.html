@@ -54,8 +54,15 @@
           "var scene = new agency.Agent(World.scene());",
           "var cursor = scene.cursor().forward(5);",
           "// Use the cursor to create your world!",
-          "// Try entering: cursor.up(90).forward(1).cube();",
-          "\n"].join('\n'));
+          "",
+          "// These lines create the introductory text you saw",
+          "cursor.forward(30).right(90).backward(15).text('Walk around with the WASD keys and the mouse.');",
+          "cursor.down(90).forward(2).up(90).text('Press ~ to go into edit mode.');",
+          "",
+          "// These lines put the cursor back in front of the camera",
+          "cursor.up(90).forward(2).down(90).forward(15).left(90).backward(30);",
+          "cursor.down(90).forward(1).up(90);",
+          ""].join('\n'));
         }
         cm.setCursor(cm.posFromIndex(cm.getValue().length));
         document.body.addEventListener('keypress', function(e) {
