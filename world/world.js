@@ -11,7 +11,8 @@ var World = (function(THREE, THREEx, TWEEN) {
       controlModes,
       controls,
       activeControlMode,
-      playerLight;
+      playerLight,
+      hemisphereLight;
 
   var ControlModes = {
     FIRST_PERSON: 'firstPerson',
@@ -101,8 +102,10 @@ var World = (function(THREE, THREEx, TWEEN) {
     scene.scale.set(1, 1, 1);
     scene.position.set(0, 0, 0);
 
-    playerLight = new THREE.PointLight(0xFFFFFF);
+    playerLight = new THREE.PointLight(0xFFFFFF, 0.5);
     scene.add(playerLight);
+    hemisphereLight = new THREE.HemisphereLight(0xCCCCFF, 0xFFCCCC, 0.5);
+    scene.add(hemisphereLight);
   };
 
   var switchControls = function(controlMode) {
@@ -159,6 +162,7 @@ var World = (function(THREE, THREEx, TWEEN) {
     renderer: function() {return renderer;},
     reset: reset,
     playerLight: function() {return playerLight;},
+    hemisphereLight: function() {return hemisphereLight;},
     animate: animate
   };
 })(THREE, THREEx, TWEEN);
