@@ -39,7 +39,7 @@
     <script src="agency/agency.js"></script>
     <script>
       var editor, scene;
-      
+
       function init() {
         World.init(document.body);
         scene = new agency.Agent(World.scene());
@@ -70,7 +70,7 @@
             editor.toggleSlide();
             World.controls.freeze = editor.visible;
             if (editor.visible) {
-              // Need setTimeout; otherwise the key actually registers in the 
+              // Need setTimeout; otherwise the key actually registers in the
               // editor, typing `
               setTimeout(function(){editor.editor.focus();});
               World.switchControls(World.ControlModes.TRACKBALL);
@@ -82,8 +82,16 @@
           return false;
         });
         editor.addPreEvalListener(World.reset);
+
+        var saveTimeout;
         editor.addPostEvalListener(function() {
-          window.location.hash = encodeURIComponent(cm.getValue());
+          if (saveTimeout) {
+            clearTimeout(saveTimeout);
+          }
+          saveTimeout = setTimeout(function() {
+            window.location.hash = encodeURIComponent(cm.getValue());
+            saveTimeout = null;
+          }, 100);
         });
       }
     </script>
