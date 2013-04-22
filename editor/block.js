@@ -115,8 +115,6 @@ var block = (function(acorn) {
     var lastY = e.pageY;
 
     this.boundHandleMouseMove = function (e) {
-      e.preventDefault();
-
       var value = parseFloat(this.cm.getSelection());
 
       var curY = e.pageY;

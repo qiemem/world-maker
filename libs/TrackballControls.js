@@ -346,7 +346,12 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		if ( _this.enabled === false ) return;
 
-		event.preventDefault();
+		// preventDefault with right mouse click seems to reset scrolled numbers
+		// if they're still selected. This is a total hack. I don't know what
+		// causes the problem. It only happens on Chrome.
+		if (event.button !== 2) {
+			event.preventDefault();
+		}
 		event.stopPropagation();
 
 		if ( _state === STATE.NONE ) {
