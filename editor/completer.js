@@ -89,7 +89,7 @@ var Completer = (function (tern, d3) {
   Completer.prototype.startServer = function(environment) {
     this.server = new tern.Server({
       getFile: this.getFile.bind(this),
-      environment: environment,
+      defs: environment,
       async: true
     });
     for (var i = 0; i < this.jsLibs.length; i++) {
