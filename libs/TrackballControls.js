@@ -4,8 +4,6 @@
 
 THREE.TrackballControls = function ( object, domElement ) {
 
-	THREE.EventDispatcher.call( this );
-
 	var _this = this;
 	var STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_ZOOM: 4, TOUCH_PAN: 5 };
 
@@ -346,21 +344,12 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		if ( _this.enabled === false ) return;
 
-		// preventDefault with right mouse click seems to reset scrolled numbers
-		// if they're still selected. This is a total hack. I don't know what
-		// causes the problem. It only happens on Chrome.
-		if (event.button !== 2) {
-			event.preventDefault();
-		}
+		event.preventDefault();
 		event.stopPropagation();
 
 		if ( _state === STATE.NONE ) {
 
 			_state = event.button;
-
-			if (event.ctrlKey) {
-				_state = STATE.PAN;
-			}
 
 		}
 
@@ -439,7 +428,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		}
 
-		_zoomStart.y += ( 1 / delta ) * 0.05;
+		_zoomStart.y += delta * 0.01;
 
 	}
 
@@ -544,3 +533,5 @@ THREE.TrackballControls = function ( object, domElement ) {
 	this.handleResize();
 
 };
+
+THREE.TrackballControls.prototype = Object.create( THREE.EventDispatcher.prototype );
