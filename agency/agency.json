@@ -84,7 +84,7 @@
           "!suggest": "()"
         },
         "text": {
-          "!type": "fn(text: string) -> +agent.Agent",
+          "!type": "fn(text: string) -> +agency.Agent",
           "!suggest": "('Hello world!')"
         }
       }
