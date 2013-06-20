@@ -63,9 +63,9 @@ var block = (function(acorn) {
   };
 
   function NumberBlock(cm,  startPos, endPos, changeCallback) {
+    Block.call(this, cm, startPos, endPos);
     this.priority = NumberBlock.PRIORITY;
     this.changeCallback = changeCallback;
-    Block.call(this, cm, startPos, endPos);
     this.blockHandle.classList.add('number-block-handle');
   }
 
@@ -115,8 +115,6 @@ var block = (function(acorn) {
     var lastY = e.pageY;
 
     this.boundHandleMouseMove = function (e) {
-      e.preventDefault();
-
       var value = parseFloat(this.cm.getSelection());
 
       var curY = e.pageY;
@@ -226,13 +224,16 @@ var block = (function(acorn) {
         this.pickedBlock.style.left = e.pageX + 'px';
         this.blockHandle.style.top = e.pageY + 'px';
         this.blockHandle.style.left = e.pageX + 'px';
-        this.insertLine = this.cm.coordsChar({top: e.pageY, left: e.pageX}).line;
+        this.insertLine = this.cm.coordsChar({
+          top: e.pageY, left: e.pageX
+        }).line;
         if (this.insertWidget) {
           this.insertWidget.clear();
         }
-        this.insertWidget = this.cm.addLineWidget(this.insertLine, blockInsert, {
-          above: true
-        });
+        this.insertWidget = this.cm.addLineWidget(
+          this.insertLine, blockInsert, {
+            above: true
+          });
       }.bind(this);
 
       document.addEventListener('mousemove', this.boundHandleMouseMove);

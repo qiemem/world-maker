@@ -24,7 +24,8 @@ var Completer = (function (tern, d3) {
       query: {
         file: EDITOR_NAME,
         end:  end,
-        type: type
+        type: type,
+        sort: false
       },
       // The editor won't get very big, so just reload it every time
       files: [{
@@ -88,7 +89,8 @@ var Completer = (function (tern, d3) {
   Completer.prototype.startServer = function(environment) {
     this.server = new tern.Server({
       getFile: this.getFile.bind(this),
-      environment: environment
+      defs: environment,
+      async: true
     });
     for (var i = 0; i < this.jsLibs.length; i++) {
       this.server.addFile(this.jsLibs[i]);

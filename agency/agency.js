@@ -31,6 +31,7 @@ var agency = (function(THREE) {
    */
   function Agent(obj) {
     this.obj = obj;
+    this.obj.useQuaternion = true;
   }
 
   // TODO: Translate methods only use rotation, not scaling, from matrix
@@ -41,7 +42,6 @@ var agency = (function(THREE) {
     */
   Agent.prototype.forward = Agent.prototype.fd = function(distance) {
     this.obj.translateX(distance);
-    this.obj.updateMatrix();
     return this;
   };
 
@@ -54,18 +54,14 @@ var agency = (function(THREE) {
   };
 
   Agent.prototype.left = Agent.prototype.lt = function(angle) {
-    this.obj.matrix.multiply(
-      new THREE.Matrix4().makeRotationY(2 * Math.PI * angle / 360));
-    var mat = new THREE.Matrix4().extractRotation(this.obj.matrix);
-    this.obj.rotation.setEulerFromRotationMatrix(mat, this.obj.eulerOrder);
+    this.obj.rotateOnAxis(
+      new THREE.Vector3(0, 1, 0), 2 * Math.PI * angle / 360);
     return this;
   };
 
   Agent.prototype.up = function(angle) {
-    this.obj.matrix.multiply(
-      new THREE.Matrix4().makeRotationZ(2 * Math.PI * angle / 360));
-    var mat = new THREE.Matrix4().extractRotation(this.obj.matrix);
-    this.obj.rotation.setEulerFromRotationMatrix(mat, this.obj.eulerOrder);
+    this.obj.rotateOnAxis(
+      new THREE.Vector3(0, 0, 1), 2 * Math.PI * angle / 360);
     return this;
   };
 
@@ -74,10 +70,8 @@ var agency = (function(THREE) {
   };
 
   Agent.prototype.rollRight = Agent.prototype.rr = function(angle) {
-    this.obj.matrix.multiply(
-      new THREE.Matrix4().makeRotationX(2 * Math.PI * angle / 360));
-    var mat = new THREE.Matrix4().extractRotation(this.obj.matrix);
-    this.obj.rotation.setEulerFromRotationMatrix(mat, this.obj.eulerOrder);
+    this.obj.rotateOnAxis(
+      new THREE.Vector3(1, 0, 0), 2 * Math.PI * angle / 360);
     return this;
   };
 
@@ -92,19 +86,16 @@ var agency = (function(THREE) {
 
   Agent.prototype.growWide = Agent.prototype.gw = function(amount) {
     this.obj.scale.z += amount;
-    this.obj.updateMatrix();
     return this;
   };
 
   Agent.prototype.growLong = Agent.prototype.gl = function(amount) {
     this.obj.scale.x += amount;
-    this.obj.updateMatrix();
     return this;
   };
 
   Agent.prototype.growTall = Agent.prototype.gt = function(amount) {
     this.obj.scale.y += amount;
-    this.obj.updateMatrix();
     return this;
   };
 
@@ -138,6 +129,7 @@ var agency = (function(THREE) {
     // arguments isn't actually an array, but is enough like one that we can
     // call slice on it
     var agent = new AgentType(Array.prototype.slice.call(arguments, 1));
+    this.obj.updateMatrix();
     agent.obj.applyMatrix(this.obj.matrix);
     if (this.obj.material) {
       agent.obj.material.color.copy(this.obj.material.color);
