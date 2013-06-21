@@ -71,7 +71,7 @@ var World = (function(THREE, THREEx, TWEEN) {
     switchControls(ControlModes.FIRST_PERSON);
 
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColorHex(0x000000, 1);
+    renderer.setClearColor(0x000000, 1);
 
     THREEx.WindowResize(renderer, camera);
     controlList.forEach(function(c) {
