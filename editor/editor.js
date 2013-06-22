@@ -12,7 +12,7 @@ var Editor = (function(d3, acorn, block, Completer) {
       styleSelectedText: true
     });
 
-    this.completer = new Completer(this.editor, ['agency/agency.js'], ['agency/agency.json']);
+    this.completer = new Completer(this.editor, [], ['agency/agency.json']);
     //this.completer = new Completer(this.editor, ['agency/agency.js'], []);
     this.completions = document.createElement('div');
     this.completions.classList.add('completions');
@@ -55,7 +55,7 @@ var Editor = (function(d3, acorn, block, Completer) {
     for (var i = 0; i < this.preEvalListeners.length; i++) {
       this.preEvalListeners[i]();
     }
-    eval(this.editor.getValue());
+    new Function(this.editor.getValue())();
     for (var i = 0; i < this.postEvalListeners.length; i++) {
       this.postEvalListeners[i]();
     }
