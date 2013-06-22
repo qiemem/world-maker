@@ -32,6 +32,11 @@ var agency = (function(THREE) {
   function Agent(obj) {
     this.obj = obj;
     this.obj.useQuaternion = true;
+    this.listeners = {
+      'tick': []
+    };
+    this.children = [];
+    this.parent = this;
   }
 
   // TODO: Translate methods only use rotation, not scaling, from matrix
@@ -125,6 +130,26 @@ var agency = (function(THREE) {
     return this;
   };
 
+  Agent.prototype.notify = function(evt) {
+    var l = this.listeners[evt].length,
+        c = this.children.length;
+
+    for (var i=0; i < l; i++) {
+      this.listeners[evt][i].call(this);
+    }
+  
+    for (var i=0; i < c; i++) {
+      this.children[i].notify(evt);
+    }
+  }
+
+  Agent.prototype.addChild = function(agent) {
+    this.children.push(agent);
+    agent.parent = this;
+    this.obj.add(agent.obj);
+    return this;
+  }
+
   Agent.prototype.__make = function(AgentType) {
     // arguments isn't actually an array, but is enough like one that we can
     // call slice on it
@@ -140,18 +165,29 @@ var agency = (function(THREE) {
   Agent.prototype.make = function(agentType) {
     var agent = this.__make(agentType);
     if (this.obj instanceof THREE.Scene) {
-      this.obj.add(agent.obj);
+      this.addChild(agent);
     } else {
-      this.obj.parent.add(agent.obj);
+      this.parent.addChild(agent);
     }
     return agent;
   };
 
   Agent.prototype.makeChild = function(agentType) {
     var agent = this.__make(agentType);
-    this.obj.add(agent.obj);
+    this.addChild(agent);
     return agent;
   };
+
+  Agent.prototype.killChildren = function() {
+    this.children.forEach(function(c) {c.die();});
+    this.children = [];
+  }
+
+  Agent.prototype.die = function() {
+    this.killChildren();
+    if (this.obj.parent) this.obj.parent.remove(this.obj);
+    this.listeners = [];
+  }
 
   /**
       @returns {Agent}
@@ -171,6 +207,16 @@ var agency = (function(THREE) {
   Agent.prototype.cursor = function() {
     return this.make(CursorAgent);
   };
+
+  Agent.prototype.on = function(evt, callback) {
+    this.listeners[evt].push(callback);
+    return this;
+  }
+
+  Agent.prototype.onTick = function(callback) {
+    return this.on('tick', callback);
+  }
+
 
   /**
       @constructor
@@ -251,6 +297,7 @@ var agency = (function(THREE) {
     Agent: Agent,
     CubeAgent: CubeAgent,
     SphereAgent: SphereAgent,
+    CursorAgent: CursorAgent,
     CompositeAgent: CompositeAgent
   };
 })(THREE);

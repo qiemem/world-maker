@@ -160,6 +160,7 @@ var World = (function(THREE, THREEx, TWEEN) {
     camera: function() {return camera;},
     controls: function() {return controls;},
     renderer: function() {return renderer;},
+    clock: function() {return clock;},
     reset: reset,
     playerLight: function() {return playerLight;},
     hemisphereLight: function() {return hemisphereLight;},

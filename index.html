@@ -43,17 +43,25 @@
 
       function init() {
         World.init(document.body);
+        /*
         scene = new agency.Agent(World.scene());
+        scene.onTick(function() {
+          requestAnimationFrame(this.notify.bind(this, 'tick'));
+        });
+        scene.notify('tick');
+        */
         editor = new Editor(document.body);
         var cm = editor.editor;
         if (window.location.hash) {
           cm.setValue(decodeURIComponent(window.location.hash.substr(1)));
         } else {
-        cm.setValue([
+          cm.setValue([
           "// This code sets things up for you to make exploring a little easier",
           "var repeat = agency.repeat,",
-          "    scene = new agency.Agent(World.scene()),",
+          "    scene  = new agency.Agent(World.scene()),",
           "    cursor = scene.cursor();",
+          "    //cursor = new agency.CursorAgent();",
+          "//scene.addChild(cursor);",
           "// Use the cursor to create your world!",
           "",
           "// These lines create the introductory text you saw",
@@ -82,6 +90,7 @@
           }
           return false;
         });
+        //editor.addPreEvalListener(scene.killChildren.bind(scene));
         editor.addPreEvalListener(World.reset);
 
         var saveTimeout;

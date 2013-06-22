@@ -88,6 +88,24 @@
           "!suggest": "('Hello world!')"
         }
       }
+    },
+    "CubeAgent": {
+      "!type": "fn()",
+      "prototype": {
+        "!proto": "agency.Agent.prototype"
+      }
+    },
+    "SphereAgent": {
+      "!type": "fn()",
+      "prototype": {
+        "!proto": "agency.Agent.prototype"
+      }
+    },
+    "CursorAgent": {
+      "!type": "fn()",
+      "prototype": {
+        "!proto": "agency.Agent.prototype"
+      }
     }
   }
 }
