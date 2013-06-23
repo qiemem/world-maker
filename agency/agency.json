@@ -1,4 +1,5 @@
 {
+  "!name" : "agency",
   "agency": {
     "repeat": {
       "!type": "fn(times: number, fn(iteration: number))",

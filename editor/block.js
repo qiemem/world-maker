@@ -159,7 +159,7 @@ var block = (function(acorn) {
   };
 
   CodeBlock.onMouseMove = function (cm, getAST, e) {
-    if (!gotBlock || gotBlock.priority < CodeBlock.PRIORITY) {
+    if (cm.getValue().length > 0 && (!gotBlock || gotBlock.priority < CodeBlock.PRIORITY)) {
       var mousePos = cm.coordsChar({top: e.pageY, left: e.pageX}),
           node = CodeBlock.getSmallestNode(cm, getAST, mousePos);
       if (node) {

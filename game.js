@@ -10,11 +10,13 @@ var editor, scene;
      });
      scene.notify('tick');
      */
-  editor = new Editor(document.body);
+  editor = new Editor(document.body, levels.freeplay.reEval.bind(levels.freeplay));
   var cm = editor.editor;
+  editor.completer = new Completer(cm, [], levels.freeplay.typedefNames, levels.freeplay.getTypedef.bind(levels.freeplay));
   if (window.location.hash) {
     cm.setValue(decodeURIComponent(window.location.hash.substr(1)));
   } else {
+    /*
     cm.setValue([
         "// This code sets things up for you to make exploring a little easier",
         "var repeat = agency.repeat,",
@@ -32,6 +34,7 @@ var editor, scene;
         "cursor.up(90).forward(2).down(90).forward(15).left(90).backward(30);",
         "cursor.down(90).forward(1).up(90);",
         ""].join('\n'));
+        */
   }
   cm.setCursor(cm.posFromIndex(cm.getValue().length));
   document.body.addEventListener('keypress', function(e) {

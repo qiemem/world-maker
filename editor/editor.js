@@ -1,7 +1,8 @@
 var Editor = (function(d3, acorn, block, Completer) {
   'use strict';
 
-  function Editor(container) {
+  function Editor(container, reEval) {
+    this.reEval = reEval;
     this.container = container;
     this.drawer = document.createElement('div');
     this.drawer.classList.add('drawer');
@@ -55,7 +56,7 @@ var Editor = (function(d3, acorn, block, Completer) {
     for (var i = 0; i < this.preEvalListeners.length; i++) {
       this.preEvalListeners[i]();
     }
-    new Function(this.editor.getValue())();
+    this.reEval(this.editor.getValue());
     for (var i = 0; i < this.postEvalListeners.length; i++) {
       this.postEvalListeners[i]();
     }
