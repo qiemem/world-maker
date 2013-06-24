@@ -5,6 +5,11 @@
  * intuitively manipulate the 3D objects.
  */
 
+// TODO:
+// - Add:
+//    - tubeDown(numSides) - like pen down, but creates a tunnel with numSides
+//    - tubeUp()
+
 var agency = (function(THREE) {
   'use strict';
 
@@ -134,6 +139,7 @@ var agency = (function(THREE) {
     var l = this.listeners[evt].length,
         c = this.children.length;
 
+    // TODO: Make this die safe
     for (var i=0; i < l; i++) {
       this.listeners[evt][i].call(this);
     }
