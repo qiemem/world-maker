@@ -14,7 +14,6 @@ var Editor = (function(d3, acorn, block, Completer) {
     });
 
     this.completer = new Completer(this.editor, [], ['agency/agency.json']);
-    //this.completer = new Completer(this.editor, ['agency/agency.js'], []);
     this.completions = document.createElement('div');
     this.completions.classList.add('completions');
     this.drawer.appendChild(this.completions);

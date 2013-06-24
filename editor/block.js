@@ -36,7 +36,9 @@ var block = (function(acorn) {
     console.log('clear');
     this.mark.clear();
     this.container.removeEventListener('mousemove', this.boundMouseMove);
-    this.blockHandle.parentNode.removeChild(this.blockHandle);
+    if (this.blockHandle && this.blockHandle.parentNode) {
+      this.blockHandle.parentNode.removeChild(this.blockHandle);
+    }
     gotBlock = false;
   };
 
@@ -207,6 +209,8 @@ var block = (function(acorn) {
   CodeBlock.prototype.handleMouseDown = function (e) {
     Block.prototype.handleMouseDown.call(this, e);
 
+    this.priority = 1000;
+
     this.handleMouseUp = function (){
       this.pickedBlock = document.createElement('div');
       this.pickedBlock.classList.add('picked-block');
@@ -247,8 +251,13 @@ var block = (function(acorn) {
     if (typeof this.insertLine !== 'undefined' && this.pickedBlock) {
       this.cm.setCursor({line: this.insertLine, ch: 0});
       this.cm.replaceSelection(this.pickedBlock.innerText + '\n');
-    }
+      var lines = this.pickedBlock.innerText.split('\n').length;
+      for (var i = 0; i < lines; i++) {
+        this.cm.indentLine(this.insertLine + i);
+      }
+    } 
     Block.prototype.handleMouseUp.call(this, e);
+
     if (this.insertWidget) {
       this.insertWidget.clear();
     }
@@ -260,7 +269,6 @@ var block = (function(acorn) {
     document.removeEventListener('mousemove', this.boundHandleMouseMove);
     if (this.pickedBlock) {
       this.pickedBlock.parentNode.removeChild(this.pickedBlock);
-
     }
   };
 
