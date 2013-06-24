@@ -56,11 +56,13 @@ var Editor = (function(d3, acorn, block, Completer) {
     for (var i = 0; i < this.preEvalListeners.length; i++) {
       this.preEvalListeners[i]();
     }
+    var startTime = (new Date()).getTime();
     this.reEval(this.editor.getValue());
+    var endTime = (new Date()).getTime();
     for (var i = 0; i < this.postEvalListeners.length; i++) {
       this.postEvalListeners[i]();
     }
-    console.log('Eval successful');
+    console.log('Evaluated in ' + (endTime - startTime));
   };
 
   Editor.prototype.slideIn = function() {

@@ -41,6 +41,7 @@ var agency = (function(THREE) {
       'tick': []
     };
     this.children = [];
+    this.childrenUsingMyColor = [];
     this.parent = this;
   }
 
@@ -109,19 +110,30 @@ var agency = (function(THREE) {
     return this;
   };
 
-  Agent.prototype.color = function(color) {
-    this.obj.material.color.set(color);
+  Agent.prototype.updateChildrensColor = function() {
+    for (var i=0; i < this.childrenUsingMyColor.length; i++) {
+      this.childrenUsingMyColor[i].color(this.color());
+    }
     return this;
   };
 
+  Agent.prototype.color = function(color) {
+    if (color) {
+      this.obj.material.color.set(color);
+      return this.updateChildrensColor();
+    } else {
+      return this.obj.material.color;
+    }
+  };
+
+  // Setting via this.color() gives us a single point that colors are through.
+  // This makes weird agents, such as SceneAgent, easier.
   Agent.prototype.rgb = function(red, green, blue) {
-    this.obj.material.color.setRGB(red, green, blue);
-    return this;
+    return this.color(this.color().setRGB(red, green, blue));
   };
 
   Agent.prototype.hsl = function(hue, saturation, lightness) {
-    this.obj.material.color.setHSL(hue, saturation, lightness);
-    return this;
+    return this.color(this.color().setHSL(hue, saturation, lightness));
   };
 
   Agent.prototype.transparency = function(amount) {
@@ -147,14 +159,34 @@ var agency = (function(THREE) {
     for (var i=0; i < c; i++) {
       this.children[i].notify(evt);
     }
-  }
+  };
 
-  Agent.prototype.addChild = function(agent) {
+  Agent.prototype.addChild = function(agent, useMyColor) {
+    if (agent.parent) {
+      agent.parent.removeChild(agent);
+    }
     this.children.push(agent);
+    if (useMyColor || (agent.color().equals(this.color()) && useMyColor != false)) {
+      this.childrenUsingMyColor.push(agent);
+      agent.color(this.color());
+    }
     agent.parent = this;
     this.obj.add(agent.obj);
     return this;
-  }
+  };
+
+  Agent.prototype.removeChild = function(agent) {
+    var i = this.children.indexOf(agent),
+        j = this.childrenUsingMyColor.indexOf(agent);
+    if (i > 0) {
+      this.children.splice(i,i);
+      this.obj.remove(agent.obj);
+    }
+    if (j > 0) {
+      this.childrenUsingMyColor.splice(j,j);
+    }
+    return this;
+  };
 
   Agent.prototype.__make = function(AgentType) {
     // arguments isn't actually an array, but is enough like one that we can
@@ -162,9 +194,7 @@ var agency = (function(THREE) {
     var agent = new AgentType(Array.prototype.slice.call(arguments, 1));
     this.obj.updateMatrix();
     agent.obj.applyMatrix(this.obj.matrix);
-    if (this.obj.material) {
-      agent.obj.material.color.copy(this.obj.material.color);
-    }
+    agent.color(this.color());
     return agent;
   };
 
@@ -180,20 +210,21 @@ var agency = (function(THREE) {
 
   Agent.prototype.makeChild = function(agentType) {
     var agent = this.__make(agentType);
-    this.addChild(agent);
+    this.addChild(agent, true);
     return agent;
   };
 
   Agent.prototype.killChildren = function() {
     this.children.forEach(function(c) {c.die();});
     this.children = [];
-  }
+    this.childrenUsingMyColor = [];
+  };
 
   Agent.prototype.die = function() {
     this.killChildren();
-    if (this.obj.parent) this.obj.parent.remove(this.obj);
+    if (this.parent) this.parent.removeChild(this);
     this.listeners = [];
-  }
+  };
 
   /**
       @returns {Agent}
@@ -208,7 +239,7 @@ var agency = (function(THREE) {
 
   Agent.prototype.text = function(text) {
     return this.make(TextAgent.bind(undefined, text));
-  }
+  };
 
   Agent.prototype.cursor = function() {
     return this.make(CursorAgent);
@@ -217,17 +248,32 @@ var agency = (function(THREE) {
   Agent.prototype.on = function(evt, callback) {
     this.listeners[evt].push(callback);
     return this;
-  }
+  };
 
   Agent.prototype.onTick = function(callback) {
     return this.on('tick', callback);
+  };
+
+
+  function SceneAgent(scene, renderer) {
+    Agent.call(this, scene);
+    this.renderer = renderer;
   }
 
+  SceneAgent.prototype = Object.create(Agent.prototype);
 
-  /**
-      @constructor
-      @extends {Agent}
-    */
+  SceneAgent.prototype.color = function(color) {
+    if (color) {
+      this.renderer.setClearColor(color);
+      return this;
+    } else {
+      return this.renderer.getClearColor();
+    }
+  };
+
+  // The scene should never force children to be its color.
+  SceneAgent.prototype.updateChildrensColor = function () {}
+
   function CubeAgent() {
     var material = new THREE.MeshPhongMaterial();
     material.side = THREE.DoubleSide;
@@ -268,14 +314,23 @@ var agency = (function(THREE) {
   SphereAgent.prototype = Object.create(Agent.prototype);
 
   function CompositeAgent() {
-    var obj = new THREE.Object3D();
+    Agent.call(this, new THREE.Object3D());
+    this.compositeColor = new THREE.Color(0xffffff);
     for (var i = 0; i < arguments.length; i++) {
-      obj.add(arguments[i]);
+      this.addChild(arguments[i], this.color().equals(arguments[i].color()));
     }
-    Agent.call(this, obj);
   }
 
   CompositeAgent.prototype = Object.create(Agent.prototype);
+
+  CompositeAgent.prototype.color = function (color) {
+    if (color) {
+      this.compositeColor.set(color);
+      return this.updateChildrensColor();
+    } else {
+      return this.compositeColor;
+    }
+  };
 
   function CursorAgent() {
     CompositeAgent.call(this);
@@ -301,6 +356,7 @@ var agency = (function(THREE) {
   return {
     repeat: repeat,
     Agent: Agent,
+    SceneAgent: SceneAgent,
     CubeAgent: CubeAgent,
     SphereAgent: SphereAgent,
     CursorAgent: CursorAgent,

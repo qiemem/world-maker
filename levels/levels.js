@@ -27,7 +27,7 @@ var levels = (function() {
 
   var freeplay = new Level(function(code) {
     if (!this.scene) {
-      this.scene = new agency.Agent(World.scene());
+      this.scene = new agency.SceneAgent(World.scene(), World.renderer());
       this.scene.onTick(function() {
         requestAnimationFrame(this.notify.bind(this, 'tick'));
       });
