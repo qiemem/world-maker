@@ -1,7 +1,8 @@
 var Editor = (function(d3, acorn, block, Completer) {
   'use strict';
 
-  function Editor(container) {
+  function Editor(container, reEval) {
+    this.reEval = reEval;
     this.container = container;
     this.drawer = document.createElement('div');
     this.drawer.classList.add('drawer');
@@ -12,8 +13,7 @@ var Editor = (function(d3, acorn, block, Completer) {
       styleSelectedText: true
     });
 
-    this.completer = new Completer(this.editor, ['agency/agency.js'], ['agency/agency.json']);
-    //this.completer = new Completer(this.editor, ['agency/agency.js'], []);
+    this.completer = new Completer(this.editor, [], ['agency/agency.json']);
     this.completions = document.createElement('div');
     this.completions.classList.add('completions');
     this.drawer.appendChild(this.completions);
@@ -55,11 +55,13 @@ var Editor = (function(d3, acorn, block, Completer) {
     for (var i = 0; i < this.preEvalListeners.length; i++) {
       this.preEvalListeners[i]();
     }
-    eval(this.editor.getValue());
+    var startTime = (new Date()).getTime();
+    this.reEval(this.editor.getValue());
+    var endTime = (new Date()).getTime();
     for (var i = 0; i < this.postEvalListeners.length; i++) {
       this.postEvalListeners[i]();
     }
-    console.log('Eval successful');
+    console.log('Evaluated in ' + (endTime - startTime));
   };
 
   Editor.prototype.slideIn = function() {
@@ -94,7 +96,7 @@ var Editor = (function(d3, acorn, block, Completer) {
        this.showCompletions.bind(this));
   };
 
-  Editor.prototype.showCompletions = function(completions) {
+  Editor.prototype.showCompletions = function(completions, start, end) {
     var li = d3.select(this.completionsList).selectAll('li').data(completions);
     var me = this;
 
@@ -103,7 +105,7 @@ var Editor = (function(d3, acorn, block, Completer) {
     li.text(function(d) {return d;})
       .classed('completion', 1)
       .on('mouseover', function(d) {
-        me.editor.replaceSelection(d);
+        me.editor.replaceSelection(d.substr(end-start));
       })
       .on('mouseout', function() {
         // Don't want tons of completion events filling the undo history.

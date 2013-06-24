@@ -4,10 +4,10 @@ var Completer = (function (tern, d3) {
   // The name that the editor's contents will go by
   var EDITOR_NAME = 'editor';
 
-  function loadEnvironment (files, callback) {
+  function loadEnvironment (files, getTypedef, callback) {
     var loaded = [];
     files.forEach(function(f){
-      d3.json(f, function (e, d) {
+      getTypedef(f, function (e, d) {
         loaded.push(d);
         if (loaded.length === files.length) {
           callback(loaded);
@@ -56,7 +56,8 @@ var Completer = (function (tern, d3) {
     });
   }
 
-  function Completer(cm, jsLibs, jsonLibs) {
+  function Completer(cm, jsLibs, jsonLibs, getTypedef) {
+    this.getTypedef = getTypedef;
     this.cm = cm;
     this.jsLibs = jsLibs;
     this.jsonLibs = jsonLibs;
@@ -107,7 +108,9 @@ var Completer = (function (tern, d3) {
         // We want to replace the currently selected text. Hence, we pretend
         // it's not there. This removes it:
         startText = this.cm.getValue().substr(0, start),
-        endText = this.cm.getValue().substr(end),
+        // The '\n' is to prevent 0 byte code from getting sent. The parser
+        // freaks out when that happens
+        endText = this.cm.getValue().substr(end)+'\n',
         text = startText + endText,
         // complete at start since we cut out the selected text
         req = buildRequest(text, 'completions', start),
@@ -118,15 +121,17 @@ var Completer = (function (tern, d3) {
       this.server.request.bind(this.server, req),
       this.server.request.bind(this.server, dotReq)
     ], function (results) {
-      var expressions = results[0][1].completions,
+      // FIXME: Check for errors in the results.
+      var start = results[0][1].start,
+          end = results[0][1].end,
+          expressions = results[0][1].completions,
           methods = results[1][1].completions.map(function (method) {
             return '.' + method;
           }),
           comps = methods.concat(expressions),
           compTypeReqs = comps.map(function (comp) {
-          // TODO: Doesn't handle partial string completions
             var compTypeReq = buildRequest(
-              startText + comp + endText,
+              startText + comp.substr(end-start) + endText,
               'type',
               start + comp.length);
             return this.server.request.bind(this.server, compTypeReq);
@@ -144,7 +149,7 @@ var Completer = (function (tern, d3) {
           }
           return comp;
         }.bind(this));
-        callback(filledCompletions);
+        callback(filledCompletions, start, end);
       }.bind(this));
     }.bind(this));
   };
@@ -153,7 +158,7 @@ var Completer = (function (tern, d3) {
     if (this.server) {
       this.unsafeComplete(pos, callback);
     } else {
-      loadEnvironment(this.jsonLibs, function (env) {
+      loadEnvironment(this.jsonLibs, this.getTypedef, function (env) {
         // TODO: Make this recursive
         for (var i=0; i<env.length; i++) {
           for (var key in env[i]) {

@@ -22,8 +22,9 @@ var block = (function(acorn) {
     this.mark = cm.markText(startPos, endPos, {className: 'block'});
     this.blockHandle = document.createElement('div');
     this.blockHandle.classList.add('block-handle');
-    cm.addWidget(startPos, this.blockHandle);
-    this.blockHandle.style.top = (parseInt(this.blockHandle.style.top) - 16) + 'px';
+    var loc = cm.charCoords(startPos);
+    this.blockHandle.style.top = loc.top + "px";
+    this.blockHandle.style.left = (loc.left - 9) + "px";
     document.body.appendChild(this.blockHandle);
 
     this.boundMouseMove = this.onMouseMove.bind(this);
@@ -35,7 +36,9 @@ var block = (function(acorn) {
     console.log('clear');
     this.mark.clear();
     this.container.removeEventListener('mousemove', this.boundMouseMove);
-    this.blockHandle.parentNode.removeChild(this.blockHandle);
+    if (this.blockHandle && this.blockHandle.parentNode) {
+      this.blockHandle.parentNode.removeChild(this.blockHandle);
+    }
     gotBlock = false;
   };
 
@@ -89,8 +92,8 @@ var block = (function(acorn) {
           gotBlock.clear();
         }
         var startPos   = {line: mousePos.line, ch: token.start},
-        endPos     = {line: mousePos.line, ch: token.end},
-        checkStart = {line: mousePos.line, ch: token.start - 1};
+            endPos     = {line: mousePos.line, ch: token.end},
+            checkStart = {line: mousePos.line, ch: token.start - 1};
 
         // Code Mirror doesn't detect, eg, ".1" properly, so check for it.
         if (token.string.indexOf('.') < 0 &&
@@ -159,7 +162,7 @@ var block = (function(acorn) {
   };
 
   CodeBlock.onMouseMove = function (cm, getAST, e) {
-    if (!gotBlock || gotBlock.priority < CodeBlock.PRIORITY) {
+    if (cm.getValue().length > 0 && (!gotBlock || gotBlock.priority < CodeBlock.PRIORITY)) {
       var mousePos = cm.coordsChar({top: e.pageY, left: e.pageX}),
           node = CodeBlock.getSmallestNode(cm, getAST, mousePos);
       if (node) {
@@ -206,6 +209,8 @@ var block = (function(acorn) {
   CodeBlock.prototype.handleMouseDown = function (e) {
     Block.prototype.handleMouseDown.call(this, e);
 
+    this.priority = 1000;
+
     this.handleMouseUp = function (){
       this.pickedBlock = document.createElement('div');
       this.pickedBlock.classList.add('picked-block');
@@ -246,8 +251,13 @@ var block = (function(acorn) {
     if (typeof this.insertLine !== 'undefined' && this.pickedBlock) {
       this.cm.setCursor({line: this.insertLine, ch: 0});
       this.cm.replaceSelection(this.pickedBlock.innerText + '\n');
-    }
+      var lines = this.pickedBlock.innerText.split('\n').length;
+      for (var i = 0; i < lines; i++) {
+        this.cm.indentLine(this.insertLine + i);
+      }
+    } 
     Block.prototype.handleMouseUp.call(this, e);
+
     if (this.insertWidget) {
       this.insertWidget.clear();
     }
@@ -259,7 +269,6 @@ var block = (function(acorn) {
     document.removeEventListener('mousemove', this.boundHandleMouseMove);
     if (this.pickedBlock) {
       this.pickedBlock.parentNode.removeChild(this.pickedBlock);
-
     }
   };
 

@@ -18,7 +18,7 @@
   "gitHead": "540a6bfa82cefe9e706387dd3620639286392f69",
   "dependencies": {
     "d3": "~3.0.8",
-    "codemirror": "~3.13.00",
+    "codemirror": "~3.14.00",
     "tern": "~0.2.0"
   }
 }
