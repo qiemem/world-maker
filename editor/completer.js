@@ -122,15 +122,16 @@ var Completer = (function (tern, d3) {
       this.server.request.bind(this.server, dotReq)
     ], function (results) {
       // FIXME: Check for errors in the results.
-      var expressions = results[0][1].completions,
+      var start = results[0][1].start,
+          end = results[0][1].end,
+          expressions = results[0][1].completions,
           methods = results[1][1].completions.map(function (method) {
             return '.' + method;
           }),
           comps = methods.concat(expressions),
           compTypeReqs = comps.map(function (comp) {
-          // TODO: Doesn't handle partial string completions
             var compTypeReq = buildRequest(
-              startText + comp + endText,
+              startText + comp.substr(end-start) + endText,
               'type',
               start + comp.length);
             return this.server.request.bind(this.server, compTypeReq);
@@ -148,7 +149,7 @@ var Completer = (function (tern, d3) {
           }
           return comp;
         }.bind(this));
-        callback(filledCompletions);
+        callback(filledCompletions, start, end);
       }.bind(this));
     }.bind(this));
   };
