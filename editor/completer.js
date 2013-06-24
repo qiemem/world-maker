@@ -121,6 +121,7 @@ var Completer = (function (tern, d3) {
       this.server.request.bind(this.server, req),
       this.server.request.bind(this.server, dotReq)
     ], function (results) {
+      // FIXME: Check for errors in the results.
       var expressions = results[0][1].completions,
           methods = results[1][1].completions.map(function (method) {
             return '.' + method;
