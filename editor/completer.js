@@ -130,10 +130,11 @@ var Completer = (function (tern, d3) {
           }),
           comps = methods.concat(expressions),
           compTypeReqs = comps.map(function (comp) {
-            var compTypeReq = buildRequest(
-              startText + comp.substr(end-start) + endText,
-              'type',
-              start + comp.length);
+            var startIndex = comp[0] === '.' ? 0 : end-start,
+                compTypeReq = buildRequest(
+                  startText + comp.substr(startIndex) + endText,
+                  'type',
+                  end + comp.length - startIndex);
             return this.server.request.bind(this.server, compTypeReq);
           }.bind(this));
       // Insert those completion strings into the text and request the resulting

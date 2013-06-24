@@ -105,7 +105,8 @@ var Editor = (function(d3, acorn, block, Completer) {
     li.text(function(d) {return d;})
       .classed('completion', 1)
       .on('mouseover', function(d) {
-        me.editor.replaceSelection(d.substr(end-start));
+        var index = d[0] === '.' ? 0 : end-start
+        me.editor.replaceSelection(d.substr(index));
       })
       .on('mouseout', function() {
         // Don't want tons of completion events filling the undo history.
