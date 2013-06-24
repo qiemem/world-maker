@@ -26,13 +26,15 @@ var levels = (function() {
   }
 
   var freeplay = new Level(function(code) {
-    if (this.scene) {
-      this.scene.killChildren();
-    } else {
+    if (!this.scene) {
       this.scene = new agency.Agent(World.scene());
+      this.scene.onTick(function() {
+        requestAnimationFrame(this.notify.bind(this, 'tick'));
+      });
+      this.scene.notify('tick');
     }
-    new Function('scene', 'repeat', code) (
-     this.scene, agency.repeat);
+    this.scene.killChildren();
+    new Function('scene', 'repeat', code) (this.scene, agency.repeat);
   }, ({
     basic: {
       "!name": "basic",
