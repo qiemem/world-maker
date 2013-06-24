@@ -22,8 +22,9 @@ var block = (function(acorn) {
     this.mark = cm.markText(startPos, endPos, {className: 'block'});
     this.blockHandle = document.createElement('div');
     this.blockHandle.classList.add('block-handle');
-    cm.addWidget(startPos, this.blockHandle);
-    this.blockHandle.style.top = (parseInt(this.blockHandle.style.top) - 16) + 'px';
+    var loc = cm.charCoords(startPos);
+    this.blockHandle.style.top = loc.top + "px";
+    this.blockHandle.style.left = (loc.left - 9) + "px";
     document.body.appendChild(this.blockHandle);
 
     this.boundMouseMove = this.onMouseMove.bind(this);
