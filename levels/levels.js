@@ -29,7 +29,7 @@ var levels = (function() {
   var freeplay = new Level( [
       "var hand = new agency.HandAgent();",
       "scene.addChild(hand);",
-      "// The above code gives you the hand to play with."
+      "// The above code gives you the hand to play with.\n\n"
     ].join('\n'),
       function(code) {
       if (!this.scene) {
