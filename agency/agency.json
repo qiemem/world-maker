@@ -84,6 +84,10 @@
           "!type": "fn() -> +agency.Agent",
           "!suggest": "()"
         },
+        "person": {
+          "!type": "fn() -> +agency.Agent",
+          "!suggest": "()"
+        },
         "text": {
           "!type": "fn(text: string) -> +agency.Agent",
           "!suggest": "('Hello world!')"
@@ -103,6 +107,12 @@
       }
     },
     "HandAgent": {
+      "!type": "fn()",
+      "prototype": {
+        "!proto": "agency.Agent.prototype"
+      }
+    },
+    "PersonAgent": {
       "!type": "fn()",
       "prototype": {
         "!proto": "agency.Agent.prototype"

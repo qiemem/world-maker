@@ -245,6 +245,10 @@ var agency = (function(THREE) {
     return this.make(HandAgent);
   };
 
+  Agent.prototype.person = function() {
+    return this.make(PersonAgent);
+  };
+
   Agent.prototype.on = function(evt, callback) {
     this.listeners[evt].push(callback);
     return this;
@@ -353,6 +357,18 @@ var agency = (function(THREE) {
 
   HandAgent.prototype = Object.create(CompositeAgent.prototype);
 
+  function PersonAgent() {
+    CompositeAgent.call(this);
+    var torso = this.makeChild(CubeAgent).dn(90).fd(1).up(90);
+    torso.sphere().up(90).fd(1).dn(90);
+    torso.cube().rt(90).fd(.7).lt(90).gw(-.55).gl(-.55);
+    torso.cube().lt(90).fd(.7).rt(90).gw(-.55).gl(-.55);
+    torso.cube().rt(90).fd(.25).lt(90).dn(90).fd(1).up(90).gw(-.55).gl(-.5);
+    torso.cube().lt(90).fd(.25).rt(90).dn(90).fd(1).up(90).gw(-.55).gl(-.5);
+  }
+
+  PersonAgent.prototype = Object.create(CompositeAgent.prototype);
+
   return {
     repeat: repeat,
     Agent: Agent,
@@ -360,6 +376,7 @@ var agency = (function(THREE) {
     CubeAgent: CubeAgent,
     SphereAgent: SphereAgent,
     HandAgent: HandAgent,
-    CompositeAgent: CompositeAgent
+    CompositeAgent: CompositeAgent,
+    PersonAgent: PersonAgent
   };
 })(THREE);
