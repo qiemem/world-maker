@@ -241,8 +241,8 @@ var agency = (function(THREE) {
     return this.make(TextAgent.bind(undefined, text));
   };
 
-  Agent.prototype.cursor = function() {
-    return this.make(CursorAgent);
+  Agent.prototype.hand = function() {
+    return this.make(HandAgent);
   };
 
   Agent.prototype.on = function(evt, callback) {
@@ -332,7 +332,7 @@ var agency = (function(THREE) {
     }
   };
 
-  function CursorAgent() {
+  function HandAgent() {
     CompositeAgent.call(this);
     var back = this.makeChild(CubeAgent).bk(0.635).gl(-0.75).gt(-0.75);
     back.transparency(0.2);
@@ -344,14 +344,14 @@ var agency = (function(THREE) {
     left.transparency(0.2);
 
     var backBottom = this.makeChild(CubeAgent);
-    backBottom.bk(0.635).gl(-0.75).gt(-0.5).gw(-0.75).dn(90).fd(0.25).up(90);
+    backBottom.bk(0.635).gl(-0.75).gt(-0.625).gw(-0.75).dn(90).fd(0.312).up(90);
     backBottom.transparency(0.2);
 
     var bottom = right.cube().dn(90).fd(0.625).up(90).lt(90).fd(0.625).rt(90);
     bottom.transparency(0.2);
   }
 
-  CursorAgent.prototype = Object.create(CompositeAgent.prototype);
+  HandAgent.prototype = Object.create(CompositeAgent.prototype);
 
   return {
     repeat: repeat,
@@ -359,7 +359,7 @@ var agency = (function(THREE) {
     SceneAgent: SceneAgent,
     CubeAgent: CubeAgent,
     SphereAgent: SphereAgent,
-    CursorAgent: CursorAgent,
+    HandAgent: HandAgent,
     CompositeAgent: CompositeAgent
   };
 })(THREE);

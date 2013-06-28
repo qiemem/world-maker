@@ -8,6 +8,8 @@ var editor, scene;
   editor.completer = new Completer(cm, [], levels.freeplay.typedefNames, levels.freeplay.getTypedef.bind(levels.freeplay));
   if (window.location.hash) {
     cm.setValue(decodeURIComponent(window.location.hash.substr(1)));
+  } else {
+    cm.setValue(levels.freeplay.initialContent);
   }
   cm.setCursor(cm.posFromIndex(cm.getValue().length));
   document.body.addEventListener('keypress', function(e) {
