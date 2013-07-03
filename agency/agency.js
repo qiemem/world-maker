@@ -34,7 +34,7 @@ var agency = (function(THREE) {
       agent-based API, she can.
       @constructor
    */
-  function Agent(obj) {
+  function Agent(obj, parent) {
     this.obj = obj;
     this.obj.useQuaternion = true;
     this.listeners = {
@@ -42,7 +42,7 @@ var agency = (function(THREE) {
     };
     this.children = [];
     this.childrenUsingMyColor = [];
-    this.parent = this;
+    //parent.addChild(this);
   }
 
   // TODO: Translate methods only use rotation, not scaling, from matrix
@@ -191,7 +191,8 @@ var agency = (function(THREE) {
   Agent.prototype.__make = function(AgentType) {
     // arguments isn't actually an array, but is enough like one that we can
     // call slice on it
-    var agent = new AgentType(Array.prototype.slice.call(arguments, 1));
+    var agent = new AgentType();
+    AgentType.apply(agent, Array.prototype.slice.call(arguments, 1));
     this.obj.updateMatrix();
     agent.obj.applyMatrix(this.obj.matrix);
     agent.color(this.color());
@@ -202,7 +203,7 @@ var agency = (function(THREE) {
     var agent = this.__make(agentType);
     if (this.obj instanceof THREE.Scene) {
       this.addChild(agent);
-    } else {
+    } else if (this.parent) {
       this.parent.addChild(agent);
     }
     return agent;
@@ -243,6 +244,10 @@ var agency = (function(THREE) {
 
   Agent.prototype.hand = function() {
     return this.make(HandAgent);
+  };
+
+  Agent.prototype.person = function() {
+    return this.make(PersonAgent);
   };
 
   Agent.prototype.on = function(evt, callback) {
@@ -353,6 +358,22 @@ var agency = (function(THREE) {
 
   HandAgent.prototype = Object.create(CompositeAgent.prototype);
 
+  function PersonAgent() {
+    CompositeAgent.call(this);
+    var torso = this.cube().dn(90).fd(1).up(90).gl(-.5);
+    var rightArm = torso.cube().rt(90).fd(.625).lt(90).gw(-.75).gl(-.25);
+    var leftArm = torso.cube().lt(90).fd(.625).rt(90).gw(-.75).gl(-.25);
+    var rightLeg = torso.cube().rt(90).fd(.25).lt(90).dn(90).fd(1).up(90).gw(-.55).gl(-.1);
+    var leftLeg = torso.cube().lt(90).fd(.25).rt(90).dn(90).fd(1).up(90).gw(-.55).gl(-.1);
+    this.shirt = new CompositeAgent(torso, rightArm, leftArm).color('green');
+    this.addChild(this.shirt, false);
+    this.pants = new CompositeAgent(rightLeg, leftLeg).color('blue');
+    this.addChild(this.pants, false);
+    this.makeChild(SphereAgent).obj.material.side = THREE.FrontSide;
+  }
+
+  PersonAgent.prototype = Object.create(CompositeAgent.prototype);
+
   return {
     repeat: repeat,
     Agent: Agent,
@@ -360,6 +381,7 @@ var agency = (function(THREE) {
     CubeAgent: CubeAgent,
     SphereAgent: SphereAgent,
     HandAgent: HandAgent,
-    CompositeAgent: CompositeAgent
+    CompositeAgent: CompositeAgent,
+    PersonAgent: PersonAgent
   };
 })(THREE);
