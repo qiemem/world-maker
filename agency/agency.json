@@ -115,7 +115,9 @@
     "PersonAgent": {
       "!type": "fn()",
       "prototype": {
-        "!proto": "agency.Agent.prototype"
+        "!proto": "agency.Agent.prototype",
+        "shirt": "agency.Agent.prototype",
+        "pants": "agency.Agent.prototype"
       }
     }
   }

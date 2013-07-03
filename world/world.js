@@ -9,6 +9,10 @@ var World = (function(THREE, THREEx, TWEEN) {
       camera,
       scene,
       controlModes,
+    // First person controls are special. We want to be able toreport player
+    // position.
+      fpControls,   
+      fpPosition,
       controls,
       activeControlMode,
       playerLight,
@@ -43,10 +47,11 @@ var World = (function(THREE, THREEx, TWEEN) {
 
     trackballControls.setActive(false);
 
-    var fpControls = new THREE.FirstPersonControls(camera);
+    fpControls = new THREE.FirstPersonControls(camera);
     fpControls.lookSpeed = 0.1;
     fpControls.movementSpeed = 2;
-    var fpPosition = camera.position.clone().setX(-5.0);
+    fpPosition = camera.position.clone().setX(-5.0);
+    fpPosition = fpPosition;
     var fpUp = camera.up.clone();
     fpControls.setActive = function(val) {
       this.freeze = !val;
@@ -147,6 +152,9 @@ var World = (function(THREE, THREEx, TWEEN) {
   var animate = function() {
     playerLight.position.copy(camera.position);
     controls.update(clock.getDelta());
+    if (fpControls.activeLook) {
+      fpPosition = fpControls.object.position.clone();
+    }
     TWEEN.update();
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
@@ -158,6 +166,8 @@ var World = (function(THREE, THREEx, TWEEN) {
     switchControls: switchControls,
     scene: function() {return scene;},
     camera: function() {return camera;},
+    playerPosition: function() {return fpPosition.clone();},
+    playerDirection: function() {return fpControls.target.clone();},
     controls: function() {return controls;},
     renderer: function() {return renderer;},
     clock: function() {return clock;},
