@@ -1,4 +1,5 @@
 var World = (function(THREE, THREEx, TWEEN) {
+  // TODO: Scalar methods do not affect physical shape
   'use strict';
 
   var VIEW_ANGLE = 45,
