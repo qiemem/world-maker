@@ -53,6 +53,7 @@ var agency = (function(THREE) {
     */
   Agent.prototype.forward = Agent.prototype.fd = function(distance) {
     this.obj.translateX(distance);
+    this.obj.__dirtyPosition = true;
     return this;
   };
 
@@ -67,12 +68,14 @@ var agency = (function(THREE) {
   Agent.prototype.left = Agent.prototype.lt = function(angle) {
     this.obj.rotateOnAxis(
       new THREE.Vector3(0, 1, 0), 2 * Math.PI * angle / 360);
+    this.obj.__dirtyRotation = true;
     return this;
   };
 
   Agent.prototype.up = function(angle) {
     this.obj.rotateOnAxis(
       new THREE.Vector3(0, 0, 1), 2 * Math.PI * angle / 360);
+    this.obj.__dirtyRotation = true;
     return this;
   };
 
@@ -83,6 +86,7 @@ var agency = (function(THREE) {
   Agent.prototype.rollRight = Agent.prototype.rr = function(angle) {
     this.obj.rotateOnAxis(
       new THREE.Vector3(1, 0, 0), 2 * Math.PI * angle / 360);
+    this.obj.__dirtyRotation = true;
     return this;
   };
 
@@ -90,7 +94,7 @@ var agency = (function(THREE) {
     return this.rr(-angle);
   };
 
-  // TODO: Scalar methods do not use matrix multiplication.
+  // TODO: Scalar methods do not affect physical shape
   Agent.prototype.grow = function(amount) {
     return this.gw(amount).gl(amount).gt(amount);
   };
@@ -145,6 +149,15 @@ var agency = (function(THREE) {
       this.obj.material.opacity = 1;
     }
     return this;
+  };
+
+  Agent.prototype.mass = function (amount) {
+    if (typeof amount === 'undefined') {
+      return this.obj.mass;
+    } else {
+      this.obj.mass = amount;
+      return this;
+    }
   };
 
   Agent.prototype.notify = function(evt) {
@@ -282,7 +295,8 @@ var agency = (function(THREE) {
   function CubeAgent() {
     var material = new THREE.MeshPhongMaterial();
     material.side = THREE.DoubleSide;
-    var cube = new THREE.Mesh(CubeAgent.geometry, material);
+    var cube = new Physijs.BoxMesh(CubeAgent.geometry, material);
+    cube.mass = 0;
     Agent.call(this, cube);
   }
 
@@ -293,7 +307,8 @@ var agency = (function(THREE) {
   function SphereAgent() {
     var material = new THREE.MeshPhongMaterial();
     material.side = THREE.DoubleSide;
-    var sphere = new THREE.Mesh(SphereAgent.geometry, material);
+    var sphere = new Physijs.SphereMesh(SphereAgent.geometry, material);
+    sphere.mass = 0;
     Agent.call(this, sphere);
   }
 

@@ -19,7 +19,6 @@
   "dependencies": {
     "d3": "~3.0.8",
     "codemirror": "~3.14.00",
-    "tern": "~0.2.0",
-    "cannon": "~0.5.0"
+    "tern": "~0.2.0"
   }
 }

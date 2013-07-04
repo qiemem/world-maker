@@ -23,6 +23,9 @@ var World = (function(THREE, THREEx, TWEEN) {
     TRACKBALL: 'trackball'
   };
 
+  Physijs.scripts.worker = '/libs/physijs_worker.js';
+  Physijs.scripts.ammo = '/libs/ammo.js';
+
   var clock = new THREE.Clock();
 
   var init = function(container) {
@@ -85,7 +88,7 @@ var World = (function(THREE, THREEx, TWEEN) {
       }
     });
 
-    scene = new THREE.Scene();
+    scene = new Physijs.Scene();
     scene.add(camera);
 
     container.appendChild(renderer.domElement);
@@ -156,6 +159,7 @@ var World = (function(THREE, THREEx, TWEEN) {
       fpPosition = fpControls.object.position.clone();
     }
     TWEEN.update();
+    scene.simulate();
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
   };

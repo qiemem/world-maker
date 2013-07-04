@@ -72,6 +72,10 @@
           "!type": "fn(amount: number) -> !this",
           "!suggest": "(0.5)"
         },
+        "mass": {
+          "!type": "fn(mass: nmber) -> !this",
+          "!suggest": "(1.0)"
+        },
         "cube": {
           "!type": "fn() -> +agency.Agent",
           "!suggest": "()"

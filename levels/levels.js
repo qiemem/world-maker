@@ -46,6 +46,7 @@ var levels = (function() {
       function(code) {
         if (!this.scene) {
           this.scene = new agency.SceneAgent(World.scene(), World.renderer());
+          this.scene.obj.setGravity(new THREE.Vector3());
           this.scene.onTick(function() {
             requestAnimationFrame(this.notify.bind(this, 'tick'));
           });
