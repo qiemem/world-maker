@@ -45,7 +45,8 @@ var agency = (function(THREE) {
     //parent.addChild(this);
   }
 
-  // TODO: Translate methods only use rotation, not scaling, from matrix
+  // Note that, translate methods only use rotation, not scaling, from matrix.
+  // This is by design.
   /**
       Moves the agent forward (along the x-axis) by distance.
       @param {number} distance The distance to move
@@ -333,6 +334,7 @@ var agency = (function(THREE) {
 
   SphereAgent.prototype = Object.create(Agent.prototype);
 
+  // FIXME: Physics doesn't work for composite agents
   function CompositeAgent() {
     Agent.call(this, new THREE.Object3D());
     this.compositeColor = new THREE.Color(0xffffff);
