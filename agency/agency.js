@@ -95,23 +95,34 @@ var agency = (function(THREE) {
     return this.rr(-angle);
   };
 
-  // TODO: Scalar methods do not affect physical shape
   Agent.prototype.grow = function(amount) {
-    return this.gw(amount).gl(amount).gt(amount);
+    // Physijs doesn't support scaling objects except at creation time
+    if (this.parent) this.parent.obj.remove(this.obj);
+    this.obj.scale.x += amount;
+    this.obj.scale.y += amount;
+    this.obj.scale.z += amount;
+    if (this.parent) this.parent.obj.add(this.obj);
+    return this;
   };
 
   Agent.prototype.growWide = Agent.prototype.gw = function(amount) {
+    if (this.parent) this.parent.obj.remove(this.obj);
     this.obj.scale.z += amount;
+    if (this.parent) this.parent.obj.add(this.obj);
     return this;
   };
 
   Agent.prototype.growLong = Agent.prototype.gl = function(amount) {
+    if (this.parent) this.parent.obj.remove(this.obj);
     this.obj.scale.x += amount;
+    if (this.parent) this.parent.obj.add(this.obj);
     return this;
   };
 
   Agent.prototype.growTall = Agent.prototype.gt = function(amount) {
+    if (this.parent) this.parent.obj.remove(this.obj);
     this.obj.scale.y += amount;
+    if (this.parent) this.parent.obj.add(this.obj);
     return this;
   };
 
