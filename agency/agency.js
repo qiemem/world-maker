@@ -97,32 +97,28 @@ var agency = (function(THREE) {
 
   Agent.prototype.grow = function(amount) {
     // Physijs doesn't support scaling objects except at creation time
-    if (this.parent) this.parent.obj.remove(this.obj);
     this.obj.scale.x += amount;
     this.obj.scale.y += amount;
     this.obj.scale.z += amount;
-    if (this.parent) this.parent.obj.add(this.obj);
+    this.__updatePhysical();
     return this;
   };
 
   Agent.prototype.growWide = Agent.prototype.gw = function(amount) {
-    if (this.parent) this.parent.obj.remove(this.obj);
     this.obj.scale.z += amount;
-    if (this.parent) this.parent.obj.add(this.obj);
+    this.__updatePhysical();
     return this;
   };
 
   Agent.prototype.growLong = Agent.prototype.gl = function(amount) {
-    if (this.parent) this.parent.obj.remove(this.obj);
     this.obj.scale.x += amount;
-    if (this.parent) this.parent.obj.add(this.obj);
+    this.__updatePhysical();
     return this;
   };
 
   Agent.prototype.growTall = Agent.prototype.gt = function(amount) {
-    if (this.parent) this.parent.obj.remove(this.obj);
     this.obj.scale.y += amount;
-    if (this.parent) this.parent.obj.add(this.obj);
+    this.__updatePhysical();
     return this;
   };
 
@@ -168,6 +164,7 @@ var agency = (function(THREE) {
       return this.obj.mass;
     } else {
       this.obj.mass = amount;
+      this.__updatePhysical();
       return this;
     }
   };
@@ -190,7 +187,6 @@ var agency = (function(THREE) {
     if (agent.parent) {
       agent.parent.removeChild(agent);
     }
-    if (this.parent) this.parent.obj.remove(this.obj);
     this.children.push(agent);
     if (useMyColor || (agent.color().equals(this.color()) && useMyColor != false)) {
       this.childrenUsingMyColor.push(agent);
@@ -198,14 +194,13 @@ var agency = (function(THREE) {
     }
     agent.parent = this;
     this.obj.add(agent.obj);
-    if (this.parent) this.parent.obj.add(this.obj);
+    this.__updatePhysical();
     return this;
   };
 
   Agent.prototype.removeChild = function(agent) {
     var i = this.children.indexOf(agent),
         j = this.childrenUsingMyColor.indexOf(agent);
-    if (this.parent) this.parent.obj.remove(this.obj);
     if (i > 0) {
       this.children.splice(i,i);
       this.obj.remove(agent.obj);
@@ -213,8 +208,15 @@ var agency = (function(THREE) {
     if (j > 0) {
       this.childrenUsingMyColor.splice(j,j);
     }
-    if (this.parent) this.parent.obj.add(this.obj);
+    this.__updatePhysical();
     return this;
+  };
+
+  Agent.prototype.__updatePhysical = function() {
+    if (this.parent) {
+      this.parent.obj.remove(this.obj);
+      this.parent.obj.add(this.obj);
+    }
   };
 
   Agent.prototype.__make = function(AgentType) {
