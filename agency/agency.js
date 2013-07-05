@@ -213,6 +213,13 @@ var agency = (function(THREE) {
   };
 
   Agent.prototype.__updatePhysical = function() {
+    if (this.obj._physijs) {
+      // Strangely, physijs *=s the width, height, and depth of an object by
+      // its scale (instead of just setting it). So, we have to reset them.
+      this.obj._physijs.width = 1.0;
+      this.obj._physijs.height = 1.0;
+      this.obj._physijs.depth = 1.0;
+    }
     if (this.parent) {
       this.parent.obj.remove(this.obj);
       this.parent.obj.add(this.obj);
