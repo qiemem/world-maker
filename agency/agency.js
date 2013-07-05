@@ -7,8 +7,8 @@
 
 // TODO:
 // - Add:
-//    - tubeDown(numSides) - like pen down, but creates a tunnel with numSides
-//    - tubeUp()
+//    - tubeDown(numSides)/tubeUp() - like pen down, but creates a tunnel with numSides
+//        - Actually, maybe start with something that just lays a four sided object. Will be much easier (but still difficult) to do this smoothly
 
 var agency = (function(THREE) {
   'use strict';
