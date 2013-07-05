@@ -190,6 +190,7 @@ var agency = (function(THREE) {
     if (agent.parent) {
       agent.parent.removeChild(agent);
     }
+    if (this.parent) this.parent.obj.remove(this.obj);
     this.children.push(agent);
     if (useMyColor || (agent.color().equals(this.color()) && useMyColor != false)) {
       this.childrenUsingMyColor.push(agent);
@@ -197,12 +198,14 @@ var agency = (function(THREE) {
     }
     agent.parent = this;
     this.obj.add(agent.obj);
+    if (this.parent) this.parent.obj.add(this.obj);
     return this;
   };
 
   Agent.prototype.removeChild = function(agent) {
     var i = this.children.indexOf(agent),
         j = this.childrenUsingMyColor.indexOf(agent);
+    if (this.parent) this.parent.obj.remove(this.obj);
     if (i > 0) {
       this.children.splice(i,i);
       this.obj.remove(agent.obj);
@@ -210,6 +213,7 @@ var agency = (function(THREE) {
     if (j > 0) {
       this.childrenUsingMyColor.splice(j,j);
     }
+    if (this.parent) this.parent.obj.add(this.obj);
     return this;
   };
 
@@ -305,10 +309,9 @@ var agency = (function(THREE) {
   SceneAgent.prototype.updateChildrensColor = function () {}
 
   function CubeAgent() {
-    var material = new THREE.MeshPhongMaterial();
+    var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .4, .6);
     material.side = THREE.DoubleSide;
-    var cube = new Physijs.BoxMesh(CubeAgent.geometry, material);
-    cube.mass = 0;
+    var cube = new Physijs.BoxMesh(CubeAgent.geometry, material, 0 /*mass*/);
     Agent.call(this, cube);
   }
 
@@ -316,11 +319,11 @@ var agency = (function(THREE) {
 
   CubeAgent.prototype = Object.create(Agent.prototype);
 
+  // FIXME: Scaling doesn't work with spheres in PhysiJS.
   function SphereAgent() {
-    var material = new THREE.MeshPhongMaterial();
+    var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .4, .6);
     material.side = THREE.DoubleSide;
-    var sphere = new Physijs.SphereMesh(SphereAgent.geometry, material);
-    sphere.mass = 0;
+    var sphere = new Physijs.SphereMesh(SphereAgent.geometry, material, 0 /*mass*/);
     Agent.call(this, sphere);
   }
 
@@ -346,6 +349,12 @@ var agency = (function(THREE) {
   SphereAgent.prototype = Object.create(Agent.prototype);
 
   // FIXME: Physics doesn't work for composite agents
+  // see: https://github.com/chandlerprall/Physijs/wiki/Compound-Shapes
+  // We may want to eliminate CompositeAgent so that all agents have some Mesh
+  // corresponding to them. Then, any agent can just effectively become a 
+  // composite agent.
+  // FIXME: In my tests, it looked like PhysiJS didn't support scaling child
+  // Meshes.
   function CompositeAgent() {
     Agent.call(this, new THREE.Object3D());
     this.compositeColor = new THREE.Color(0xffffff);
