@@ -201,12 +201,12 @@ var agency = (function(THREE) {
   Agent.prototype.removeChild = function(agent) {
     var i = this.children.indexOf(agent),
         j = this.childrenUsingMyColor.indexOf(agent);
-    if (i > 0) {
-      this.children.splice(i,i);
+    if (i > -1) {
+      this.children.splice(i,i+1);
       this.obj.remove(agent.obj);
     }
-    if (j > 0) {
-      this.childrenUsingMyColor.splice(j,j);
+    if (j > -1) {
+      this.childrenUsingMyColor.splice(j,j+1);
     }
     this.__updatePhysical();
     return this;
@@ -254,8 +254,11 @@ var agency = (function(THREE) {
   };
 
   Agent.prototype.killChildren = function() {
-    this.children.forEach(function(c) {c.die();});
-    this.children = [];
+    // This is algorithmically inefficient, but it's not worth fixing since
+    // as it's not actually noticeable.
+    while (this.children.length > 0) {
+      this.children[0].die();
+    }
     this.childrenUsingMyColor = [];
   };
 
