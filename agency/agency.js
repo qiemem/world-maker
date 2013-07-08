@@ -370,6 +370,7 @@ var agency = (function(THREE) {
     // children together.
     var fakeMesh = new Physijs.SphereMesh(CompositeAgent.geometry, CompositeAgent.material, 0 /*mass*/, { collision_flags: 0 });
     // Make sure a collision check is never done on the composite agent itself.
+    fakeMesh.visible = false;
     fakeMesh._physijs.radius = -1;
     Agent.call(this, fakeMesh);
     this.compositeColor = new THREE.Color(0xffffff);
