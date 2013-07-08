@@ -357,20 +357,26 @@ var agency = (function(THREE) {
 
   SphereAgent.prototype = Object.create(Agent.prototype);
 
-  // FIXME: Physics doesn't work for composite agents
   // see: https://github.com/chandlerprall/Physijs/wiki/Compound-Shapes
-  // We may want to eliminate CompositeAgent so that all agents have some Mesh
-  // corresponding to them. Then, any agent can just effectively become a 
-  // composite agent.
   // FIXME: In my tests, it looked like PhysiJS didn't support scaling child
   // Meshes.
   function CompositeAgent() {
-    Agent.call(this, new THREE.Object3D());
+    // The agent must be physical so that physics checks happen for it's 
+    // children, and so that it can move and have velocity. However, we don't
+    // want it to actually interact with anything. It's just holding it's
+    // children together.
+    var fakeMesh = new Physijs.SphereMesh(CompositeAgent.geometry, CompositeAgent.material, 0 /*mass*/, { collision_flags: 0 });
+    // Make sure a collision check is never done on the composite agent itself.
+    fakeMesh._physijs.radius = -1;
+    Agent.call(this, fakeMesh);
     this.compositeColor = new THREE.Color(0xffffff);
     for (var i = 0; i < arguments.length; i++) {
       this.addChild(arguments[i], this.color().equals(arguments[i].color()));
     }
   }
+
+  CompositeAgent.geometry = new THREE.SphereGeometry(0.0);
+  CompositeAgent.material = Physijs.createMaterial(new THREE.LineBasicMaterial(), 0, 0);
 
   CompositeAgent.prototype = Object.create(Agent.prototype);
 
