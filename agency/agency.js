@@ -42,6 +42,7 @@ var agency = (function(THREE) {
     };
     this.children = [];
     this.childrenUsingMyColor = [];
+    this.physicalFactor = 1.0;
     //parent.addChild(this);
   }
 
@@ -169,6 +170,19 @@ var agency = (function(THREE) {
     }
   };
 
+  Agent.prototype.physical = function (enabled) {
+    if (typeof enabled === 'undefined') {
+      return this.physicalFactor >= 0;
+    } else if (enabled) {
+      this.physicalFactor = 1.0;
+    } else {
+      this.physicalFactor = -1.0;
+    }
+    this.children.forEach(function(c) {c.physical(enabled);});
+    this.__updatePhysical();
+    return this;
+  };
+
   Agent.prototype.notify = function(evt) {
     var l = this.listeners[evt].length,
         c = this.children.length;
@@ -216,9 +230,9 @@ var agency = (function(THREE) {
     if (this.obj._physijs) {
       // Strangely, physijs *=s the width, height, and depth of an object by
       // its scale (instead of just setting it). So, we have to reset them.
-      if ( this.obj._physijs.width ) this.obj._physijs.width = 1.0;
-      if ( this.obj._physijs.height ) this.obj._physijs.height = 1.0;
-      if ( this.obj._physijs.depth ) this.obj._physijs.depth = 1.0;
+      if ( this.obj._physijs.width ) this.obj._physijs.width = this.physicalFactor;
+      if ( this.obj._physijs.height ) this.obj._physijs.height = this.physicalFactor;
+      if ( this.obj._physijs.depth ) this.obj._physijs.depth = this.physicalFactor;
     }
     this.children.forEach(function (c) { c.__resetDimensions(); });
   };
