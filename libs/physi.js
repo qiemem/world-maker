@@ -848,6 +848,16 @@ window.Physijs = (function() {
       if ( object._physijs.depth ) {
         object._physijs.depth *= scale.z;
       }
+      
+      if ( object._physijs.points ) {
+        for ( i = 0; i< object._physijs.points.length; i++ ) {
+          var p = object._physijs.points[i];
+          p.x *= scale.x;
+          p.y *= scale.y;
+          p.z *= scale.z;
+        }
+      }
+
       for ( i = 0; i < object.children.length; i++) {
         initRecursiveScale(object.children[i], scale);
       }

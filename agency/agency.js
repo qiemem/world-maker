@@ -216,9 +216,9 @@ var agency = (function(THREE) {
     if (this.obj._physijs) {
       // Strangely, physijs *=s the width, height, and depth of an object by
       // its scale (instead of just setting it). So, we have to reset them.
-      this.obj._physijs.width = 1.0;
-      this.obj._physijs.height = 1.0;
-      this.obj._physijs.depth = 1.0;
+      if ( this.obj._physijs.width ) this.obj._physijs.width = 1.0;
+      if ( this.obj._physijs.height ) this.obj._physijs.height = 1.0;
+      if ( this.obj._physijs.width ) this.obj._physijs.width = 1.0;
     }
     this.children.forEach(function (c) { c.__resetDimensions(); });
   };
@@ -340,7 +340,12 @@ var agency = (function(THREE) {
   function SphereAgent() {
     var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .4, .6);
     material.side = THREE.DoubleSide;
-    var sphere = new Physijs.SphereMesh(SphereAgent.geometry, material, 0 /*mass*/);
+    // Although ConvexMesh is inefficient, scaling along an axis doesn't work
+    // for spheres in Physijs (as that makes them not spheres). I did change
+    // Physijs so it works for ConvexMeshes though. If the ineffeciency becomes
+    // noticeable, I should use SphereMesh as long as the scaling is the same
+    // in each dimension (I would have to implement this in Physijs as well).
+    var sphere = new Physijs.ConvexMesh(SphereAgent.geometry, material, 0 /*mass*/);
     Agent.call(this, sphere);
   }
 
