@@ -212,7 +212,7 @@ var agency = (function(THREE) {
     return this;
   };
 
-  Agent.prototype.__updatePhysical = function() {
+  Agent.prototype.__resetDimensions = function() {
     if (this.obj._physijs) {
       // Strangely, physijs *=s the width, height, and depth of an object by
       // its scale (instead of just setting it). So, we have to reset them.
@@ -220,6 +220,11 @@ var agency = (function(THREE) {
       this.obj._physijs.height = 1.0;
       this.obj._physijs.depth = 1.0;
     }
+    this.children.forEach(function (c) { c.__resetDimensions(); });
+  };
+
+  Agent.prototype.__updatePhysical = function() {
+    this.__resetDimensions()
     if (this.parent) {
       this.parent.obj.remove(this.obj);
       this.parent.obj.add(this.obj);
@@ -231,14 +236,14 @@ var agency = (function(THREE) {
     // call slice on it
     var agent = new AgentType();
     AgentType.apply(agent, Array.prototype.slice.call(arguments, 1));
-    this.obj.updateMatrix();
-    agent.obj.applyMatrix(this.obj.matrix);
     agent.color(this.color());
     return agent;
   };
 
   Agent.prototype.make = function(agentType) {
     var agent = this.__make(agentType);
+    this.obj.updateMatrix();
+    agent.obj.applyMatrix(this.obj.matrix);
     if (this.obj instanceof THREE.Scene) {
       this.addChild(agent);
     } else if (this.parent) {

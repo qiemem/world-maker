@@ -828,6 +828,31 @@ window.Physijs = (function() {
 		}
 	};
 
+    // intentionally private
+    function initRecursiveScale (object, parentScale) {
+      var i,
+          scale = parentScale.clone().multiply(object.scale);
+      if ( object._physijs.position_offset ) {
+        object._physijs.position_offset.x *= parentScale.x;
+        object._physijs.position_offset.y *= parentScale.y;
+        object._physijs.position_offset.z *= parentScale.z;
+      }
+      object._physijs.positionOffset
+      // Check for scaling
+      if ( object._physijs.width ) {
+        object._physijs.width *= scale.x;
+      }
+      if ( object._physijs.height ) {
+        object._physijs.height *= scale.y;
+      }
+      if ( object._physijs.depth ) {
+        object._physijs.depth *= scale.z;
+      }
+      for ( i = 0; i < object.children.length; i++) {
+        initRecursiveScale(object.children[i], scale);
+      }
+    }
+
 	Physijs.Scene.prototype.add = function( object ) {
 		THREE.Mesh.prototype.add.call( this, object );
 
@@ -867,18 +892,7 @@ window.Physijs = (function() {
 				}
 				object._physijs.rotation = { x: object.quaternion.x, y: object.quaternion.y, z: object.quaternion.z, w: object.quaternion.w };
 
-				// Check for scaling
-				var mass_scaling = new THREE.Vector3( 1, 1, 1 );
-				if ( object._physijs.width ) {
-					object._physijs.width *= object.scale.x;
-				}
-				if ( object._physijs.height ) {
-					object._physijs.height *= object.scale.y;
-				}
-				if ( object._physijs.depth ) {
-					object._physijs.depth *= object.scale.z;
-				}
-
+                initRecursiveScale(object, new THREE.Vector3(1, 1, 1));
 				this.execute( 'addObject', object._physijs );
 
 			}
