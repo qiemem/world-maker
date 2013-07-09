@@ -831,27 +831,22 @@ window.Physijs = (function() {
     // intentionally private
     function initRecursiveScale (object, parentScale) {
       var i,
-          scale = parentScale.clone().multiply(object.scale);
-      if ( object._physijs.position_offset ) {
-        object._physijs.position_offset.x *= parentScale.x;
-        object._physijs.position_offset.y *= parentScale.y;
-        object._physijs.position_offset.z *= parentScale.z;
+          scale = parentScale.clone().multiply(object.scale),
+          phys = object._physijs;
+      if ( phys.position_offset ) {
+        phys.position_offset.x *= parentScale.x;
+        phys.position_offset.y *= parentScale.y;
+        phys.position_offset.z *= parentScale.z;
       }
-      object._physijs.positionOffset
+      phys.positionOffset
       // Check for scaling
-      if ( object._physijs.width ) {
-        object._physijs.width *= scale.x;
-      }
-      if ( object._physijs.height ) {
-        object._physijs.height *= scale.y;
-      }
-      if ( object._physijs.depth ) {
-        object._physijs.depth *= scale.z;
-      }
-      
-      if ( object._physijs.points ) {
-        for ( i = 0; i< object._physijs.points.length; i++ ) {
-          var p = object._physijs.points[i];
+      if (phys.type === 'box') {
+        phys.width *= scale.x;
+        phys.height *= scale.y;
+        phys.depth *= scale.z;
+      } else if (phys.type === 'convex') {
+        for ( i = 0; i< phys.points.length; i++ ) {
+          var p = phys.points[i];
           p.x *= scale.x;
           p.y *= scale.y;
           p.z *= scale.z;

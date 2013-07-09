@@ -218,7 +218,7 @@ var agency = (function(THREE) {
       // its scale (instead of just setting it). So, we have to reset them.
       if ( this.obj._physijs.width ) this.obj._physijs.width = 1.0;
       if ( this.obj._physijs.height ) this.obj._physijs.height = 1.0;
-      if ( this.obj._physijs.width ) this.obj._physijs.width = 1.0;
+      if ( this.obj._physijs.depth ) this.obj._physijs.depth = 1.0;
     }
     this.children.forEach(function (c) { c.__resetDimensions(); });
   };
