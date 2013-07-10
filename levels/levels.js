@@ -53,6 +53,7 @@ var levels = (function() {
           });
           this.scene.notify('tick');
         }
+        this.scene.killChildren();
         new Function('scene', 'repeat', code) (this.scene, agency.repeat);
       }, ({
         basic: {

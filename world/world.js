@@ -93,19 +93,6 @@ var World = (function(THREE, THREEx, TWEEN) {
 
     container.appendChild(renderer.domElement);
 
-    reset();
-
-    animate();
-  };
-
-  var reset = function() {
-    for (var i = scene.children.length - 1; i >= 0; i--) {
-      var obj = scene.children[i];
-      if (obj !== camera) {
-        scene.remove(obj);
-      }
-    }
-
     scene.rotation.set(0, 0, 0);
     scene.scale.set(1, 1, 1);
     scene.position.set(0, 0, 0);
@@ -114,6 +101,8 @@ var World = (function(THREE, THREEx, TWEEN) {
     scene.add(playerLight);
     hemisphereLight = new THREE.HemisphereLight(0xCCCCFF, 0xFFCCCC, 0.5);
     scene.add(hemisphereLight);
+    
+    animate();
   };
 
   var switchControls = function(controlMode) {
@@ -175,7 +164,6 @@ var World = (function(THREE, THREEx, TWEEN) {
     controls: function() {return controls;},
     renderer: function() {return renderer;},
     clock: function() {return clock;},
-    reset: reset,
     playerLight: function() {return playerLight;},
     hemisphereLight: function() {return hemisphereLight;},
     animate: animate
