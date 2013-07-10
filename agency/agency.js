@@ -176,7 +176,7 @@ var agency = (function(THREE) {
     } else if (enabled) {
       this.physicalFactor = 1.0;
     } else {
-      this.physicalFactor = -1.0;
+      this.physicalFactor = -Infinity;
     }
     this.children.forEach(function(c) {c.physical(enabled);});
     this.__updatePhysical();
@@ -228,11 +228,17 @@ var agency = (function(THREE) {
 
   Agent.prototype.__resetDimensions = function() {
     if (this.obj._physijs) {
+      var phys = this.obj._physijs;
+      if (phys.type === 'box') {
+        phys.width = this.physicalFactor;
+        phys.height = this.physicalFactor;
+        phys.depth = this.physicalFactor;
+      } else if (phys.type === 'sphere') {
+        phys.radius = this.physicalFactor;
+      }
       // Strangely, physijs *=s the width, height, and depth of an object by
       // its scale (instead of just setting it). So, we have to reset them.
-      if ( this.obj._physijs.width ) this.obj._physijs.width = this.physicalFactor;
-      if ( this.obj._physijs.height ) this.obj._physijs.height = this.physicalFactor;
-      if ( this.obj._physijs.depth ) this.obj._physijs.depth = this.physicalFactor;
+      // TODO: Make this work for ConvexMesh
     }
     this.children.forEach(function (c) { c.__resetDimensions(); });
   };
@@ -337,7 +343,7 @@ var agency = (function(THREE) {
   };
 
   // The scene should never force children to be its color.
-  SceneAgent.prototype.updateChildrensColor = function () {}
+  SceneAgent.prototype.updateChildrensColor = function () {};
 
   function CubeAgent() {
     var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .4, .6);
@@ -384,19 +390,16 @@ var agency = (function(THREE) {
 
   SphereAgent.prototype = Object.create(Agent.prototype);
 
-  // see: https://github.com/chandlerprall/Physijs/wiki/Compound-Shapes
-  // FIXME: In my tests, it looked like PhysiJS didn't support scaling child
-  // Meshes.
   function CompositeAgent() {
     // The agent must be physical so that physics checks happen for it's 
     // children, and so that it can move and have velocity. However, we don't
     // want it to actually interact with anything. It's just holding it's
     // children together.
     var fakeMesh = new Physijs.SphereMesh(CompositeAgent.geometry, CompositeAgent.material, 0 /*mass*/, { collision_flags: 0 });
-    // Make sure a collision check is never done on the composite agent itself.
     fakeMesh.visible = false;
-    fakeMesh._physijs.radius = -1;
     Agent.call(this, fakeMesh);
+    this.physical(false);
+    this.__updatePhysical();
     this.compositeColor = new THREE.Color(0xffffff);
     for (var i = 0; i < arguments.length; i++) {
       this.addChild(arguments[i], this.color().equals(arguments[i].color()));

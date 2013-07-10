@@ -395,7 +395,7 @@ window.Physijs = (function() {
 
 		this._worker = new Worker( Physijs.scripts.worker || 'physijs_worker.js' );
 		this._worker.transferableMessage = this._worker.webkitPostMessage || this._worker.postMessage;
-		this._materials = {};
+		this._materials_ref_counts = {};
 		this._objects = {};
 		this._vehicles = {};
 		this._constraints = {};
@@ -854,7 +854,8 @@ window.Physijs = (function() {
       }
 
       for ( i = 0; i < object.children.length; i++) {
-        initRecursiveScale(object.children[i], scale);
+        if (object.children[i]._physijs) 
+          initRecursiveScale(object.children[i], scale);
       }
     }
 
@@ -883,9 +884,12 @@ window.Physijs = (function() {
 				}
 
 				if ( object.material._physijs ) {
-					if ( !this._materials.hasOwnProperty( object.material._physijs.id ) ) {
+					if ( !this._materials_ref_counts.hasOwnProperty( object.material._physijs.id ) ) {
 						this.execute( 'registerMaterial', object.material._physijs );
 						object._physijs.materialId = object.material._physijs.id;
+						this._materials_ref_counts[object.material._physijs.id] = 1;
+					} else {
+						this._materials_ref_counts[object.material._physijs.id]++;
 					}
 				}
 
@@ -917,6 +921,15 @@ window.Physijs = (function() {
 			if ( object._physijs ) {
 				delete this._objects[object._physijs.id];
 				this.execute( 'removeObject', { id: object._physijs.id } );
+			}
+		}
+		if ( object.material 
+             && object.material._physijs 
+             && this._materials_ref_counts.hasOwnProperty( object.material._physijs.id ) ) {
+			this._materials_ref_counts[object.material._physijs.id]--;
+			if(this._materials_ref_counts[object.material._physijs.id] == 0) {
+				this.execute( 'unRegisterMaterial', object.material._physijs );
+				delete this._materials_ref_counts[object.material._physijs.id];
 			}
 		}
 	};
