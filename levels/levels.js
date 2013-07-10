@@ -40,6 +40,7 @@ var levels = (function() {
 
   var freeplay = new Level( [
       "var hand = new agency.HandAgent();",
+      "hand.physical(false);",
       "scene.addChild(hand);",
       "// The above code gives you the hand to play with.\n\n"
       ].join('\n'),
@@ -52,10 +53,7 @@ var levels = (function() {
           });
           this.scene.notify('tick');
         }
-        this.scene.killChildren();
-        window.player = this.createAvatar();
-        this.scene.addChild(player);
-        new Function('scene', 'repeat', 'player', code) (this.scene, agency.repeat, player);
+        new Function('scene', 'repeat', code) (this.scene, agency.repeat);
       }, ({
         basic: {
           "!name": "basic",
