@@ -216,11 +216,11 @@ var agency = (function(THREE) {
     var i = this.children.indexOf(agent),
         j = this.childrenUsingMyColor.indexOf(agent);
     if (i > -1) {
-      this.children.splice(i,i+1);
+      this.children.splice(i,1);
       this.obj.remove(agent.obj);
     }
     if (j > -1) {
-      this.childrenUsingMyColor.splice(j,j+1);
+      this.childrenUsingMyColor.splice(j,1);
     }
     this.__updatePhysical();
     return this;
@@ -254,7 +254,7 @@ var agency = (function(THREE) {
   Agent.prototype.__make = function(AgentType) {
     // arguments isn't actually an array, but is enough like one that we can
     // call slice on it
-    var agent = new AgentType();
+    var agent = new AgentType;
     AgentType.apply(agent, Array.prototype.slice.call(arguments, 1));
     agent.color(this.color());
     return agent;
@@ -356,7 +356,6 @@ var agency = (function(THREE) {
 
   CubeAgent.prototype = Object.create(Agent.prototype);
 
-  // FIXME: Scaling doesn't work with spheres in PhysiJS.
   function SphereAgent() {
     var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .4, .6);
     material.side = THREE.DoubleSide;
