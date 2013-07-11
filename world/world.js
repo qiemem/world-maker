@@ -25,15 +25,18 @@ var World = (function(THREE, THREEx, TWEEN) {
     var aspect = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(VIEW_ANGLE, aspect, NEAR, FAR);
 
+    /*
     controls = new THREE.TrackballControls(camera, renderer.domElement);
     controls.rotateSpeed = 1.5;
     controls.zoomSpeed = 12;
     controls.panSpeed = 1.0;
     controls.staticMoving = true;
     window.addEventListener('resize', function() {console.log('handle');controls.handleResize();});
+    */
     // TODO: Set default trackball position
     camera.position.setZ(30);
     camera.lookAt(new THREE.Vector3(0,0,0));
+    controls = new CodeDrop.PoleControls(camera, renderer.domElement);
 
 
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -59,7 +62,7 @@ var World = (function(THREE, THREEx, TWEEN) {
 
   var animate = function() {
     playerLight.position.copy(camera.position);
-    controls.update(clock.getDelta());
+    //controls.update(clock.getDelta());
 
     // Don't define how much time to simulate in each call (defaults to time
     // since last call). Max of ten time steps.
