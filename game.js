@@ -15,15 +15,12 @@ var editor, scene;
   document.body.addEventListener('keypress', function(e) {
     if (e.charCode === '`'.charCodeAt(0)) {
       editor.toggleSlide();
-      World.controls.freeze = editor.visible;
       if (editor.visible) {
         // Need setTimeout; otherwise the key actually registers in the
         // editor, typing `
         setTimeout(function(){editor.editor.focus();});
-        World.switchControls(World.ControlModes.TRACKBALL);
       } else {
         editor.editor.getInputField().blur();
-        World.switchControls(World.ControlModes.FIRST_PERSON);
       }
     }
     return false;
