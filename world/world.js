@@ -88,7 +88,7 @@ var World = (function(THREE, THREEx, TWEEN) {
       }
     });
 
-    scene = new Physijs.Scene();
+    scene = new Physijs.Scene({fixedTimeStep: 1/240 /* ms */});
     scene.add(camera);
 
     container.appendChild(renderer.domElement);
@@ -148,7 +148,10 @@ var World = (function(THREE, THREEx, TWEEN) {
       fpPosition = fpControls.object.position.clone();
     }
     TWEEN.update();
-    scene.simulate();
+
+    // Don't define how much time to simulate in each call (defaults to time
+    // since last call). Max of ten time steps.
+    scene.simulate(undefined, 10);
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
   };
