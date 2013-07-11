@@ -170,6 +170,26 @@ var agency = (function(THREE) {
     }
   };
 
+  Agent.prototype.friction = function (amount) {
+    if (typeof amount === 'undefined') {
+      return this.obj.material._physijs.friction;
+    } else {
+      this.obj.material._physijs.friction = amount;
+      this.__updatePhysical();
+      return this;
+    }
+  };
+
+  Agent.prototype.bounciness = function (amount) {
+    if (typeof amount === 'undefined') {
+      return this.obj.material._physijs.restitution;
+    } else {
+      this.obj.material._physijs.restitution = amount;
+      this.__updatePhysical();
+      return this;
+    }
+  };
+
   Agent.prototype.physical = function (enabled) {
     if (typeof enabled === 'undefined') {
       return this.physicalFactor >= 0;
@@ -346,7 +366,7 @@ var agency = (function(THREE) {
   SceneAgent.prototype.updateChildrensColor = function () {};
 
   function CubeAgent() {
-    var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .4, .6);
+    var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .5, .5);
     material.side = THREE.DoubleSide;
     var cube = new Physijs.BoxMesh(CubeAgent.geometry, material, 0 /*mass*/);
     Agent.call(this, cube);
@@ -357,7 +377,7 @@ var agency = (function(THREE) {
   CubeAgent.prototype = Object.create(Agent.prototype);
 
   function SphereAgent() {
-    var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .4, .6);
+    var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .5, .5);
     material.side = THREE.DoubleSide;
     // Although ConvexMesh is inefficient, scaling along an axis doesn't work
     // for spheres in Physijs (as that makes them not spheres). I did change
