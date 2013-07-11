@@ -367,7 +367,6 @@ var agency = (function(THREE) {
 
   function CubeAgent() {
     var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .5, .5);
-    material.side = THREE.DoubleSide;
     var cube = new Physijs.BoxMesh(CubeAgent.geometry, material, 0 /*mass*/);
     Agent.call(this, cube);
   }
@@ -378,7 +377,6 @@ var agency = (function(THREE) {
 
   function SphereAgent() {
     var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .5, .5);
-    material.side = THREE.DoubleSide;
     // Although ConvexMesh is inefficient, scaling along an axis doesn't work
     // for spheres in Physijs (as that makes them not spheres). I did change
     // Physijs so it works for ConvexMeshes though. If the ineffeciency becomes
