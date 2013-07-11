@@ -7,7 +7,7 @@ CodeDrop.PoleControls = function ( object, domElement ) {
 
   this.rotateSpeed = 1.0;
   this.zoomSpeed = 0.001;
-  this.panSpeed = 0.3;
+  this.panSpeed = 0.001;
 
   // If zoom hits 0 or Infinity, it breaks
   this.minDistance = 0.1;
@@ -19,29 +19,59 @@ CodeDrop.PoleControls = function ( object, domElement ) {
   }
 
   this.target = new THREE.Vector3();
+
+  this.lastY = -1;
   
   this.distance = function (newDist) {
     if (typeof newDist === 'undefined') {
       return this.object.position.distanceTo(this.target);
     } else {
-      this.object.position.sub(this.target).normalize().multiplyScalar(newDist);
+      //this.object.position.sub(this.target).normalize().multiplyScalar(newDist);
+      this.object.translateZ(newDist - this.distance());
       return this;
     }
   };
 
   this.zoom = function (scalar) {
-    console.log(scalar);
-    return this.distance(this.distance() / scalar);
+    if (typeof scalar === 'undefined') {
+      return 1.0 / this.distance();
+    } else {
+      return this.distance(this.distance() / scalar);
+    }
   };
 
   this.wheel = function (units) {
     this.zoom(Math.exp(this.zoomSpeed * units));
   };
 
+  this.dragVertical = function (pixels) {
+    this.panVertical(this.distance() * this.panSpeed * pixels);
+  };
+
+
+  this.panVertical = function (distance) {
+    var lastPos = this.object.position.clone();
+    this.object.translateY(distance);
+    this.target.add(lastPos.sub(this.object.position).negate());
+    return this;
+  };
+
   this.handleMouseWheel = function (e, delta) {
     this.wheel(delta);
   }.bind(this);
 
-  $(domElement).bind('mousewheel', this.handleMouseWheel);
+  this.handleMouseMove = function (e) {
+    if (e.which === 1) {
+      if (this.lastY >= 0 ) {
+        this.dragVertical(e.pageY - this.lastY);
+      } 
+      this.lastY = e.pageY;
+    } else {
+      this.lastY = -1;
+    }
+  }.bind(this);
+
+  $(domElement).mousemove(this.handleMouseMove);
+  $(domElement).mousewheel(this.handleMouseWheel);
 
 };
