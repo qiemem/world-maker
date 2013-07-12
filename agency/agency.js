@@ -334,7 +334,7 @@ var agency = (function(THREE) {
             lastTime = time;
           }
         }.bind(this);
-    wrapper();
+    setTimeout(wrapper);
   };
 
   function SceneAgent(scene, renderer) {
