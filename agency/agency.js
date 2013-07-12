@@ -5,12 +5,16 @@
  * intuitively manipulate the 3D objects.
  */
 
-// TODO:
-// - Add:
-//    - tubeDown(numSides)/tubeUp() - like pen down, but creates a tunnel with numSides
-//        - Actually, maybe start with something that just lays a four sided object. Will be much easier (but still difficult) to do this smoothly
+/*
+   TODO:
+   - Add:
+     - tubeDown(numSides)/tubeUp() - like pen down, but creates a tunnel with
+     numSides
+         - Actually, maybe start with something that just lays a four sided 
+         object. Will be much easier (but still difficult) to do this smoothly
+ */
 
-var agency = (function(THREE) {
+window.agency = (function(THREE, Physijs) {
   'use strict';
 
   /**
@@ -34,7 +38,7 @@ var agency = (function(THREE) {
       agent-based API, she can.
       @constructor
    */
-  function Agent(obj, parent) {
+  function Agent(obj) {
     this.obj = obj;
     this.obj.useQuaternion = true;
     this.obj.agent = this;
@@ -59,6 +63,12 @@ var agency = (function(THREE) {
 
   Agent.prototype.backward = Agent.prototype.bk = function(distance) {
     return this.fd(-distance);
+  };
+
+  Agent.prototype.translate = Agent.prototype.trans = function(x, y ,z) {
+    this.obj.translateX(x).translateY(y).translateZ(z);
+    this.obj.__dirtyPosition = true;
+    return this;
   };
 
   Agent.prototype.right = Agent.prototype.rt = function(angle) {
@@ -206,7 +216,8 @@ var agency = (function(THREE) {
       agent.parent.removeChild(agent);
     }
     this.children.push(agent);
-    if (useMyColor || (agent.color().equals(this.color()) && useMyColor != false)) {
+    if (useMyColor ||
+        (agent.color().equals(this.color()) && useMyColor !== false)) {
       this.childrenUsingMyColor.push(agent);
       agent.color(this.color());
     }
@@ -248,7 +259,7 @@ var agency = (function(THREE) {
   };
 
   Agent.prototype.__updatePhysical = function() {
-    this.__resetDimensions()
+    this.__resetDimensions();
     if (this.parent) {
       this.parent.obj.remove(this.obj);
       this.parent.obj.add(this.obj);
@@ -258,7 +269,7 @@ var agency = (function(THREE) {
   Agent.prototype.__make = function(AgentType) {
     // arguments isn't actually an array, but is enough like one that we can
     // call slice on it
-    var agent = new AgentType;
+    var agent = new AgentType();
     agent.color(this.color());
     return agent;
   };
@@ -292,7 +303,7 @@ var agency = (function(THREE) {
 
   Agent.prototype.die = function() {
     this.killChildren();
-    if (this.parent) this.parent.removeChild(this);
+    if (this.parent) { this.parent.removeChild(this); }
     delete this.parent;
     this.listeners = [];
   };
@@ -358,7 +369,8 @@ var agency = (function(THREE) {
   SceneAgent.prototype.updateChildrensColor = function () {};
 
   function CubeAgent() {
-    var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .5, .5);
+    var material =
+      Physijs.createMaterial(new THREE.MeshPhongMaterial(), 0.5, 0.5);
     var cube = new Physijs.BoxMesh(CubeAgent.geometry, material, 0 /*mass*/);
     Agent.call(this, cube);
   }
@@ -368,13 +380,15 @@ var agency = (function(THREE) {
   CubeAgent.prototype = Object.create(Agent.prototype);
 
   function SphereAgent() {
-    var material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .5, .5);
+    var material =
+      Physijs.createMaterial(new THREE.MeshPhongMaterial(), 0.5, 0.5);
     // Although ConvexMesh is inefficient, scaling along an axis doesn't work
     // for spheres in Physijs (as that makes them not spheres). I did change
     // Physijs so it works for ConvexMeshes though. If the ineffeciency becomes
     // noticeable, I should use SphereMesh as long as the scaling is the same
     // in each dimension (I would have to implement this in Physijs as well).
-    var sphere = new Physijs.ConvexMesh(SphereAgent.geometry, material, 0 /*mass*/);
+    var sphere =
+      new Physijs.ConvexMesh(SphereAgent.geometry, material, 0 /*mass*/);
     Agent.call(this, sphere);
   }
   SphereAgent.geometry = new THREE.SphereGeometry(0.5, 16, 16);
@@ -403,7 +417,11 @@ var agency = (function(THREE) {
     // children, and so that it can move and have velocity. However, we don't
     // want it to actually interact with anything. It's just holding it's
     // children together.
-    var fakeMesh = new Physijs.SphereMesh(CompositeAgent.geometry, CompositeAgent.material, 0 /*mass*/, { collision_flags: 0 });
+    var fakeMesh =
+      new Physijs.SphereMesh(CompositeAgent.geometry,
+                             CompositeAgent.material,
+                             0 /*mass*/,
+                             { collision_flags: 0 });
     fakeMesh.visible = false;
     Agent.call(this, fakeMesh);
     this.physical(false);
@@ -415,7 +433,8 @@ var agency = (function(THREE) {
   }
 
   CompositeAgent.geometry = new THREE.SphereGeometry(0.0);
-  CompositeAgent.material = Physijs.createMaterial(new THREE.LineBasicMaterial(), 0, 0);
+  CompositeAgent.material =
+    Physijs.createMaterial(new THREE.LineBasicMaterial(), 0, 0);
 
   CompositeAgent.prototype = Object.create(Agent.prototype);
 
@@ -451,11 +470,13 @@ var agency = (function(THREE) {
 
   function PersonAgent() {
     CompositeAgent.call(this);
-    var torso = this.cube().dn(90).fd(1).up(90).gl(-.5);
-    var rightArm = torso.cube().rt(90).fd(.625).lt(90).gw(-.75).gl(-.25);
-    var leftArm = torso.cube().lt(90).fd(.625).rt(90).gw(-.75).gl(-.25);
-    var rightLeg = torso.cube().rt(90).fd(.25).lt(90).dn(90).fd(1).up(90).gw(-.55).gl(-.1);
-    var leftLeg = torso.cube().lt(90).fd(.25).rt(90).dn(90).fd(1).up(90).gw(-.55).gl(-.1);
+    var torso = this.cube().dn(90).fd(1).up(90).gl(-0.5);
+    var rightArm = torso.cube().rt(90).fd(0.625).lt(90).gw(-0.75).gl(-0.25);
+    var leftArm = torso.cube().lt(90).fd(0.625).rt(90).gw(-0.75).gl(-0.25);
+    var rightLeg = torso.cube()
+      .rt(90).fd(0.25).lt(90).dn(90).fd(1).up(90).gw(-0.55).gl(-0.1);
+    var leftLeg = torso.cube()
+      .lt(90).fd(0.25).rt(90).dn(90).fd(1).up(90).gw(-0.55).gl(-0.1);
     this.shirt = new CompositeAgent(torso, rightArm, leftArm).color('green');
     this.addChild(this.shirt, false);
     this.pants = new CompositeAgent(rightLeg, leftLeg).color('blue');
@@ -475,4 +496,4 @@ var agency = (function(THREE) {
     CompositeAgent: CompositeAgent,
     PersonAgent: PersonAgent
   };
-})(THREE);
+})(window.THREE, window.Physijs);

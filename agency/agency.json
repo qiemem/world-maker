@@ -16,6 +16,10 @@
           "!type": "fn(distance: number) -> !this",
           "!suggest": "(1.0)"
         },
+        "translate": {
+          "!type": "fn(x: number, y: number, z: number) -> !this",
+          "!suggest": "(0.0, 1.0, 0.0)"
+        },
         "right": {
           "!type": "fn(angle: number) -> !this",
           "!suggest": "(90)"
