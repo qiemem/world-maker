@@ -203,20 +203,6 @@ var agency = (function(THREE) {
     return this;
   };
 
-  Agent.prototype.notify = function(evt) {
-    var l = this.listeners[evt].length,
-        c = this.children.length;
-
-    // TODO: Make this die safe
-    for (var i=0; i < l; i++) {
-      this.listeners[evt][i].call(this);
-    }
-  
-    for (var i=0; i < c; i++) {
-      this.children[i].notify(evt);
-    }
-  };
-
   Agent.prototype.addChild = function(agent, useMyColor) {
     if (agent.parent) {
       agent.parent.removeChild(agent);
@@ -337,11 +323,6 @@ var agency = (function(THREE) {
     return this.make(PersonAgent);
   };
 
-  Agent.prototype.on = function(evt, callback) {
-    this.listeners[evt].push(callback);
-    return this;
-  };
-
   Agent.prototype.every = function(ms, callback) {
     var lastTime = (new Date()).getTime(),
         wrapper = function () {
@@ -355,11 +336,6 @@ var agency = (function(THREE) {
         }.bind(this);
     wrapper();
   };
-
-  Agent.prototype.onTick = function(callback) {
-    return this.on('tick', callback);
-  };
-
 
   function SceneAgent(scene, renderer) {
     Agent.call(this, scene);
