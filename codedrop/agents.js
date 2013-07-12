@@ -1,5 +1,5 @@
-CodeDrope = window.CodeDrop || {};
-CodeDrope.agents = (function (agency) {
+CodeDrop = window.CodeDrop || {};
+CodeDrop.agents = (function (agency) {
   'use strict';
 
   agency.Agent.prototype.ramp = function () {
