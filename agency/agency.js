@@ -261,7 +261,6 @@ var agency = (function(THREE) {
     // arguments isn't actually an array, but is enough like one that we can
     // call slice on it
     var agent = new AgentType;
-    AgentType.apply(agent, Array.prototype.slice.call(arguments, 1));
     agent.color(this.color());
     return agent;
   };
@@ -324,16 +323,12 @@ var agency = (function(THREE) {
   };
 
   Agent.prototype.every = function(ms, callback) {
-    var lastTime = (new Date()).getTime(),
-        wrapper = function () {
-          var time;
-          if (this.parent) {
-            callback.call(this);
-            time = (new Date()).getTime();
-            setTimeout(wrapper, ms - (time - lastTime));
-            lastTime = time;
-          }
-        }.bind(this);
+    var wrapper = function () {
+      if (this.parent) {
+        callback.call(this);
+        setTimeout(wrapper, ms);
+      }
+    }.bind(this);
     setTimeout(wrapper);
   };
 
