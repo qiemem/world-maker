@@ -65,6 +65,12 @@ window.agency = (function(THREE, Physijs) {
     return this.fd(-distance);
   };
 
+  Agent.prototype.translate = Agent.prototype.trans = function(x, y ,z) {
+    this.obj.translateX(x).translateY(y).translateZ(z);
+    this.obj.__dirtyPosition = true;
+    return this;
+  };
+
   Agent.prototype.right = Agent.prototype.rt = function(angle) {
     return this.lt(-angle);
   };
