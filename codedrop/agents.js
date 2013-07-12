@@ -31,10 +31,23 @@ CodeDrop.agents = (function (agency) {
     this.every(2000, function () {this.make(Ball);});
   }
   Generator.prototype = Object.create(agency.CubeAgent.prototype);
+
+  function Goal() {
+    agency.CubeAgent.call(this);
+    this.transparency(0.5);
+    this.onTouch(function(other) {
+      if (other.points) {
+        other.die();
+      }
+      console.log('You scored ' + other.points + ' points!');
+    });
+  }
+  Goal.prototype = Object.create(agency.CubeAgent.prototype);
   
   return {
     RampAgent: RampAgent,
     Ball: Ball,
-    Generator: Generator
+    Generator: Generator,
+    Goal: Goal
   }
 })(agency)
