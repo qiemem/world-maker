@@ -27,13 +27,7 @@ var levels = (function() {
   }
 
   Level.prototype.createAvatar = function() {
-    var avatar = new agency.PersonAgent().onTick(function() {
-      this.obj.position = World.playerPosition();
-      var lookAt = World.playerDirection();
-      lookAt.set(-lookAt.z, 0, lookAt.x);
-      this.obj.lookAt(lookAt);
-    });
-    avatar.notify('tick');
+    var avatar = new agency.PersonAgent();
     return avatar;
   }
 
@@ -48,10 +42,6 @@ var levels = (function() {
         if (!this.scene) {
           this.scene = new agency.SceneAgent(World.scene(), World.renderer());
           this.scene.obj.setGravity(new THREE.Vector3());
-          this.scene.onTick(function() {
-            requestAnimationFrame(this.notify.bind(this, 'tick'));
-          });
-          this.scene.notify('tick');
         }
         this.scene.killChildren();
         new Function('scene', 'repeat', code) (this.scene, agency.repeat);
