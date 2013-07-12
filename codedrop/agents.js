@@ -1,15 +1,17 @@
-CodeDrop = window.CodeDrop || {};
-CodeDrop.agents = (function (agency) {
+var CodeDrop = window.CodeDrop || {};
+CodeDrop.agents = (function (agency, Physijs, THREE) {
   'use strict';
-
+  
   agency.Agent.prototype.ramp = function () {
     return this.make(RampAgent);
   };
 
   function RampAgent () {
     agency.CompositeAgent.call(this);
-    this.makeChild(agency.CubeAgent).growTall(-.75).rollRight(45).bounciness(0).friction(0);
-    this.makeChild(agency.CubeAgent).growTall(-.75).rollLeft(45).bounciness(0).friction(0);
+    this.makeChild(agency.CubeAgent)
+      .growTall(-0.75).rollRight(45).bounciness(0).friction(0);
+    this.makeChild(agency.CubeAgent)
+      .growTall(-0.75).rollLeft(45).bounciness(0).friction(0);
   }
 
   RampAgent.prototype = Object.create(agency.CompositeAgent.prototype);
@@ -20,8 +22,9 @@ CodeDrop.agents = (function (agency) {
     this.points = 1;
     this.physicalFactor = 0.5;
     this.__updatePhysical();
-  };
-  Ball.material = Physijs.createMaterial(new THREE.MeshPhongMaterial(), .5, .5);
+  }
+  Ball.material = Physijs.createMaterial(
+      new THREE.MeshPhongMaterial(), 0.5, 0.5);
   Ball.geometry = new THREE.SphereGeometry(0.5, 16, 16);
   Ball.prototype = Object.create(agency.Agent.prototype);
 
@@ -43,11 +46,11 @@ CodeDrop.agents = (function (agency) {
     });
   }
   Goal.prototype = Object.create(agency.CubeAgent.prototype);
-  
+
   return {
     RampAgent: RampAgent,
     Ball: Ball,
     Generator: Generator,
     Goal: Goal
-  }
-})(agency)
+  };
+})(window.agency, window.Physijs, window.THREE);

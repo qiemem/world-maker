@@ -1,4 +1,9 @@
-CodeDrop = window.CodeDrop || {};
+/* global World */
+/* global THREE */
+/* global agency */
+/* global levels */
+
+var CodeDrop = window.CodeDrop || {};
 CodeDrop.levels = (function(agency, levels) {
   'use strict';
 
@@ -13,7 +18,7 @@ CodeDrop.levels = (function(agency, levels) {
       this.scene.obj.setGravity(new THREE.Vector3(0, -10.0, 0));
     }
     this.scene.killChildren();
-    this.setup();
+    this.setup(code);
   };
 
 

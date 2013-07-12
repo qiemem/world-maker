@@ -1,5 +1,10 @@
-CodeDrop = window.CodeDrop || {};
+/* global THREE */
+/* global $ */
+
+var CodeDrop = window.CodeDrop || {};
+
 CodeDrop.PoleControls = function ( object, domElement ) {
+  'use strict';
 
   this.object = object;
   this.domElement = typeof domElement === 'undefined' ? document : domElement;
@@ -16,7 +21,7 @@ CodeDrop.PoleControls = function ( object, domElement ) {
   this.keys = {
     pan: 17 /*ctrl*/,
     zoom: 16
-  }
+  };
 
   this.target = new THREE.Vector3();
 
@@ -27,7 +32,6 @@ CodeDrop.PoleControls = function ( object, domElement ) {
     if (typeof newDist === 'undefined') {
       return this.object.position.distanceTo(this.target);
     } else {
-      //this.object.position.sub(this.target).normalize().multiplyScalar(newDist);
       this.object.translateZ(newDist - this.distance());
       return this;
     }
@@ -76,7 +80,7 @@ CodeDrop.PoleControls = function ( object, domElement ) {
       if (this.lastMouseY >= 0 ) {
         this.dragVertical(e.which, e.pageY - this.lastMouseY);
         this.dragHorizontal(e.which, e.pageX - this.lastMouseX);
-      } 
+      }
       this.lastMouseX = e.pageX;
       this.lastMouseY = e.pageY;
     } else {
