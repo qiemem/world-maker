@@ -37,9 +37,7 @@ var agency = (function(THREE) {
   function Agent(obj, parent) {
     this.obj = obj;
     this.obj.useQuaternion = true;
-    this.listeners = {
-      'tick': []
-    };
+    this.obj.agent = this;
     this.children = [];
     this.childrenUsingMyColor = [];
     this.physicalFactor = 1.0;
@@ -330,6 +328,14 @@ var agency = (function(THREE) {
       }
     }.bind(this);
     setTimeout(wrapper);
+  };
+
+  Agent.prototype.onTouch = function(callback) {
+    callback = callback.bind(this);
+    this.obj.addEventListener('collision', function (otherObject) {
+      callback(otherObject.agent);
+    });
+    return this;
   };
 
   function SceneAgent(scene, renderer) {
