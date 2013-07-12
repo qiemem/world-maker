@@ -310,6 +310,7 @@ var agency = (function(THREE) {
   Agent.prototype.die = function() {
     this.killChildren();
     if (this.parent) this.parent.removeChild(this);
+    delete this.parent;
     this.listeners = [];
   };
 
@@ -339,6 +340,20 @@ var agency = (function(THREE) {
   Agent.prototype.on = function(evt, callback) {
     this.listeners[evt].push(callback);
     return this;
+  };
+
+  Agent.prototype.every = function(ms, callback) {
+    var lastTime = (new Date()).getTime(),
+        wrapper = function () {
+          var time;
+          if (this.parent) {
+            callback.call(this);
+            time = (new Date()).getTime();
+            setTimeout(wrapper, ms - (time - lastTime));
+            lastTime = time;
+          }
+        }.bind(this);
+    wrapper();
   };
 
   Agent.prototype.onTick = function(callback) {
@@ -385,6 +400,9 @@ var agency = (function(THREE) {
     var sphere = new Physijs.ConvexMesh(SphereAgent.geometry, material, 0 /*mass*/);
     Agent.call(this, sphere);
   }
+  SphereAgent.geometry = new THREE.SphereGeometry(0.5, 16, 16);
+  SphereAgent.prototype = Object.create(Agent.prototype);
+
 
   function TextAgent(text) {
     var text3d = new THREE.TextGeometry(text, {
@@ -402,10 +420,6 @@ var agency = (function(THREE) {
   }
 
   TextAgent.prototype = Object.create(Agent.prototype);
-
-  SphereAgent.geometry = new THREE.SphereGeometry(0.5, 16, 16);
-
-  SphereAgent.prototype = Object.create(Agent.prototype);
 
   function CompositeAgent() {
     // The agent must be physical so that physics checks happen for it's 
