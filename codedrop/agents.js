@@ -37,15 +37,22 @@ CodeDrop.agents = (function (agency, Physijs, THREE) {
 
   function Goal() {
     agency.CubeAgent.call(this);
+    this.scored = 0;
     this.transparency(0.5);
     this.onTouch(function(other) {
+      this.score(other.points);
       if (other.points) {
         other.die();
       }
-      console.log('You scored ' + other.points + ' points!');
     });
   }
+
   Goal.prototype = Object.create(agency.CubeAgent.prototype);
+
+  Goal.prototype.score = function (points) {
+    this.scored += points;
+    this.transparency(0.5 - 0.5 * this.scored / 10);
+  };
 
   return {
     RampAgent: RampAgent,
