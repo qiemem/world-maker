@@ -9,23 +9,23 @@ CodeDrop.agents = (function (agency, Physijs, THREE) {
   function RampAgent () {
     agency.CompositeAgent.call(this);
     this.makeChild(agency.CubeAgent)
-      .growTall(-0.75).rollRight(45).bounciness(0).friction(0);
+      .growTall(-0.9).rollRight(45).bounciness(0).friction(0);
     this.makeChild(agency.CubeAgent)
-      .growTall(-0.75).rollLeft(45).bounciness(0).friction(0);
+      .growTall(-0.9).rollLeft(45).bounciness(0).friction(0);
   }
 
   RampAgent.prototype = Object.create(agency.CompositeAgent.prototype);
 
   function Ball () {
-    var sphere = new Physijs.SphereMesh(Ball.geometry, Ball.material, 1);
+    // SphereMesh seems to be buggy in ammo.js
+    var sphere = new Physijs.ConvexMesh(Ball.geometry, Ball.material, 1);
     agency.Agent.call(this, sphere);
     this.points = 1;
-    this.physicalFactor = 0.5;
     this.__updatePhysical();
   }
   Ball.material = Physijs.createMaterial(
       new THREE.MeshPhongMaterial(), 0.5, 0.5);
-  Ball.geometry = new THREE.SphereGeometry(0.5, 16, 16);
+  Ball.geometry = new THREE.SphereGeometry(0.5, 32, 32);
   Ball.prototype = Object.create(agency.Agent.prototype);
 
   function Generator () {
