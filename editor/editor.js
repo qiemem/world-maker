@@ -13,7 +13,6 @@ var Editor = (function(d3, acorn, block, Completer) {
       styleSelectedText: true
     });
 
-    this.completer = new Completer(this.editor, [], ['agency/agency.json']);
     this.completions = document.createElement('div');
     this.completions.classList.add('completions');
     this.drawer.appendChild(this.completions);

@@ -66,6 +66,7 @@ var levels = (function() {
       }), ['agency/agency.json', 'basic']);
 
   return {
-    freeplay: freeplay
+    freeplay: freeplay,
+    Level: Level
   }
 })();

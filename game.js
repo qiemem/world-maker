@@ -1,16 +1,37 @@
-
 var editor, scene;
 
 (function() {
+  var cm,
+      level,
+      levelName='',
+      code = '';
   World.init(document.body);
-  editor = new Editor(document.body, levels.freeplay.reEval.bind(levels.freeplay));
-  var cm = editor.editor;
-  editor.completer = new Completer(cm, [], levels.freeplay.typedefNames, levels.freeplay.getTypedef.bind(levels.freeplay));
   if (window.location.hash) {
-    cm.setValue(decodeURIComponent(window.location.hash.substr(1)));
+    var hash = decodeURIComponent(window.location.hash.substr(1)),
+        codeIndex = hash.indexOf('#'),
+        levelName = '';
+    if (codeIndex >= 0) {
+      levelName = hash.substr(0, codeIndex);
+      code = hash.substr(codeIndex + 1);
+    } else {
+      levelName = hash;
+    }
+    if (CodeDrop.levels[levelName]) {
+      level = CodeDrop.levels[levelName];
+    }
   } else {
-    cm.setValue(levels.freeplay.initialContent);
+    level = levels.freeplay;
   }
+  if (!code) {
+    code = level.initialContent;
+  }
+  window.editor = 
+    new Editor(document.body, level.reEval.bind(level));
+  cm = editor.editor;
+  editor.completer = new Completer(
+    cm, [], level.typedefNames,
+    level.getTypedef.bind(level));
+  cm.setValue(code);
   cm.setCursor(cm.posFromIndex(cm.getValue().length));
   document.body.addEventListener('keypress', function(e) {
     if (e.charCode === '`'.charCodeAt(0)) {
@@ -32,7 +53,7 @@ var editor, scene;
       clearTimeout(saveTimeout);
     }
     saveTimeout = setTimeout(function() {
-      window.location.hash = encodeURIComponent(cm.getValue());
+      window.location.hash = encodeURIComponent(levelName + '#' + cm.getValue());
       saveTimeout = null;
     }, 100);
   });
