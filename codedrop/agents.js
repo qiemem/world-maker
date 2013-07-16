@@ -37,14 +37,8 @@ CodeDrop.agents = (function (agency, Physijs, THREE) {
 
   function Goal() {
     agency.CubeAgent.call(this);
-    this.scored = 0;
+    this.score = 0;
     this.transparency(0.5);
-    this.onTouch(function(other) {
-      this.score(other.points);
-      if (other.points) {
-        other.die();
-      }
-    });
   }
 
   Goal.prototype = Object.create(agency.CubeAgent.prototype);
