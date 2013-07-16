@@ -22,7 +22,6 @@ CodeDrop.levels = (function(agency, levels) {
     this.scene.killChildren();
     this.goals = [];
     this.hand = this.scene.hand().physical(false).color('white')
-                          .translate(0.0, -3.0, 0.0).down(15);
     this.setup(code);
   };
 
@@ -37,13 +36,15 @@ CodeDrop.levels = (function(agency, levels) {
 
   Level.prototype.checkWin = function() {
     if (this.hasWon()) {
-      alert('You win!');
+      console.log('You win!');
     }
   };
 
   Level.prototype.addGoal = function() {
     var level = this;
-    var goal = this.scene.make(CodeDrop.agents.Goal).color('blue');
+    var goal = this.scene.make(CodeDrop.agents.Goal)
+                         .color('green')
+                         .transparency(0.1);
     goal.onTouch(function(other) {
       if (other.points) {
         this.score += other.points;
@@ -55,10 +56,15 @@ CodeDrop.levels = (function(agency, levels) {
     return goal;
   };
 
+  Level.prototype.addGenerator = function() {
+    return this.scene.make(CodeDrop.agents.Generator).color('blue');
+  };
+
   var one = new Level(
     function(code) {
-      this.scene.make(CodeDrop.agents.Generator).color('blue');
-      this.addGoal().translate(2.0, -5.0, 0.0).transparency(0.5).color('green');
+      this.addGenerator();
+      this.addGoal().translate(2.0, -5.0, 0.0);
+      this.hand.translate(0.0, -3.0, 0.0).down(15);
       new Function('hand', code) (this.hand);
     },
     {
@@ -71,8 +77,37 @@ CodeDrop.levels = (function(agency, levels) {
     },
     ['one']);
 
+  var two = new Level(
+    function(code) {
+      this.addGenerator();
+      this.addGoal().translate(4.0, -5.0, 0.0);
+      this.scene.cube().color('white').translate(0.0, -4.0, 0.0).down(15);
+      this.hand.translate(0.0, -5.0, 0.0);
+      new Function('hand', code)(this.hand);
+    },
+    {
+      two: {
+        '!name': 'two',
+        hand: {
+          cube: { '!suggest': '()' },
+          forward: {
+            '!suggest': '(1.0)',
+            '!type': 'fn(angle: number) -> !this'
+          },
+          backward: {
+            '!suggest': '(1.0)',
+            '!type': 'fn(angle: number) -> !this'
+          }
+        }
+      }
+    },
+    ['two']);
+
+
+
 
   return {
-    one: one
+    one: one,
+    two: two
   };
 })(agency, levels);
