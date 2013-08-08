@@ -1,4 +1,4 @@
-var World = (function(THREE, THREEx, TWEEN) {
+var World = (function(THREE, THREEx, Physijs) {
   'use strict';
 
   var VIEW_ANGLE = 45,
@@ -82,4 +82,4 @@ var World = (function(THREE, THREEx, TWEEN) {
     hemisphereLight: function() {return hemisphereLight;},
     animate: animate
   };
-})(THREE, THREEx);
+})(THREE, THREEx, Physijs);
