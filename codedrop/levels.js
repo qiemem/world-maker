@@ -75,7 +75,7 @@ CodeDrop.levels = (function(agency, levels) {
     }
     this.scene.killChildren();
     this.goals = [];
-    this.hand = this.scene.hand().physical(false).color('white')
+    this.hand = this.scene.hand().physical(false).color('white');
     this.setup(code);
   };
 
@@ -114,6 +114,28 @@ CodeDrop.levels = (function(agency, levels) {
     return this.scene.make(CodeDrop.agents.Generator).color('blue');
   };
 
+  Level.prototype.addWall = function() {
+    return this.addWall();
+  };
+
+  Level.prototype.addContainer = function() {
+    var container = this.scene.make(agency.CompositeAgent).color('grey'),
+        transparency = 0.5;
+    container.makeChild(agency.CubeAgent)
+             .translate(0.55, 0.0, 0.0).gl(-0.9).transparency(transparency);
+    container.makeChild(agency.CubeAgent)
+             .translate(-0.55, 0.0, 0.0).gl(-0.9).transparency(transparency);
+    container.makeChild(agency.CubeAgent)
+             .translate(0.0, 0.55, 0.0).gt(-0.9).transparency(transparency);
+    container.makeChild(agency.CubeAgent)
+             .translate(0.0, -0.55, 0.0).gt(-0.9).transparency(transparency);
+    container.makeChild(agency.CubeAgent)
+             .translate(0.0, 0.0, 0.55).gw(-0.9).transparency(transparency);
+    container.makeChild(agency.CubeAgent)
+             .translate(0.0, 0.0, -0.55).gw(-0.9).transparency(transparency);
+    return container;
+  };
+
   var one = new Level(
     function(code) {
       this.addGenerator();
@@ -127,7 +149,7 @@ CodeDrop.levels = (function(agency, levels) {
     function(code) {
       this.addGenerator();
       this.addGoal().translate(5.0, -5.0, 0.0);
-      this.scene.cube().color('white').translate(0.0, -4.0, 0.0).down(15);
+      this.addWall().translate(0.0, -4.0, 0.0).down(15);
       this.hand.translate(0.0, -5.0, 0.0);
       new Function('hand', code)(this.hand);
     }, typedefs,
@@ -137,18 +159,27 @@ CodeDrop.levels = (function(agency, levels) {
     function(code) {
       this.addGenerator();
       this.addGoal().translate(0.0, -10.0, 0.0);
-      this.scene.cube().color('white')
-                       .translate(0.0, -5.0, 0.0)
-                       .gw(2.0).gt(2.0);
+      this.addWall().translate(0.0, -5.0, 0.0).gw(2.0).gt(2.0);
       this.hand.translate(0.0, -2.0, 0.0);
       new Function('hand', code)(this.hand);
 
     }, typedefs,
     ['cube', 'move', 'turn']);
 
+  var four = new Level(
+    function(code) {
+      this.addGenerator().backward(12.5);
+      this.addGoal().translate(0.0, -50.0, 0.0);
+      this.addContainer().gw(50.0).gl(50.0).gt(200.0);
+      new Function('hand', code)(this.hand);
+    }, typedefs,
+    ['cube', 'move', 'turn']
+    );
+
   return {
     one: one,
     two: two,
-    three: three
+    three: three,
+    four: four
   };
 })(agency, levels);
