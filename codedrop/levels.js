@@ -6,6 +6,74 @@
 var CodeDrop = window.CodeDrop || {};
 CodeDrop.levels = (function(agency, levels) {
   'use strict';
+  
+  var typedefs = {
+    cube: {
+      '!name': 'cube',
+      hand: {
+        cube: {
+          '!suggest': '()',
+          '!type': 'fn() -> hand'
+        }
+      }
+    },
+    move: {
+      '!name': 'move',
+      hand: {
+        forward: {
+          '!suggest': '(1.0)',
+          '!type': 'fn(distance: number) -> !this'
+        },
+        backward: {
+          '!suggest': '(1.0)',
+          '!type': 'fn(distance: number) -> !this'
+        }
+      }
+    },
+    turn: {
+      '!name': 'turn',
+      hand: {
+        left: {
+          '!suggest': '(90.0)',
+          '!type': 'fn(angle: name) -> !this'
+        },
+        right: {
+          '!suggest': '(90.0)',
+          '!type': 'fn(angle: name) -> !this'
+        },
+        up: {
+          '!suggest': '(90.0)',
+          '!type': 'fn(angle: name) -> !this'
+        },
+        down: {
+          '!suggest': '(90.0)',
+          '!type': 'fn(angle: name) -> !this'
+        },
+        rollLeft: {
+          '!suggest': '(90.0)',
+          '!type': 'fn(angle: name) -> !this'
+        },
+        rollRight: {
+          '!suggest': '(90.0)',
+          '!type': 'fn(angle: name) -> !this'
+        }
+      }
+    }
+  }
+
+  function merge() {
+    var result = {};
+    for (var i=0; i < arguments.length; i++) {
+      for (var key in arguments[i]) {
+        if (key in result) {
+          result[key] = merge(result[key], argument[i][key]);
+        } else {
+          result[key] = argument[i][key];
+        }
+      }
+    }
+    return result;
+  }
 
   function Level (setup, typedefs, typeDefNames) {
     levels.Level.call(this, '', this.reEval, typedefs, typeDefNames);
@@ -66,16 +134,8 @@ CodeDrop.levels = (function(agency, levels) {
       this.addGoal().translate(2.0, -5.0, 0.0);
       this.hand.translate(0.0, -3.0, 0.0).down(15);
       new Function('hand', code) (this.hand);
-    },
-    {
-      one: {
-        '!name': 'one',
-        hand: {
-          cube: { '!suggest': '()' }
-        }
-      }
-    },
-    ['one']);
+    }, typedefs ,
+    ['cube']);
 
   var two = new Level(
     function(code) {
@@ -84,27 +144,8 @@ CodeDrop.levels = (function(agency, levels) {
       this.scene.cube().color('white').translate(0.0, -4.0, 0.0).down(15);
       this.hand.translate(0.0, -5.0, 0.0);
       new Function('hand', code)(this.hand);
-    },
-    {
-      two: {
-        '!name': 'two',
-        hand: {
-          cube: { '!suggest': '()' },
-          forward: {
-            '!suggest': '(1.0)',
-            '!type': 'fn(angle: number) -> !this'
-          },
-          backward: {
-            '!suggest': '(1.0)',
-            '!type': 'fn(angle: number) -> !this'
-          }
-        }
-      }
-    },
-    ['two']);
-
-
-
+    }, typedefs,
+    ['cube', 'move']);
 
   return {
     one: one,
