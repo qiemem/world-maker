@@ -1,4 +1,4 @@
-var Completer = (function (tern, d3) {
+var Completer = (function (tern, d3, $) {
   'use strict';
 
   // The name that the editor's contents will go by
@@ -160,10 +160,13 @@ var Completer = (function (tern, d3) {
       this.unsafeComplete(pos, callback);
     } else {
       loadEnvironment(this.jsonLibs, this.getTypedef, function (env) {
-        // TODO: Make this recursive
         for (var i=0; i<env.length; i++) {
           for (var key in env[i]) {
-            this.env[key] = env[i][key];
+            if (this.env[key]) {
+              $.extend(true, this.env[key], env[i][key]);
+            } else {
+              this.env[key] = env[i][key];
+            }
           }
         }
         this.startServer(env);
@@ -173,4 +176,4 @@ var Completer = (function (tern, d3) {
   };
 
   return Completer;
-})(tern, d3);
+})(tern, d3, $);
