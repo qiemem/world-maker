@@ -34,46 +34,32 @@ CodeDrop.levels = (function(agency, levels) {
       '!name': 'turn',
       hand: {
         left: {
-          '!suggest': '(90.0)',
+          '!suggest': '(90)',
           '!type': 'fn(angle: name) -> !this'
         },
         right: {
-          '!suggest': '(90.0)',
+          '!suggest': '(90)',
           '!type': 'fn(angle: name) -> !this'
         },
         up: {
-          '!suggest': '(90.0)',
+          '!suggest': '(90)',
           '!type': 'fn(angle: name) -> !this'
         },
         down: {
-          '!suggest': '(90.0)',
+          '!suggest': '(90)',
           '!type': 'fn(angle: name) -> !this'
         },
         rollLeft: {
-          '!suggest': '(90.0)',
+          '!suggest': '(90)',
           '!type': 'fn(angle: name) -> !this'
         },
         rollRight: {
-          '!suggest': '(90.0)',
+          '!suggest': '(90)',
           '!type': 'fn(angle: name) -> !this'
         }
       }
     }
-  }
-
-  function merge() {
-    var result = {};
-    for (var i=0; i < arguments.length; i++) {
-      for (var key in arguments[i]) {
-        if (key in result) {
-          result[key] = merge(result[key], argument[i][key]);
-        } else {
-          result[key] = argument[i][key];
-        }
-      }
-    }
-    return result;
-  }
+  };
 
   function Level (setup, typedefs, typeDefNames) {
     levels.Level.call(this, '', this.reEval, typedefs, typeDefNames);
@@ -140,15 +126,29 @@ CodeDrop.levels = (function(agency, levels) {
   var two = new Level(
     function(code) {
       this.addGenerator();
-      this.addGoal().translate(4.0, -5.0, 0.0);
+      this.addGoal().translate(5.0, -5.0, 0.0);
       this.scene.cube().color('white').translate(0.0, -4.0, 0.0).down(15);
       this.hand.translate(0.0, -5.0, 0.0);
       new Function('hand', code)(this.hand);
     }, typedefs,
     ['cube', 'move']);
 
+  var three = new Level(
+    function(code) {
+      this.addGenerator();
+      this.addGoal().translate(0.0, -10.0, 0.0);
+      this.scene.cube().color('white')
+                       .translate(0.0, -5.0, 0.0)
+                       .gw(2.0).gt(2.0);
+      this.hand.translate(0.0, -2.0, 0.0);
+      new Function('hand', code)(this.hand);
+
+    }, typedefs,
+    ['cube', 'move', 'turn']);
+
   return {
     one: one,
-    two: two
+    two: two,
+    three: three
   };
 })(agency, levels);
