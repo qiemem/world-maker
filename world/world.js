@@ -1,4 +1,4 @@
-var World = (function(THREE, THREEx, TWEEN) {
+var World = (function(THREE, THREEx, TWEEN, Physijs) {
   'use strict';
 
   var VIEW_ANGLE = 45,
@@ -11,7 +11,7 @@ var World = (function(THREE, THREEx, TWEEN) {
       controlModes,
     // First person controls are special. We want to be able toreport player
     // position.
-      fpControls,   
+      fpControls,
       fpPosition,
       controls,
       activeControlMode,
@@ -168,4 +168,4 @@ var World = (function(THREE, THREEx, TWEEN) {
     hemisphereLight: function() {return hemisphereLight;},
     animate: animate
   };
-})(THREE, THREEx, TWEEN);
+})(THREE, THREEx, TWEEN, Physijs);
