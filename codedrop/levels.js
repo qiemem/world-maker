@@ -119,21 +119,7 @@ CodeDrop.levels = (function(agency, levels) {
   };
 
   Level.prototype.addContainer = function() {
-    var container = this.scene.make(agency.CompositeAgent).color('grey'),
-        transparency = 0.5;
-    container.makeChild(agency.CubeAgent)
-             .translate(0.55, 0.0, 0.0).gl(-0.9).transparency(transparency);
-    container.makeChild(agency.CubeAgent)
-             .translate(-0.55, 0.0, 0.0).gl(-0.9).transparency(transparency);
-    container.makeChild(agency.CubeAgent)
-             .translate(0.0, 0.55, 0.0).gt(-0.9).transparency(transparency);
-    container.makeChild(agency.CubeAgent)
-             .translate(0.0, -0.55, 0.0).gt(-0.9).transparency(transparency);
-    container.makeChild(agency.CubeAgent)
-             .translate(0.0, 0.0, 0.55).gw(-0.9).transparency(transparency);
-    container.makeChild(agency.CubeAgent)
-             .translate(0.0, 0.0, -0.55).gw(-0.9).transparency(transparency);
-    return container;
+    return this.scene.make(CodeDrop.agents.Container).color('grey');
   };
 
   var one = new Level(

@@ -30,7 +30,7 @@ CodeDrop.agents = (function (agency, Physijs, THREE) {
 
   function Generator () {
     agency.CubeAgent.call(this);
-    this.transparency(0.5).physical(false);
+    this.physical(false);
     this.every(2000, function () {this.make(Ball);});
   }
   Generator.prototype = Object.create(agency.CubeAgent.prototype);
@@ -48,10 +48,29 @@ CodeDrop.agents = (function (agency, Physijs, THREE) {
     this.transparency(0.5 - 0.5 * this.scored / 10);
   };
 
+  function Container() {
+    agency.CompositeAgent.call(this);
+    var transparency = 0.5;
+    this.makeChild(agency.CubeAgent)
+        .translate(0.55001, 0.0, 0.0).gl(-0.9).transparency(transparency);
+    this.makeChild(agency.CubeAgent)
+        .translate(-0.55001, 0.0, 0.0).gl(-0.9).transparency(transparency);
+    this.makeChild(agency.CubeAgent)
+        .translate(0.0, 0.55001, 0.0).gt(-0.9).transparency(transparency);
+    this.makeChild(agency.CubeAgent)
+        .translate(0.0, -0.55001, 0.0).gt(-0.9).transparency(transparency);
+    this.makeChild(agency.CubeAgent)
+        .translate(0.0, 0.0, 0.55001).gw(-0.9).transparency(transparency);
+    this.makeChild(agency.CubeAgent)
+        .translate(0.0, 0.0, -0.55001).gw(-0.9).transparency(transparency);
+  }
+  Container.prototype = Object.create(agency.CompositeAgent.prototype);
+
   return {
     RampAgent: RampAgent,
     Ball: Ball,
     Generator: Generator,
-    Goal: Goal
+    Goal: Goal,
+    Container: Container
   };
 })(window.agency, window.Physijs, window.THREE);
