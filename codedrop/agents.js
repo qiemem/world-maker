@@ -20,6 +20,7 @@ CodeDrop.agents = (function (agency, Physijs, THREE) {
     // SphereMesh seems to be buggy in ammo.js
     var sphere = new Physijs.ConvexMesh(Ball.geometry, Ball.material, 1);
     agency.Agent.call(this, sphere);
+    this.bounciness(0.1);
     this.points = 1;
     this.__updatePhysical();
   }
@@ -31,7 +32,7 @@ CodeDrop.agents = (function (agency, Physijs, THREE) {
   function Generator () {
     agency.CubeAgent.call(this);
     this.physical(false);
-    this.every(2000, function () {this.make(Ball);});
+    this.every(5000, function () {this.make(Ball);});
   }
   Generator.prototype = Object.create(agency.CubeAgent.prototype);
 

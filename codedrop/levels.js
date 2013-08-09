@@ -17,6 +17,15 @@ CodeDrop.levels = (function(agency, levels) {
         }
       }
     },
+    ramp: {
+      '!name': 'ramp',
+      hand: {
+        ramp: {
+          '!suggest': '()',
+          '!type': 'fn() -> hand'
+        }
+      }
+    },
     move: {
       '!name': 'move',
       hand: {
@@ -30,8 +39,21 @@ CodeDrop.levels = (function(agency, levels) {
         }
       }
     },
-    turn: {
-      '!name': 'turn',
+    pitch: {
+      '!name': 'pitch',
+      hand: {
+        up: {
+          '!suggest': '(90)',
+          '!type': 'fn(angle: name) -> !this'
+        },
+        down: {
+          '!suggest': '(90)',
+          '!type': 'fn(angle: name) -> !this'
+        }
+      }
+    },
+    yaw: {
+      '!name': 'yaw',
       hand: {
         left: {
           '!suggest': '(90)',
@@ -40,23 +62,38 @@ CodeDrop.levels = (function(agency, levels) {
         right: {
           '!suggest': '(90)',
           '!type': 'fn(angle: name) -> !this'
-        },
-        up: {
-          '!suggest': '(90)',
-          '!type': 'fn(angle: name) -> !this'
-        },
-        down: {
-          '!suggest': '(90)',
-          '!type': 'fn(angle: name) -> !this'
-        },
-        rollLeft: {
-          '!suggest': '(90)',
-          '!type': 'fn(angle: name) -> !this'
-        },
-        rollRight: {
-          '!suggest': '(90)',
-          '!type': 'fn(angle: name) -> !this'
         }
+      }
+    },
+    roll: {
+      rollLeft: {
+        '!suggest': '(90)',
+        '!type': 'fn(angle: name) -> !this'
+      },
+      rollRight: {
+        '!suggest': '(90)',
+        '!type': 'fn(angle: name) -> !this'
+      }
+    },
+    grow: {
+      '!name': 'grow',
+      hand: {
+        grow: {
+          '!type': 'fn(amount: number) -> !this',
+          '!suggest': '(1.0)'
+        },
+        growWide: {
+          '!type': 'fn(amount: number) -> !this',
+          '!suggest': '(1.0)'
+        },
+        growLong: {
+          '!type': 'fn(amount: number) -> !this',
+          '!suggest': '(1.0)'
+        },
+        growTall: {
+          '!type': 'fn(amount: number) -> !this',
+          '!suggest': '(1.0)'
+        },
       }
     }
   };
@@ -71,7 +108,7 @@ CodeDrop.levels = (function(agency, levels) {
   Level.prototype.reEval = function (code)  {
     if (!this.scene) {
       this.scene = new agency.SceneAgent(World.scene(), World.renderer());
-      this.scene.obj.setGravity(new THREE.Vector3(0, -10.0, 0));
+      this.scene.obj.setGravity(new THREE.Vector3(0, -15.0, 0));
     }
     this.scene.killChildren();
     this.goals = [];
@@ -115,7 +152,7 @@ CodeDrop.levels = (function(agency, levels) {
   };
 
   Level.prototype.addWall = function() {
-    return this.addWall();
+    return this.scene.make(agency.CubeAgent).color('white');
   };
 
   Level.prototype.addContainer = function() {
@@ -150,17 +187,20 @@ CodeDrop.levels = (function(agency, levels) {
       new Function('hand', code)(this.hand);
 
     }, typedefs,
-    ['cube', 'move', 'turn']);
+    ['cube', 'move', 'pitch']);
 
   var four = new Level(
     function(code) {
-      this.addGenerator().backward(12.5);
-      this.addGoal().translate(0.0, -50.0, 0.0);
-      this.addContainer().gw(50.0).gl(50.0).gt(200.0);
+      this.addGenerator().translate(0.0, 10.0, 0.0);
+      this.addGoal().translate(0.0, -10.0, 0.0);
+      this.addWall().translate(-3.0, 3.0, 0.0).gl(20).gw(1)
+          .cube().translate(6.0, -6.0, 0.0);
+      this.addWall().translate(-13, 6.0, 0.0).gt(6).gw(1)
+          .cube().translate(26, -6.0, 0.0);
+      this.hand.translate(0.0, 7.0, 0.0);
       new Function('hand', code)(this.hand);
     }, typedefs,
-    ['cube', 'move', 'turn']
-    );
+    ['cube', 'move', 'pitch', 'grow', 'ramp']);
 
   return {
     one: one,
