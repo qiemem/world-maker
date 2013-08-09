@@ -66,13 +66,15 @@ CodeDrop.levels = (function(agency, levels) {
       }
     },
     roll: {
-      rollLeft: {
-        '!suggest': '(90)',
-        '!type': 'fn(angle: name) -> !this'
-      },
-      rollRight: {
-        '!suggest': '(90)',
-        '!type': 'fn(angle: name) -> !this'
+      hand: {
+        rollLeft: {
+          '!suggest': '(90)',
+          '!type': 'fn(angle: name) -> !this'
+        },
+        rollRight: {
+          '!suggest': '(90)',
+          '!type': 'fn(angle: name) -> !this'
+        }
       }
     },
     grow: {
@@ -202,19 +204,23 @@ CodeDrop.levels = (function(agency, levels) {
     }, typedefs,
     ['cube', 'move', 'pitch', 'grow', 'ramp']);
 
-  var five = new Level(
+  var ten = new Level(
     function(code) {
-      var size = 10,
+      var size = 15,
+          fullTurns = 4,
+          heightPerTurn = 10,
           levelMaker = this.scene.hand().color('white');
-      this.addContainer().gw(2*size).gl(2*size).gt(60)
-                         .translate(0.0, -20, 0.0);
-      this.addGenerator();
-      levelMaker.translate(0.0, -10, 0.0);
-      agency.repeat(4, function() {
+      this.addContainer()
+          .gw(2*size).gl(2*size).gt(16 * heightPerTurn * fullTurns);
+      this.addGenerator().translate(0.0, 3.0, -5);
+      this.hand.translate(0.0, 0.0, -5);
+      this.addGoal().translate(0.0, -4*fullTurns*heightPerTurn, 0.0)
+                    .gw(2*size).gl(2*size);
+      levelMaker.translate(0.0, -heightPerTurn / 2, 0.0);
+      agency.repeat(4*fullTurns, function() {
         levelMaker.cube().bk(size/2 - 1).gl(size + 2).gw(2*size);
-        levelMaker.translate(0.0, -10, 0.0).right(90);
+        levelMaker.translate(0.0, -heightPerTurn, 0.0).right(90);
       });
-      this.addGoal().translate(0.0, -5*size, 0.0);
       levelMaker.die();
       new Function('hand', code)(this.hand);
     }, typedefs,
@@ -225,6 +231,6 @@ CodeDrop.levels = (function(agency, levels) {
     two: two,
     three: three,
     four: four,
-    five: five
+    ten: ten
   };
 })(agency, levels);

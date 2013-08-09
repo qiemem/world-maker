@@ -53,17 +53,17 @@ CodeDrop.agents = (function (agency, Physijs, THREE) {
     agency.CompositeAgent.call(this);
     var transparency = 0.5;
     this.makeChild(agency.CubeAgent)
-        .translate(0.55001, 0.0, 0.0).gl(-0.9).transparency(transparency);
+        .translate(0.55, 0.0, 0.0).gl(-0.901).transparency(transparency);
     this.makeChild(agency.CubeAgent)
-        .translate(-0.55001, 0.0, 0.0).gl(-0.9).transparency(transparency);
+        .translate(-0.55, 0.0, 0.0).gl(-0.901).transparency(transparency);
     this.makeChild(agency.CubeAgent)
-        .translate(0.0, 0.55001, 0.0).gt(-0.9).transparency(transparency);
+        .translate(0.0, 0.55, 0.0).gt(-0.901).transparency(transparency);
     this.makeChild(agency.CubeAgent)
-        .translate(0.0, -0.55001, 0.0).gt(-0.9).transparency(transparency);
+        .translate(0.0, -0.55, 0.0).gt(-0.901).transparency(transparency);
     this.makeChild(agency.CubeAgent)
-        .translate(0.0, 0.0, 0.55001).gw(-0.9).transparency(transparency);
+        .translate(0.0, 0.0, 0.55).gw(-0.901).transparency(transparency);
     this.makeChild(agency.CubeAgent)
-        .translate(0.0, 0.0, -0.55001).gw(-0.9).transparency(transparency);
+        .translate(0.0, 0.0, -0.55).gw(-0.901).transparency(transparency);
   }
   Container.prototype = Object.create(agency.CompositeAgent.prototype);
 
