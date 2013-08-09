@@ -202,10 +202,29 @@ CodeDrop.levels = (function(agency, levels) {
     }, typedefs,
     ['cube', 'move', 'pitch', 'grow', 'ramp']);
 
+  var five = new Level(
+    function(code) {
+      var size = 10,
+          levelMaker = this.scene.hand().color('white');
+      this.addContainer().gw(2*size).gl(2*size).gt(60)
+                         .translate(0.0, -20, 0.0);
+      this.addGenerator();
+      levelMaker.translate(0.0, -10, 0.0);
+      agency.repeat(4, function() {
+        levelMaker.cube().bk(size/2 - 1).gl(size + 2).gw(2*size);
+        levelMaker.translate(0.0, -10, 0.0).right(90);
+      });
+      this.addGoal().translate(0.0, -5*size, 0.0);
+      levelMaker.die();
+      new Function('hand', code)(this.hand);
+    }, typedefs,
+    ['cube', 'move', 'pitch', 'yaw', 'roll', 'grow', 'ramp']);
+
   return {
     one: one,
     two: two,
     three: three,
-    four: four
+    four: four,
+    five: five
   };
 })(agency, levels);
