@@ -1,32 +1,52 @@
 var editor, scene;
 
-(function() {
+(function(World, Editor, CodeDrop, levels, Completer) {
+  'use strict';
+
+  function queryObj() {
+    var queryString = location.search,
+        result = {},
+        keyValuePairs;
+    if (queryString[queryString.length - 1] === '/') {
+      queryString = queryString.substr(0, queryString.length - 1);
+    }
+    keyValuePairs = queryString.slice(1).split('&');
+
+    keyValuePairs.forEach(function(keyValuePair) {
+      keyValuePair = keyValuePair.split('=');
+      result[keyValuePair[0]] = keyValuePair[1] || '';
+    });
+
+    return result;
+  }
+
+  function encodeQuery(params) {
+    var queryList = [];
+    for (var key in params) {
+      if (params.hasOwnProperty(params)) {
+        queryList.push(encodeURIComponent(key + '=' + params[key]));
+      }
+    }
+    return queryList.join('&');
+  }
+
   var cm,
       level,
       levelName='',
-      code = '';
+      code = '',
+      query = queryObj();
   World.init(document.body);
-  if (window.location.hash) {
-    var hash = decodeURIComponent(window.location.hash.substr(1)),
-        codeIndex = hash.indexOf('#'),
-        levelName = '';
-    if (codeIndex >= 0) {
-      levelName = hash.substr(0, codeIndex);
-      code = hash.substr(codeIndex + 1);
-    } else {
-      levelName = hash;
-    }
-    if (CodeDrop.levels[levelName]) {
-      level = CodeDrop.levels[levelName];
-    }
+
+  if (query.level) {
+    level = CodeDrop.levels[query.level];
   } else {
     level = levels.freeplay;
   }
-  if (!code) {
-    code = level.initialContent;
-  }
-  window.editor = 
-    new Editor(document.body, level.reEval.bind(level));
+
+  code = decodeURIComponent(window.location.hash.substr(1)) ||
+         level.initialContent;
+
+  window.editor = new Editor(document.body, level.reEval.bind(level));
   cm = editor.editor;
   editor.completer = new Completer(
     cm, [], level.typedefNames,
@@ -53,8 +73,8 @@ var editor, scene;
       clearTimeout(saveTimeout);
     }
     saveTimeout = setTimeout(function() {
-      window.location.hash = encodeURIComponent(levelName + '#' + cm.getValue());
+      window.location.hash = encodeURIComponent(cm.getValue());
       saveTimeout = null;
     }, 100);
   });
-})();
+})(World, Editor, CodeDrop, levels, Completer);
