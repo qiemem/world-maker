@@ -32,49 +32,57 @@ var editor, scene;
 
   var cm,
       level,
-      levelName='',
       code = '',
       query = queryObj();
   World.init(document.body);
 
   if (query.level) {
     level = CodeDrop.levels[query.level];
+    code = decodeURIComponent(window.location.hash.substr(1)) ||
+           level.initialContent;
+
+    window.editor = new Editor(document.body, level.reEval.bind(level));
+    cm = editor.editor;
+    editor.completer = new Completer(
+      cm, [], level.typedefNames,
+      level.getTypedef.bind(level));
+    cm.setValue(code);
+    cm.setCursor(cm.posFromIndex(cm.getValue().length));
+    document.body.addEventListener('keypress', function(e) {
+      if (e.charCode === '`'.charCodeAt(0)) {
+        editor.toggleSlide();
+        if (editor.visible) {
+          // Need setTimeout; otherwise the key actually registers in the
+          // editor, typing `
+          setTimeout(function(){editor.editor.focus();});
+        } else {
+          editor.editor.getInputField().blur();
+        }
+      }
+      return false;
+    });
+
+    var saveTimeout;
+    editor.addPostEvalListener(function() {
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+      }
+      saveTimeout = setTimeout(function() {
+        window.location.hash = encodeURIComponent(cm.getValue());
+        saveTimeout = null;
+      }, 100);
+    });
   } else {
-    level = levels.freeplay;
+    $('canvas').remove();
+    $(document.body).append('<h1>Code Drop</h1>');
+    $(document.body).append('<h2>Select Level</h2>');
+    $(document.body).append('<ul>');
+    CodeDrop.levels.levels.forEach(function (level) {
+      var query = '?level=' + level;
+      $(document.body).append('<li><a href="'+query+'">'+level+'</a></li>');
+    });
+    $(document.body).append('</ul>');
   }
 
-  code = decodeURIComponent(window.location.hash.substr(1)) ||
-         level.initialContent;
 
-  window.editor = new Editor(document.body, level.reEval.bind(level));
-  cm = editor.editor;
-  editor.completer = new Completer(
-    cm, [], level.typedefNames,
-    level.getTypedef.bind(level));
-  cm.setValue(code);
-  cm.setCursor(cm.posFromIndex(cm.getValue().length));
-  document.body.addEventListener('keypress', function(e) {
-    if (e.charCode === '`'.charCodeAt(0)) {
-      editor.toggleSlide();
-      if (editor.visible) {
-        // Need setTimeout; otherwise the key actually registers in the
-        // editor, typing `
-        setTimeout(function(){editor.editor.focus();});
-      } else {
-        editor.editor.getInputField().blur();
-      }
-    }
-    return false;
-  });
-
-  var saveTimeout;
-  editor.addPostEvalListener(function() {
-    if (saveTimeout) {
-      clearTimeout(saveTimeout);
-    }
-    saveTimeout = setTimeout(function() {
-      window.location.hash = encodeURIComponent(cm.getValue());
-      saveTimeout = null;
-    }, 100);
-  });
 })(World, Editor, CodeDrop, levels, Completer);

@@ -231,6 +231,7 @@ CodeDrop.levels = (function(agency, levels) {
     two: two,
     three: three,
     four: four,
-    ten: ten
+    ten: ten,
+    levels: ['one', 'two', 'three', 'four', 'ten']
   };
 })(agency, levels);
