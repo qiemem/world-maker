@@ -3,26 +3,31 @@
 body {
     background-color: black;
     color: gray;
+}
+
+.menu {
     text-align: center;
 }
 
-li {
-    list-style-type: none;
-    padding: 2px;
+.levels {
+    padding: 0;
 }
-li a {
+
+.levels li {
+    list-style-type: none;
+}
+.levelbutton a {
     font-size: x-large;
     color: white;
     text-decoration: none;
     padding: 2px;
 }
 
-li a:visited {
+.levelbutton a:visited {
     color: darkgray;
 }
 
-li a:hover {
-    //font-weight: bold; 
+.levelbutton a:hover {
     border: solid 2px;
     border-radius: 5px;
 }

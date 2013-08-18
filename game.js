@@ -1,6 +1,6 @@
 var editor, scene;
 
-(function(World, Editor, CodeDrop, levels, Completer) {
+(function(World, Editor, CodeDrop, levels, Completer, $) {
   'use strict';
 
   function queryObj() {
@@ -74,15 +74,15 @@ var editor, scene;
     });
   } else {
     $('canvas').remove();
-    $(document.body).append('<h1>Code Drop</h1>');
-    $(document.body).append('<h2>Select Level</h2>');
-    $(document.body).append('<ul>');
+    $(document.body).append('<div class="menu"></div>')
+    $('.menu').append('<h1>Code Drop</h1>');
+    $('.menu').append('<h2>Select Level</h2>');
+    $('.menu').append('<ol class="levels"></ol>');
     CodeDrop.levels.levels.forEach(function (level) {
       var query = '?level=' + level;
-      $(document.body).append('<li><a href="'+query+'">'+level+'</a></li>');
+      $('.levels').append('<li class="levelbutton"><a href="index.html'+query+'">'+level+'</a></li>');
     });
-    $(document.body).append('</ul>');
   }
 
 
-})(World, Editor, CodeDrop, levels, Completer);
+})(World, Editor, CodeDrop, levels, Completer, $);
