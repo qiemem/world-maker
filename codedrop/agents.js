@@ -38,15 +38,16 @@ CodeDrop.agents = (function (agency, Physijs, THREE) {
 
   function Goal() {
     agency.CubeAgent.call(this);
-    this.score = 0;
+    this.scored = 0;
     this.transparency(0.5);
+    this.score(0);
   }
 
   Goal.prototype = Object.create(agency.CubeAgent.prototype);
 
   Goal.prototype.score = function (points) {
     this.scored += points;
-    this.transparency(0.5 - 0.5 * this.scored / 10);
+    this.transparency(0.4 * (1 - this.scored / 3));
   };
 
   function Container() {

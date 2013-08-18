@@ -120,7 +120,8 @@ CodeDrop.levels = (function(agency, levels) {
 
   Level.prototype.hasWon = function() {
     for (var i=0; i < this.goals.length; i++) {
-      if (this.goals[i].score < 10) {
+      // Checks for strict equality so that it doesn't keep notifying of win
+      if (this.goals[i].scored !== 3) {
         return false;
       }
     }
@@ -129,18 +130,22 @@ CodeDrop.levels = (function(agency, levels) {
 
   Level.prototype.checkWin = function() {
     if (this.hasWon()) {
-      console.log('You win!');
+      $.colorbox({
+        html: '<h1>You win!</h1>'
+            + '<a href="index.html">Play another level</a>',
+        overlayClose: false,
+        trapFocus: false
+      })
     }
   };
 
   Level.prototype.addGoal = function() {
     var level = this;
     var goal = this.scene.make(CodeDrop.agents.Goal)
-                         .color('green')
-                         .transparency(0.1);
+                         .color('green');
     goal.onTouch(function(other) {
       if (other.points) {
-        this.score += other.points;
+        this.score(other.points);
         other.die();
         level.checkWin();
       }
