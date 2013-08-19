@@ -34,6 +34,15 @@ var editor, scene;
       level,
       code = '',
       query = queryObj();
+
+  function blockWin() {
+    level.canWin = false;
+  }
+
+  function allowWin() {
+    level.canWin = true;
+  }
+
   World.init(document.body);
 
   if (query.level) {
@@ -72,10 +81,8 @@ var editor, scene;
         saveTimeout = null;
       }, 100);
     });
-    console.log(level.helpPages);
     if (level.helpPages) {
       level.helpPages.forEach(function(href) {
-        console.log(href);
         $('#help-pages').append(
           '<a href="codedrop/instructions/'+href+'" rel="help-message"></a>'
         );
@@ -87,7 +94,9 @@ var editor, scene;
         top: '0px',
         right: '0px',
         transition: 'none',
-        trapFocus: false
+        trapFocus: false,
+        onOpen: blockWin,
+        onClosed: allowWin
       });
       $('<span href="#" class="help">?</span>').appendTo(document.body).click(function (e) {
         e.preventDefault();

@@ -104,6 +104,7 @@ CodeDrop.levels = (function(agency, levels) {
     levels.Level.call(this, '', this.reEval, typedefs, typeDefNames);
     this.setup = setup;
     this.helpPages = helpPages;
+    this.canWin = true;
   }
 
   Level.prototype = Object.create(levels.Level.prototype);
@@ -120,9 +121,9 @@ CodeDrop.levels = (function(agency, levels) {
   };
 
   Level.prototype.hasWon = function() {
+    if (!this.canWin) { return false; }
     for (var i=0; i < this.goals.length; i++) {
-      // Checks for strict equality so that it doesn't keep notifying of win
-      if (this.goals[i].scored !== 3) {
+       if (this.goals[i].scored < 3) {
         return false;
       }
     }
