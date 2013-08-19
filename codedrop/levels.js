@@ -100,9 +100,10 @@ CodeDrop.levels = (function(agency, levels) {
     }
   };
 
-  function Level (setup, typedefs, typeDefNames) {
+  function Level (setup, typedefs, typeDefNames, helpPages) {
     levels.Level.call(this, '', this.reEval, typedefs, typeDefNames);
     this.setup = setup;
+    this.helpPages = helpPages;
   }
 
   Level.prototype = Object.create(levels.Level.prototype);
@@ -131,11 +132,11 @@ CodeDrop.levels = (function(agency, levels) {
   Level.prototype.checkWin = function() {
     if (this.hasWon()) {
       $.colorbox({
-        html: '<h1>You win!</h1>'
-            + '<a href="index.html">Play another level</a>',
+        html: '<h1>You win!</h1>' +
+              '<a href="index.html">Play another level</a>',
         overlayClose: false,
         trapFocus: false
-      })
+      });
     }
   };
 
@@ -173,7 +174,9 @@ CodeDrop.levels = (function(agency, levels) {
       this.hand.translate(0.0, -3.0, 0.0).down(15);
       new Function('hand', code) (this.hand);
     }, typedefs ,
-    ['cube']);
+    ['cube'],
+    ['intro.html', 'open.html', 'suggestions.html']
+  );
 
   var two = new Level(
     function(code) {
@@ -183,7 +186,8 @@ CodeDrop.levels = (function(agency, levels) {
       this.hand.translate(0.0, -5.0, 0.0);
       new Function('hand', code)(this.hand);
     }, typedefs,
-    ['cube', 'move']);
+    ['cube', 'move']
+  );
 
   var three = new Level(
     function(code) {

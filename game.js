@@ -72,6 +72,29 @@ var editor, scene;
         saveTimeout = null;
       }, 100);
     });
+    console.log(level.helpPages);
+    if (level.helpPages) {
+      level.helpPages.forEach(function(href) {
+        console.log(href);
+        $('#help-pages').append(
+          '<a href="codedrop/instructions/'+href+'" rel="help-message"></a>'
+        );
+      });
+      window.$help = $('a[rel=help-message]').colorbox({
+        current: '{current} of {total}',
+        maxWidth: '400px',
+        height: '100%',
+        top: '0px',
+        right: '0px',
+        transition: 'none',
+        trapFocus: false
+      });
+      $('<span href="#" class="help">?</span>').appendTo(document.body).click(function (e) {
+        e.preventDefault();
+        $help.eq(0).click();
+      });
+    }
+
   } else {
     $('canvas').remove();
     $(document.body).append('<div class="menu"></div>')
@@ -83,6 +106,4 @@ var editor, scene;
       $('.levels').append('<li class="levelbutton"><a href="index.html'+query+'">'+level+'</a></li>');
     });
   }
-
-
 })(World, Editor, CodeDrop, levels, Completer, $);
