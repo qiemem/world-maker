@@ -187,7 +187,8 @@ CodeDrop.levels = (function(agency, levels) {
       this.hand.translate(0.0, -5.0, 0.0);
       new Function('hand', code)(this.hand);
     }, typedefs,
-    ['cube', 'move']
+    ['cube', 'move'],
+    ['forwardbackward.html', 'multiplelines.html', 'chaining.html', 'numbers.html', 'goodluck.html']
   );
 
   var three = new Level(
