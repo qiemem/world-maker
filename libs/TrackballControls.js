@@ -31,7 +31,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 	this.minDistance = 0;
 	this.maxDistance = Infinity;
 
-	this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
+    this.keys = [ 18 /*alt*/, 16 /*shift*/, 17 /*ctrl*/ ]
 
 	// internals
 
