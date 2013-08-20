@@ -1,0 +1,132 @@
+{
+  "!name" : "agency",
+  "agency": {
+    "repeat": {
+      "!type": "fn(times: number, fn(iteration: number))",
+      "!suggest": "(10, function() {\n\n});\n"
+    },
+    "Agent": {
+      "!type": "fn(obj: Object3D)",
+      "prototype": {
+        "forward": {
+          "!type": "fn(distance: number) -> !this",
+          "!suggest": "(1.0)"
+        },
+        "backward": {
+          "!type": "fn(distance: number) -> !this",
+          "!suggest": "(1.0)"
+        },
+        "translate": {
+          "!type": "fn(x: number, y: number, z: number) -> !this",
+          "!suggest": "(0.0, 1.0, 0.0)"
+        },
+        "right": {
+          "!type": "fn(angle: number) -> !this",
+          "!suggest": "(90)"
+        },
+        "left": {
+          "!type": "fn(angle: number) -> !this",
+          "!suggest": "(90)"
+        },
+        "up": {
+          "!type": "fn(angle: number) -> !this",
+          "!suggest": "(90)"
+        },
+        "down": {
+          "!type": "fn(angle: number) -> !this",
+          "!suggest": "(90)"
+        },
+        "rollRight": {
+          "!type": "fn(angle: number) -> !this",
+          "!suggest": "(90)"
+        },
+        "rollLeft": {
+          "!type": "fn(angle: number) -> !this",
+          "!suggest": "(90)"
+        },
+        "grow": {
+          "!type": "fn(amount: number) -> !this",
+          "!suggest": "(1.0)"
+        },
+        "growWide": {
+          "!type": "fn(amount: number) -> !this",
+          "!suggest": "(1.0)"
+        },
+        "growLong": {
+          "!type": "fn(amount: number) -> !this",
+          "!suggest": "(1.0)"
+        },
+        "growTall": {
+          "!type": "fn(amount: number) -> !this",
+          "!suggest": "(1.0)"
+        },
+        "color": {
+          "!type": "fn(color: string) -> !this",
+          "!suggest": "('red')"
+        },
+        "rgb": {
+          "!type": "fn(red: number, green: number, blue: number) -> !this",
+          "!suggest": "(0.20, 0.50, 0.70)"
+        },
+        "hsl": {
+          "!type": "fn(hue: number, saturation: number, lightness: number) -> !this",
+          "!suggest": "(0.20, 1.0, 0.5)"
+        },
+        "transparency": {
+          "!type": "fn(amount: number) -> !this",
+          "!suggest": "(0.5)"
+        },
+        "mass": {
+          "!type": "fn(mass: nmber) -> !this",
+          "!suggest": "(1.0)"
+        },
+        "cube": {
+          "!type": "fn() -> +agency.Agent",
+          "!suggest": "()"
+        },
+        "sphere": {
+          "!type": "fn() -> +agency.Agent",
+          "!suggest":  "()"
+        },
+        "hand": {
+          "!type": "fn() -> +agency.Agent",
+          "!suggest": "()"
+        },
+        "person": {
+          "!type": "fn() -> +agency.Agent",
+          "!suggest": "()"
+        },
+        "text": {
+          "!type": "fn(text: string) -> +agency.Agent",
+          "!suggest": "('Hello world!')"
+        }
+      }
+    },
+    "CubeAgent": {
+      "!type": "fn()",
+      "prototype": {
+        "!proto": "agency.Agent.prototype"
+      }
+    },
+    "SphereAgent": {
+      "!type": "fn()",
+      "prototype": {
+        "!proto": "agency.Agent.prototype"
+      }
+    },
+    "HandAgent": {
+      "!type": "fn()",
+      "prototype": {
+        "!proto": "agency.Agent.prototype"
+      }
+    },
+    "PersonAgent": {
+      "!type": "fn()",
+      "prototype": {
+        "!proto": "agency.Agent.prototype",
+        "shirt": "agency.Agent.prototype",
+        "pants": "agency.Agent.prototype"
+      }
+    }
+  }
+}
