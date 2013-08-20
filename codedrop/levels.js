@@ -97,6 +97,13 @@ CodeDrop.levels = (function(agency, levels) {
           '!suggest': '(1.0)'
         },
       }
+    },
+    repeat: {
+      '!name': 'repeat',
+      repeat: {
+        '!type': 'fn(times: number, fn(iteration: number))',
+        '!suggest': '(10, function() {\n\n});\n'
+      }
     }
   };
 
@@ -215,10 +222,10 @@ CodeDrop.levels = (function(agency, levels) {
     }, typedefs,
     ['cube', 'move', 'pitch', 'grow', 'ramp']);
 
-  var ten = new Level(
+  var five = new Level(
     function(code) {
       var size = 15,
-          fullTurns = 4,
+          fullTurns = 1,
           heightPerTurn = 10,
           levelMaker = this.scene.hand().color('white');
       this.addContainer()
@@ -237,12 +244,35 @@ CodeDrop.levels = (function(agency, levels) {
     }, typedefs,
     ['cube', 'move', 'pitch', 'yaw', 'roll', 'grow', 'ramp']);
 
+  var six = new Level(
+    function(code) {
+      var size = 15,
+      fullTurns = 4,
+      heightPerTurn = 10,
+      levelMaker = this.scene.hand().color('white');
+      this.addContainer()
+      .gw(2*size).gl(2*size).gt(16 * heightPerTurn * fullTurns);
+      this.addGenerator().translate(0.0, 3.0, -5);
+      this.hand.translate(0.0, 0.0, -5);
+      this.addGoal().translate(0.0, -4*fullTurns*heightPerTurn, 0.0)
+      .gw(2*size).gl(2*size);
+      levelMaker.translate(0.0, -heightPerTurn / 2, 0.0);
+      agency.repeat(4*fullTurns, function() {
+        levelMaker.cube().bk(size/2 - 1).gl(size + 2).gw(2*size);
+        levelMaker.translate(0.0, -heightPerTurn, 0.0).right(90);
+      });
+      levelMaker.die();
+      new Function('hand', code)(this.hand);
+    }, typedefs,
+    ['cube', 'move', 'pitch', 'yaw', 'roll', 'grow', 'ramp', 'repeat']);
+
   return {
     one: one,
     two: two,
     three: three,
     four: four,
-    ten: ten,
-    levels: ['one', 'two', 'three', 'four', 'ten']
+    five: five,
+    six: six,
+    levels: ['one', 'two', 'three', 'four', 'five', 'six']
   };
 })(agency, levels);
