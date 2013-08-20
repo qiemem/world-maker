@@ -1,4 +1,4 @@
-var World = (function(THREE, THREEx, TWEEN) {
+var World = (function(THREE, THREEx, TWEEN, Physijs) {
   'use strict';
 
   var VIEW_ANGLE = 45,
@@ -9,6 +9,10 @@ var World = (function(THREE, THREEx, TWEEN) {
       camera,
       scene,
       controlModes,
+    // First person controls are special. We want to be able toreport player
+    // position.
+      fpControls,
+      fpPosition,
       controls,
       activeControlMode,
       playerLight,
@@ -18,6 +22,10 @@ var World = (function(THREE, THREEx, TWEEN) {
     FIRST_PERSON: 'firstPerson',
     TRACKBALL: 'trackball'
   };
+
+  // physijs worker loads ammo, so that url must be made relative to it.
+  Physijs.scripts.worker = 'libs/physijs_worker.js';
+  Physijs.scripts.ammo = 'ammo.js';
 
   var clock = new THREE.Clock();
 
@@ -43,10 +51,11 @@ var World = (function(THREE, THREEx, TWEEN) {
 
     trackballControls.setActive(false);
 
-    var fpControls = new THREE.FirstPersonControls(camera);
+    fpControls = new THREE.FirstPersonControls(camera);
     fpControls.lookSpeed = 0.1;
     fpControls.movementSpeed = 2;
-    var fpPosition = camera.position.clone().setX(-5.0);
+    fpPosition = camera.position.clone().setX(-5.0);
+    fpPosition = fpPosition;
     var fpUp = camera.up.clone();
     fpControls.setActive = function(val) {
       this.freeze = !val;
@@ -80,23 +89,10 @@ var World = (function(THREE, THREEx, TWEEN) {
       }
     });
 
-    scene = new THREE.Scene();
+    scene = new Physijs.Scene();
     scene.add(camera);
 
     container.appendChild(renderer.domElement);
-
-    reset();
-
-    animate();
-  };
-
-  var reset = function() {
-    for (var i = scene.children.length - 1; i >= 0; i--) {
-      var obj = scene.children[i];
-      if (obj !== camera) {
-        scene.remove(obj);
-      }
-    }
 
     scene.rotation.set(0, 0, 0);
     scene.scale.set(1, 1, 1);
@@ -106,6 +102,8 @@ var World = (function(THREE, THREEx, TWEEN) {
     scene.add(playerLight);
     hemisphereLight = new THREE.HemisphereLight(0xCCCCFF, 0xFFCCCC, 0.5);
     scene.add(hemisphereLight);
+    
+    animate();
   };
 
   var switchControls = function(controlMode) {
@@ -147,7 +145,11 @@ var World = (function(THREE, THREEx, TWEEN) {
   var animate = function() {
     playerLight.position.copy(camera.position);
     controls.update(clock.getDelta());
+    if (fpControls.activeLook) {
+      fpPosition = fpControls.object.position.clone();
+    }
     TWEEN.update();
+    scene.simulate();
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
   };
@@ -158,12 +160,13 @@ var World = (function(THREE, THREEx, TWEEN) {
     switchControls: switchControls,
     scene: function() {return scene;},
     camera: function() {return camera;},
+    playerPosition: function() {return fpPosition.clone();},
+    playerDirection: function() {return fpControls.target.clone();},
     controls: function() {return controls;},
     renderer: function() {return renderer;},
     clock: function() {return clock;},
-    reset: reset,
     playerLight: function() {return playerLight;},
     hemisphereLight: function() {return hemisphereLight;},
     animate: animate
   };
-})(THREE, THREEx, TWEEN);
+})(THREE, THREEx, TWEEN, Physijs);

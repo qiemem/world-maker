@@ -1,3 +1,11 @@
+// FIXME:
+// I used a decentralized, every block creates their own listeners approach
+// as I thought it would simpler. I was wrong. Managing all the listeners and
+// block states is a nightmare and extremely bug prone. 
+// This should be refactored so that there is a central BlockManager that
+// contains all necessary listeners and just hooks the current block up 
+// appropriately.
+
 var block = (function(acorn) {
   'use strict';
 

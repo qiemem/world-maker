@@ -16,6 +16,10 @@
           "!type": "fn(distance: number) -> !this",
           "!suggest": "(1.0)"
         },
+        "translate": {
+          "!type": "fn(x: number, y: number, z: number) -> !this",
+          "!suggest": "(0.0, 1.0, 0.0)"
+        },
         "right": {
           "!type": "fn(angle: number) -> !this",
           "!suggest": "(90)"
@@ -72,6 +76,10 @@
           "!type": "fn(amount: number) -> !this",
           "!suggest": "(0.5)"
         },
+        "mass": {
+          "!type": "fn(mass: nmber) -> !this",
+          "!suggest": "(1.0)"
+        },
         "cube": {
           "!type": "fn() -> +agency.Agent",
           "!suggest": "()"
@@ -81,6 +89,10 @@
           "!suggest":  "()"
         },
         "hand": {
+          "!type": "fn() -> +agency.Agent",
+          "!suggest": "()"
+        },
+        "person": {
           "!type": "fn() -> +agency.Agent",
           "!suggest": "()"
         },
@@ -106,6 +118,14 @@
       "!type": "fn()",
       "prototype": {
         "!proto": "agency.Agent.prototype"
+      }
+    },
+    "PersonAgent": {
+      "!type": "fn()",
+      "prototype": {
+        "!proto": "agency.Agent.prototype",
+        "shirt": "agency.Agent.prototype",
+        "pants": "agency.Agent.prototype"
       }
     }
   }

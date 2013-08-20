@@ -28,8 +28,6 @@ var editor, scene;
     }
     return false;
   });
-  //editor.addPreEvalListener(scene.killChildren.bind(scene));
-  editor.addPreEvalListener(World.reset);
 
   var saveTimeout;
   editor.addPostEvalListener(function() {
