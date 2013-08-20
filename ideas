@@ -1,3 +1,0 @@
-Make block handles context menus. First Item for statement blocks would be "move". For numbers it would be "adjust" (another should be "abstract" to turn it into a variable). For variables, it would be, er, something such that you could drag the variable to a literal, and the literal would be replaced by the variable... sorta... This would open up new options with the blocks as well as putting in natural help.
-
-Use DOM as AST. Enforce formatting through this. Makes block manipulation very natural. Really become graphical programming that you happen to be able to type. See branch custom-editor.
