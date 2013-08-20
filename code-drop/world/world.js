@@ -14,8 +14,9 @@ var World = (function(THREE, THREEx, Physijs) {
       playerLight,
       hemisphereLight;
 
-  Physijs.scripts.worker = '/libs/physijs_worker.js';
-  Physijs.scripts.ammo = '/libs/ammo.js';
+  // physijs worker loads ammo, so that url must be made relative to it.
+  Physijs.scripts.worker = 'libs/physijs_worker.js';
+  Physijs.scripts.ammo = 'ammo.js';
 
   var clock = new THREE.Clock();
 
