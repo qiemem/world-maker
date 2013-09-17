@@ -95,7 +95,7 @@ CodeDrop.PoleControls = function ( object, domElement ) {
 
   $(domElement).mousemove(this.handleMouseMove);
   $(domElement).mousewheel(this.handleMouseWheel);
-  $(domElement).mousedown(function() {this.mouseDown = true;}.bind(this));
-  $(domElement).mouseup(function() {this.mouseDown = false;}.bind(this));
+  $(document).mousedown(function() {this.mouseDown = true;}.bind(this));
+  $(document).mouseup(function() {this.mouseDown = false;}.bind(this));
 
 };
