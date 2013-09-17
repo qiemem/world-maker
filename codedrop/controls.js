@@ -18,6 +18,8 @@ CodeDrop.PoleControls = function ( object, domElement ) {
   this.minDistance = 0.1;
   this.maxDistance = 10000.0;
 
+  this.mouseDown = false;
+
   this.keys = {
     pan: 17 /*ctrl*/,
     zoom: 16
@@ -76,7 +78,9 @@ CodeDrop.PoleControls = function ( object, domElement ) {
   }.bind(this);
 
   this.handleMouseMove = function (e) {
-    if (e.which > 0) {
+    // e.which prevents chrome from snagging when mouse goes off window
+    // no way to prevent that in ff
+    if (e.which && this.mouseDown) {
       if (this.lastMouseY >= 0 ) {
         this.dragVertical(e.which, e.pageY - this.lastMouseY);
         this.dragHorizontal(e.which, e.pageX - this.lastMouseX);
@@ -91,5 +95,7 @@ CodeDrop.PoleControls = function ( object, domElement ) {
 
   $(domElement).mousemove(this.handleMouseMove);
   $(domElement).mousewheel(this.handleMouseWheel);
+  $(domElement).mousedown(function() {this.mouseDown = true;}.bind(this));
+  $(domElement).mouseup(function() {this.mouseDown = false;}.bind(this));
 
 };
